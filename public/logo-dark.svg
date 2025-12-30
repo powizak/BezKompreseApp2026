@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 60">
+  <defs>
+    <style>
+      .text {
+        font-family: sans-serif;
+        font-weight: 900;
+        font-style: italic;
+        text-transform: uppercase;
+      }
+    </style>
+  </defs>
+  <text x="10" y="45" class="text" fill="#111111" font-size="40" letter-spacing="-1">BEZ</text>
+  <text x="100" y="45" class="text" fill="#111111" font-size="40" letter-spacing="-1">KOMPRESE</text>
+</svg>
