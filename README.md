@@ -2,6 +2,10 @@
 
 Fanouškovská aplikace pro YouTube kanál **Bez Komprese**, vyvinutá s důrazem na Mobile First přístup.
 
+## 🌐 Živé Demo
+
+Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://bezkompreseapp.web.app)**
+
 ## Technologie
 
 *   **Runtime:** Node.js (nebo Bun)
