@@ -59,7 +59,7 @@ export default function Events() {
         loadEvents();
     };
 
-    if (loading) return <div className="p-10 text-center text-slate-500 font-mono">Načítám akce...</div>;
+
 
     return (
         <div>
@@ -130,7 +130,20 @@ export default function Events() {
                 </div>
             )}
 
-            {viewMode === 'map' ? (
+            {loading ? (
+                <div className="p-12 text-center text-slate-400">
+                    <div className="animate-spin w-8 h-8 border-4 border-slate-200 border-t-brand rounded-full mx-auto mb-4"></div>
+                    <p className="font-bold uppercase tracking-wide text-sm">Načítám akce...</p>
+                </div>
+            ) : events.length === 0 ? (
+                <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl p-12 text-center text-slate-400 animate-in fade-in zoom-in-95">
+                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
+                        <List size={32} />
+                    </div>
+                    <h3 className="font-bold text-lg text-slate-700 mb-1">Žádné naplánované akce</h3>
+                    <p className="text-sm">Buď první a uspořádej sraz!</p>
+                </div>
+            ) : viewMode === 'map' ? (
                 <EventMap events={events} />
             ) : (
                 <div className="space-y-4">

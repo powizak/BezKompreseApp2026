@@ -1,5 +1,5 @@
 import { Context, Effect, Layer } from "effect";
-import { collection, addDoc, getDocs, query, where, updateDoc, doc } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where, updateDoc, doc, limit } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../config/firebase";
 import type { Car, AppEvent, SocialPost } from "../types";
@@ -27,6 +27,8 @@ export interface DataService {
     readonly searchUsers: (query: string) => Effect.Effect<import("../types").UserProfile[], DataError>;
     readonly addFriend: (currentUserId: string, friendId: string) => Effect.Effect<void, DataError>;
     readonly removeFriend: (currentUserId: string, friendId: string) => Effect.Effect<void, DataError>;
+    readonly getAllUsers: (limitCount?: number) => Effect.Effect<import("../types").UserProfile[], DataError>;
+    readonly getUserEvents: (userId: string) => Effect.Effect<{ created: AppEvent[], joined: AppEvent[] }, DataError>;
 }
 
 export const DataService = Context.GenericTag<DataService>("DataService");
@@ -279,6 +281,32 @@ export const DataServiceLive = Layer.succeed(
                 });
             },
             catch: (e) => new DataError("Failed to remove friend", e)
+        }),
+        getAllUsers: (limitCount = 20) => Effect.tryPromise({
+            try: async () => {
+                const q = query(
+                    collection(db, "users"),
+                    limit(limitCount)
+                );
+                const snapshot = await getDocs(q);
+                return snapshot.docs.map(doc => doc.data() as import("../types").UserProfile);
+            },
+            catch: (e) => new DataError("Failed to fetch users", e)
+        }),
+        getUserEvents: (userId) => Effect.tryPromise({
+            try: async () => {
+                // 1. Created events
+                const qCreated = query(collection(db, "events"), where("creatorId", "==", userId));
+                const snapCreated = await getDocs(qCreated);
+                const created = snapCreated.docs.map(doc => ({ id: doc.id, ...doc.data() } as AppEvent));
+
+                // 2. Joined events (Not implemented in DB yet, return empty for safety)
+                // Future todo: Query a 'participants' collection or array field
+                const joined: AppEvent[] = [];
+
+                return { created, joined };
+            },
+            catch: (e) => new DataError("Failed to fetch user events", e)
         })
     })
 );

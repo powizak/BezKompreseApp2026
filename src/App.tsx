@@ -8,6 +8,7 @@ import Info from './pages/Info';
 import Login from './pages/Login';
 import EventDetail from './pages/EventDetail';
 import UserProfile from './pages/UserProfile';
+import UsersPage from './pages/Users';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/garage" element={<Garage />} />
             <Route path="/events" element={<Events />} />
             <Route path="/events/:id" element={<EventDetail />} />
+            <Route path="/users" element={<UsersPage />} />
             <Route path="/profile/:id" element={<UserProfile />} />
             <Route path="/info" element={<Info />} />
             <Route path="/login" element={<Login />} />

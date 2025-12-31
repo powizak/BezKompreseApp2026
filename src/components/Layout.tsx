@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Home, Car, Calendar, Info, LogIn } from 'lucide-react';
+import { Home, Car, Calendar, Info, LogIn, Users } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -10,55 +10,56 @@ export default function Layout() {
   const navItems = [
     { icon: Home, label: 'Feed', path: '/' },
     { icon: Car, label: 'Garáž', path: '/garage' },
+    { icon: Users, label: 'Lidé', path: '/users' },
     { icon: Calendar, label: 'Akce', path: '/events' },
     { icon: Info, label: 'Info', path: '/info' },
   ];
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row font-sans text-slate-900">
-      
+
       {/* Desktop Sidebar - Black Theme */}
       <aside className="hidden md:flex flex-col w-64 bg-[#111111] border-r border-slate-800 fixed h-full z-20 text-slate-200">
         <div className="p-6 flex justify-center">
-            <img src="/logo.svg" alt="Bez Komprese" className="h-8" />
+          <img src="/logo.svg" alt="Bez Komprese" className="h-8" />
         </div>
-        
+
         <nav className="flex-1 px-4 space-y-2 mt-4">
-            {navItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = pathname === item.path;
-                return (
-                    <Link 
-                        key={item.path} 
-                        to={item.path} 
-                        className={cn(
-                            "flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold tracking-wide uppercase text-sm",
-                            isActive ? "bg-brand text-brand-contrast shadow-[0_0_15px_rgba(255,214,0,0.3)]" : "text-slate-400 hover:text-white hover:bg-white/5"
-                        )}
-                    >
-                        <Icon size={20} />
-                        {item.label}
-                    </Link>
-                )
-            })}
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.path;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={cn(
+                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold tracking-wide uppercase text-sm",
+                  isActive ? "bg-brand text-brand-contrast shadow-[0_0_15px_rgba(255,214,0,0.3)]" : "text-slate-400 hover:text-white hover:bg-white/5"
+                )}
+              >
+                <Icon size={20} />
+                {item.label}
+              </Link>
+            )
+          })}
         </nav>
 
         <div className="p-4 border-t border-slate-800">
-            {user ? (
-                <div className="flex items-center gap-3 px-4 py-2">
-                    <div className="w-8 h-8 rounded-full bg-slate-700 overflow-hidden ring-2 ring-brand">
-                        {user.photoURL ? <img src={user.photoURL} alt="User" /> : <div className="p-1 text-slate-400"><Car size={20}/></div>}
-                    </div>
-                    <div className="flex-1 overflow-hidden">
-                        <p className="text-sm font-bold truncate text-white">{user.displayName || 'Uživatel'}</p>
-                        <button onClick={logout} className="text-xs text-brand hover:underline flex items-center gap-1">Odhlásit</button>
-                    </div>
-                </div>
-            ) : (
-                <Link to="/login" className="flex items-center gap-2 px-4 py-3 bg-white/5 rounded-xl text-sm font-bold text-white hover:bg-brand hover:text-brand-contrast transition-colors justify-center">
-                    <LogIn size={18} /> PŘIHLÁSIT SE
-                </Link>
-            )}
+          {user ? (
+            <div className="flex items-center gap-3 px-4 py-2">
+              <Link to={`/profile/${user.uid}`} className="w-8 h-8 rounded-full bg-slate-700 overflow-hidden ring-2 ring-brand block hover:scale-105 transition-transform">
+                {user.photoURL ? <img src={user.photoURL} alt="User" className="w-full h-full object-cover" /> : <div className="p-1 text-slate-400 h-full w-full flex items-center justify-center"><Car size={16} /></div>}
+              </Link>
+              <div className="flex-1 overflow-hidden">
+                <Link to={`/profile/${user.uid}`} className="text-sm font-bold truncate text-white hover:text-brand transition-colors block">{user.displayName || 'Uživatel'}</Link>
+                <button onClick={logout} className="text-xs text-brand hover:underline flex items-center gap-1">Odhlásit</button>
+              </div>
+            </div>
+          ) : (
+            <Link to="/login" className="flex items-center gap-2 px-4 py-3 bg-white/5 rounded-xl text-sm font-bold text-white hover:bg-brand hover:text-brand-contrast transition-colors justify-center">
+              <LogIn size={18} /> PŘIHLÁSIT SE
+            </Link>
+          )}
         </div>
       </aside>
 
@@ -66,9 +67,9 @@ export default function Layout() {
       <header className="md:hidden sticky top-0 z-10 bg-[#111111] text-white shadow-md p-4 flex justify-between items-center border-b border-white/10">
         <img src="/logo.svg" alt="Bez Komprese" className="h-6" />
         {user ? (
-          <div className="w-8 h-8 rounded-full bg-white/10 overflow-hidden ring-1 ring-brand">
-             {user.photoURL ? <img src={user.photoURL} alt="User" /> : <div className="p-1"><Car size={20}/></div>}
-          </div>
+          <Link to={`/profile/${user.uid}`} className="w-8 h-8 rounded-full bg-white/10 overflow-hidden ring-1 ring-brand block">
+            {user.photoURL ? <img src={user.photoURL} alt="User" className="w-full h-full object-cover" /> : <div className="p-1 h-full w-full flex items-center justify-center"><Car size={16} /></div>}
+          </Link>
         ) : (
           <Link to="/login" className="text-sm font-bold text-brand hover:underline flex items-center gap-1 uppercase tracking-wider">
             <LogIn size={16} /> Login
