@@ -1,7 +1,8 @@
 import { Context, Effect, Layer, Stream } from "effect";
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
-import { auth } from "../config/firebase";
+import { auth, db } from "../config/firebase";
 import type { UserProfile } from "../types";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 // Define the Error type
 export class AuthError {
@@ -9,8 +10,8 @@ export class AuthError {
   readonly message: string;
   readonly originalError: unknown;
   constructor(message: string, originalError: unknown) {
-      this.message = message;
-      this.originalError = originalError;
+    this.message = message;
+    this.originalError = originalError;
   }
 }
 
@@ -33,12 +34,17 @@ export const AuthServiceLive = Layer.succeed(
         const provider = new GoogleAuthProvider();
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
-        return {
+        const profile: UserProfile = {
           uid: user.uid,
           displayName: user.displayName,
           email: user.email,
-          photoURL: user.photoURL
+          photoURL: user.photoURL,
+          // We don't overwrite friends on login, handled by merge: true
         };
+
+        await setDoc(doc(db, "users", user.uid), profile, { merge: true });
+
+        return profile;
       },
       catch: (error) => new AuthError("Failed to login", error)
     }),
@@ -47,21 +53,33 @@ export const AuthServiceLive = Layer.succeed(
       catch: (error) => new AuthError("Failed to logout", error)
     }),
     currentUser: Stream.async<UserProfile | null>((emit) => {
-      onAuthStateChanged(auth, (user) => {
+      onAuthStateChanged(auth, async (user) => {
         if (user) {
-          emit.single({
+          // Also sync on auth state restore to ensure fresh data
+          const userRef = doc(db, "users", user.uid);
+          await setDoc(userRef, {
             uid: user.uid,
             displayName: user.displayName,
             email: user.email,
             photoURL: user.photoURL
+          }, { merge: true });
+
+          // Allow fetching friends list which is not in auth object
+          const snap = await getDoc(userRef);
+          const data = snap.data() as UserProfile | undefined;
+
+          emit.single({
+            uid: user.uid,
+            displayName: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL,
+            friends: data?.friends || []
           });
         } else {
           emit.single(null);
         }
       });
-      // Stream.async expects void or Effect, not a generic function for cleanup in simple mode.
-      // For proper cleanup we would use Stream.asyncScoped, but for this demo:
-      return Effect.void; 
+      return Effect.void;
     })
   })
 );

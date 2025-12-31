@@ -160,6 +160,11 @@ export default function Events() {
                                             <MapPin size={16} className={event.type === 'official' ? 'text-brand' : 'text-slate-400'} />
                                             {event.location}
                                         </div>
+                                        <div className="flex items-center gap-1.5">
+                                            <Link to={`/profile/${event.creatorId}`} className="hover:text-brand hover:underline">
+                                                Organizátor
+                                            </Link>
+                                        </div>
                                     </div>
                                 </div>
 

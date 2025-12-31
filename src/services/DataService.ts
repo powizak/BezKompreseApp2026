@@ -23,6 +23,10 @@ export interface DataService {
     readonly getEventById: (id: string) => Effect.Effect<AppEvent | undefined, DataError>;
     readonly addEvent: (event: Omit<AppEvent, "id">) => Effect.Effect<string, DataError>;
     readonly getSocialFeed: Effect.Effect<SocialPost[], DataError>;
+    readonly getUserProfile: (userId: string) => Effect.Effect<{ profile: import("../types").UserProfile, cars: Car[] } | null, DataError>;
+    readonly searchUsers: (query: string) => Effect.Effect<import("../types").UserProfile[], DataError>;
+    readonly addFriend: (currentUserId: string, friendId: string) => Effect.Effect<void, DataError>;
+    readonly removeFriend: (currentUserId: string, friendId: string) => Effect.Effect<void, DataError>;
 }
 
 export const DataService = Context.GenericTag<DataService>("DataService");
@@ -218,6 +222,63 @@ export const DataServiceLive = Layer.succeed(
                 return posts.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
             },
             catch: (e) => new DataError("Failed to fetch social feed", e)
+        }),
+        getUserProfile: (userId) => Effect.tryPromise({
+            try: async () => {
+                const userRef = doc(db, "users", userId);
+                const userSnap = await await import("firebase/firestore").then(m => m.getDoc(userRef));
+
+                if (!userSnap.exists()) {
+                    return null;
+                }
+
+                const profile = userSnap.data() as import("../types").UserProfile;
+                const carsQuery = query(collection(db, "cars"), where("ownerId", "==", userId));
+                const carsSnap = await getDocs(carsQuery);
+                const cars = carsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Car));
+
+                return { profile, cars };
+            },
+            catch: (e) => new DataError("Failed to fetch user profile", e)
+        }),
+        searchUsers: (searchQuery) => Effect.tryPromise({
+            try: async () => {
+                // Simple prefix search on displayName
+                // Note: This requires a composite index or compatible field. 
+                // For simplicity/demo: client-side filtering or simple match if low volume.
+                // Real implementation ideally uses Algolia or similar for full text search.
+                // Here we try a basic Firestore query for exact match or simple startAt
+
+                const q = query(
+                    collection(db, "users"),
+                    where("displayName", ">=", searchQuery),
+                    where("displayName", "<=", searchQuery + '\uf8ff'),
+                    await import("firebase/firestore").then(m => m.limit(10))
+                );
+                const snapshot = await getDocs(q);
+                return snapshot.docs.map(doc => doc.data() as import("../types").UserProfile);
+            },
+            catch: (e) => new DataError("Failed to search users", e)
+        }),
+        addFriend: (currentUserId, friendId) => Effect.tryPromise({
+            try: async () => {
+                const { arrayUnion } = await import("firebase/firestore");
+                const userRef = doc(db, "users", currentUserId);
+                await updateDoc(userRef, {
+                    friends: arrayUnion(friendId)
+                });
+            },
+            catch: (e) => new DataError("Failed to add friend", e)
+        }),
+        removeFriend: (currentUserId, friendId) => Effect.tryPromise({
+            try: async () => {
+                const { arrayRemove } = await import("firebase/firestore");
+                const userRef = doc(db, "users", currentUserId);
+                await updateDoc(userRef, {
+                    friends: arrayRemove(friendId)
+                });
+            },
+            catch: (e) => new DataError("Failed to remove friend", e)
         })
     })
 );

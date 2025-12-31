@@ -3,6 +3,7 @@ export interface UserProfile {
   displayName: string | null;
   email: string | null;
   photoURL: string | null;
+  friends?: string[]; // Array of user UIDs
 }
 
 export interface CarModification {

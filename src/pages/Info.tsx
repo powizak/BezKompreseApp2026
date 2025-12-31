@@ -26,9 +26,9 @@ export default function Info() {
   ];
 
   const socials = [
-      { name: 'Instagram', icon: Instagram, url: 'http://bit.ly/2tjTkFK', color: 'hover:text-pink-600' },
-      { name: 'Facebook', icon: Facebook, url: 'http://bit.ly/3aX05OF', color: 'hover:text-blue-600' },
-      { name: 'YouTube', icon: Youtube, url: 'https://www.youtube.com/channel/UCw7nrQwqRDvG6Q3CSEmcOSw', color: 'hover:text-red-600' },
+    { name: 'Instagram', icon: Instagram, url: 'https://www.instagram.com/bez_komprese', color: 'hover:text-pink-600' },
+    { name: 'Facebook', icon: Facebook, url: 'https://www.facebook.com/bezkomprese/', color: 'hover:text-blue-600' },
+    { name: 'YouTube', icon: Youtube, url: 'https://www.youtube.com/channel/UCw7nrQwqRDvG6Q3CSEmcOSw', color: 'hover:text-red-600' },
   ];
 
   return (
@@ -40,8 +40,8 @@ export default function Info() {
 
       <div className="grid gap-4">
         {sections.map((item) => {
-           const Icon = item.icon;
-           return (
+          const Icon = item.icon;
+          return (
             <a key={item.title} href={item.link} target="_blank" rel="noopener noreferrer" className="flex items-start gap-4 bg-white p-5 rounded-2xl shadow-sm hover:shadow-md transition-all hover:-translate-y-1 border border-slate-100">
               <div className={`${item.color} text-white p-3 rounded-xl shadow-md`}>
                 <Icon size={24} />
@@ -51,26 +51,26 @@ export default function Info() {
                 <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
               </div>
             </a>
-           )
+          )
         })}
       </div>
 
       <div className="bg-slate-100 p-8 rounded-3xl text-center">
         <h3 className="font-bold mb-4 text-slate-800">Sledujte nás na sítích</h3>
         <div className="flex justify-center gap-4">
-           {socials.map(soc => {
-               const Icon = soc.icon;
-               return (
-                   <a key={soc.name} href={soc.url} target="_blank" rel="noopener noreferrer" className={`p-4 bg-white rounded-full shadow-sm ${soc.color} transition-colors text-slate-700`}>
-                       <Icon size={24} />
-                   </a>
-               )
-           })}
+          {socials.map(soc => {
+            const Icon = soc.icon;
+            return (
+              <a key={soc.name} href={soc.url} target="_blank" rel="noopener noreferrer" className={`p-4 bg-white rounded-full shadow-sm ${soc.color} transition-colors text-slate-700`}>
+                <Icon size={24} />
+              </a>
+            )
+          })}
         </div>
       </div>
 
       <footer className="text-center text-xs text-slate-400 py-4">
-          &copy; {new Date().getFullYear()} Bez Komprese Fan App. Not affiliated officially.
+        &copy; {new Date().getFullYear()} Bez Komprese Fan App. Not affiliated officially.
       </footer>
     </div>
   );
