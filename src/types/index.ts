@@ -24,6 +24,7 @@ export interface Car {
   year: number;
   engine: string;
   power: string;
+  stockPower?: string;
   mods: CarModification[];
   photos: string[];
 }
