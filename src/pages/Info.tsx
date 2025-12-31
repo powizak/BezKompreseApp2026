@@ -18,7 +18,7 @@ export default function Info() {
     },
     {
       title: "Bez Komprese Media",
-      desc: "Foto, video, webové stránky a marketing. Tvoříme obsah, který má koule.",
+      desc: "Foto, video, vývoj aplikací a využití AI v reálném životě. Tvoříme obsah, který má koule.",
       icon: Camera,
       link: "https://bezkompresemedia.cz",
       color: "bg-purple-600"
