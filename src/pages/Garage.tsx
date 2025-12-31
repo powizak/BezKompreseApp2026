@@ -24,7 +24,7 @@ export default function Garage() {
   // Form State
   const initialFormState = {
     name: '', make: '', model: '', year: new Date().getFullYear().toString(),
-    engine: '', power: '', mods: [] as CarModification[], photos: [] as string[]
+    engine: '', power: '', stockPower: '', mods: [] as CarModification[], photos: [] as string[]
   };
   const [formData, setFormData] = useState(initialFormState);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -61,6 +61,7 @@ export default function Garage() {
       year: car.year.toString(),
       engine: car.engine,
       power: car.power,
+      stockPower: car.stockPower || '',
       mods: car.mods || [],
       photos: car.photos || []
     });
@@ -158,6 +159,7 @@ export default function Garage() {
         year: parseInt(formData.year),
         engine: formData.engine,
         power: formData.power,
+        stockPower: formData.stockPower,
         mods: formData.mods,
         photos: finalPhotos
       };
@@ -251,8 +253,12 @@ export default function Garage() {
                     <input placeholder="1.9 TDI" className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all" value={formData.engine} onChange={e => setFormData({ ...formData, engine: e.target.value })} required />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Výkon</label>
-                    <input placeholder="Original 66kW / Chip 85kW" className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all" value={formData.power} onChange={e => setFormData({ ...formData, power: e.target.value })} required />
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Aktuální Výkon</label>
+                    <input placeholder="Např. 140kW" className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all" value={formData.power} onChange={e => setFormData({ ...formData, power: e.target.value })} required />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Sériový Výkon</label>
+                    <input placeholder="Např. 110kW" className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all" value={formData.stockPower} onChange={e => setFormData({ ...formData, stockPower: e.target.value })} />
                   </div>
                 </div>
               </div>
