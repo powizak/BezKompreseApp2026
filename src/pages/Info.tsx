@@ -11,7 +11,7 @@ export default function Info() {
     },
     {
       title: "Bez Komprese Shop",
-      desc: "E-shop s vůní benzínu. Podpořte nás nákupem merche nebo autokosmetiky Xintex.",
+      desc: "E-shop s vůní benzínu. Podpořte nás nákupem merche nebo profesionálních přípravků Xintex na ošetření vozidla.",
       icon: ShoppingBag,
       link: "https://bezkompreseshop.cz",
       color: "bg-green-600"
