@@ -5,6 +5,15 @@ export interface UserProfile {
   photoURL: string | null;
 }
 
+export interface CarModification {
+  id: string;
+  type: string;
+  name: string;
+  description?: string;
+  date?: string;
+  price?: number;
+}
+
 export interface Car {
   id: string;
   ownerId: string;
@@ -14,8 +23,8 @@ export interface Car {
   year: number;
   engine: string;
   power: string;
-  mods: string[];
-  imageUrl?: string;
+  mods: CarModification[];
+  photos: string[];
 }
 
 export interface AppEvent {
