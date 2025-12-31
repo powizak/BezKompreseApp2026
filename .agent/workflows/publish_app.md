@@ -1,0 +1,26 @@
+---
+description: Build, deploy to Firebase Hosting, and push changes to GitHub. Use this workflow to publish the app.
+---
+
+1. Build the production version of the app
+// turbo
+npm run build
+
+2. Deploy to Firebase Hosting
+// turbo
+npx firebase deploy --only hosting
+
+3. Check the status of the repository
+// turbo
+git status
+
+4. Stage all changes for commit
+// turbo
+git add .
+
+5. Commit the changes (Update the message as needed)
+git commit -m "chore: build and deploy"
+
+6. Push changes to GitHub
+// turbo
+git push
