@@ -146,7 +146,7 @@ export default function UserProfilePage() {
                         {cars.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {cars.map(car => (
-                                    <div key={car.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-slate-100 group">
+                                    <Link to={`/car/${car.id}`} key={car.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-slate-100 group block">
                                         <div className="h-48 bg-slate-100 relative overflow-hidden">
                                             {car.photos && car.photos.length > 0 ? (
                                                 <img src={car.photos[0]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={car.name} />
@@ -175,7 +175,7 @@ export default function UserProfilePage() {
                                                 )}
                                             </div>
                                         </div>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
                         ) : (

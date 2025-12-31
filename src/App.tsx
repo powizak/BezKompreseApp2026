@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import EventDetail from './pages/EventDetail';
 import UserProfile from './pages/UserProfile';
 import UsersPage from './pages/Users';
+import CarDetail from './pages/CarDetail';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/events/:id" element={<EventDetail />} />
             <Route path="/users" element={<UsersPage />} />
             <Route path="/profile/:id" element={<UserProfile />} />
+            <Route path="/car/:id" element={<CarDetail />} />
             <Route path="/info" element={<Info />} />
             <Route path="/login" element={<Login />} />
           </Route>

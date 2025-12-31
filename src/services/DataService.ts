@@ -29,6 +29,7 @@ export interface DataService {
     readonly removeFriend: (currentUserId: string, friendId: string) => Effect.Effect<void, DataError>;
     readonly getAllUsers: (limitCount?: number) => Effect.Effect<import("../types").UserProfile[], DataError>;
     readonly getUserEvents: (userId: string) => Effect.Effect<{ created: AppEvent[], joined: AppEvent[] }, DataError>;
+    readonly getCarById: (carId: string) => Effect.Effect<Car | undefined, DataError>;
 }
 
 export const DataService = Context.GenericTag<DataService>("DataService");
@@ -307,6 +308,17 @@ export const DataServiceLive = Layer.succeed(
                 return { created, joined };
             },
             catch: (e) => new DataError("Failed to fetch user events", e)
+        }),
+        getCarById: (carId) => Effect.tryPromise({
+            try: async () => {
+                const docRef = doc(db, "cars", carId);
+                const docSnap = await import("firebase/firestore").then(m => m.getDoc(docRef));
+                if (docSnap.exists()) {
+                    return { id: docSnap.id, ...docSnap.data() } as Car;
+                }
+                return undefined;
+            },
+            catch: (e) => new DataError("Failed to fetch car", e)
         })
     })
 );
