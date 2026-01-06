@@ -24,7 +24,7 @@ export default function Garage() {
   // Form State
   const initialFormState = {
     name: '', make: '', model: '', year: new Date().getFullYear().toString(),
-    engine: '', power: '', stockPower: '', mods: [] as CarModification[], photos: [] as string[]
+    engine: '', power: '', stockPower: '', mods: [] as CarModification[], photos: [] as string[], isOwned: true
   };
   const [formData, setFormData] = useState(initialFormState);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -63,7 +63,8 @@ export default function Garage() {
       power: car.power,
       stockPower: car.stockPower || '',
       mods: car.mods || [],
-      photos: car.photos || []
+      photos: car.photos || [],
+      isOwned: car.isOwned ?? true
     });
     setShowForm(true);
     setSelectedFiles([]); // Reset new files
@@ -161,7 +162,8 @@ export default function Garage() {
         power: formData.power,
         stockPower: formData.stockPower,
         mods: formData.mods,
-        photos: finalPhotos
+        photos: finalPhotos,
+        isOwned: formData.isOwned
       };
 
       if (editingCar) {
@@ -369,6 +371,24 @@ export default function Garage() {
                 </div>
               </div>
 
+              {/* Ownership Status */}
+              <div className="mb-8 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      className="peer sr-only"
+                      checked={formData.isOwned}
+                      onChange={e => setFormData({ ...formData, isOwned: e.target.checked })}
+                    />
+                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand"></div>
+                  </div>
+                  <span className="font-medium text-slate-700">
+                    {formData.isOwned ? "Vozidlo stále vlastním (V garáži)" : "Vozidlo již nevlastním (Historie)"}
+                  </span>
+                </label>
+              </div>
+
               <div className="pt-4 border-t border-slate-100">
                 <button
                   type="submit"
@@ -419,7 +439,7 @@ export default function Garage() {
                 </div>
 
                 {/* Actions */}
-                <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
                   <button
                     onClick={() => handleEdit(car)}
                     className="bg-white/90 text-slate-900 p-2 rounded-full shadow-lg hover:bg-white transition-colors"
@@ -427,6 +447,22 @@ export default function Garage() {
                     <Pencil size={16} />
                   </button>
                 </div>
+
+                {/* Ownership Badge */}
+                {(car.isOwned ?? true) && (
+                  <div className="absolute top-3 right-12 z-20">
+                    <span className="bg-brand text-slate-900 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg border border-brand-light flex items-center gap-1">
+                      V garáži
+                    </span>
+                  </div>
+                )}
+                {!(car.isOwned ?? true) && (
+                  <div className="absolute top-3 right-12 z-20">
+                    <span className="bg-slate-800 text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg flex items-center gap-1 opacity-90">
+                      Historie
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Specs */}

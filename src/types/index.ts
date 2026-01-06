@@ -27,6 +27,7 @@ export interface Car {
   stockPower?: string;
   mods: CarModification[];
   photos: string[];
+  isOwned?: boolean;
 }
 
 export interface AppEvent {

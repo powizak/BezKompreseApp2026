@@ -158,6 +158,21 @@ export default function UserProfilePage() {
                                             <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4 pt-12">
                                                 <h3 className="text-white font-black text-xl italic uppercase tracking-wide">{car.name}</h3>
                                             </div>
+                                            {/* Ownership Badge */}
+                                            {(car.isOwned ?? true) && (
+                                                <div className="absolute top-2 right-2 z-10">
+                                                    <span className="bg-brand text-slate-900 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg border border-brand-light flex items-center gap-1">
+                                                        V garáži
+                                                    </span>
+                                                </div>
+                                            )}
+                                            {!(car.isOwned ?? true) && (
+                                                <div className="absolute top-2 right-2 z-10">
+                                                    <span className="bg-slate-800 text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg flex items-center gap-1 opacity-90">
+                                                        Historie
+                                                    </span>
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="p-5">
                                             <div className="flex justify-between items-center text-sm font-bold text-slate-600 mb-3">

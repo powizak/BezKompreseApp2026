@@ -72,6 +72,23 @@ export default function CarDetail() {
                             <span className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm"><Gauge size={16} /> {car.engine}</span>
                         </div>
                     </div>
+
+
+                    {/* Ownership Badge */}
+                    {(car.isOwned ?? true) && (
+                        <div className="absolute top-6 right-6 z-10 pointer-events-none">
+                            <span className="bg-brand text-slate-900 font-black uppercase tracking-wider px-4 py-2 rounded-xl shadow-lg border border-brand-light flex items-center gap-2 transform rotate-2">
+                                V garáži
+                            </span>
+                        </div>
+                    )}
+                    {!(car.isOwned ?? true) && (
+                        <div className="absolute top-6 right-6 z-10 pointer-events-none">
+                            <span className="bg-slate-800 text-white font-black uppercase tracking-wider px-4 py-2 rounded-xl shadow-lg flex items-center gap-2 opacity-90 transform -rotate-2 border border-slate-700">
+                                Historie / Prodáno
+                            </span>
+                        </div>
+                    )}
                 </div>
 
                 {/* Content */}
@@ -178,19 +195,21 @@ export default function CarDetail() {
             </div>
 
             {/* Image Modal */}
-            {isImageModalOpen && car.photos && car.photos.length > 0 && (
-                <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={() => setIsImageModalOpen(false)}>
-                    <button className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
-                        <X size={32} />
-                    </button>
-                    <img
-                        src={car.photos[0]}
-                        alt={car.name}
-                        className="max-w-full max-h-screen object-contain shadow-2xl rounded-sm"
-                        onClick={(e) => e.stopPropagation()}
-                    />
-                </div>
-            )}
-        </div>
+            {
+                isImageModalOpen && car.photos && car.photos.length > 0 && (
+                    <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={() => setIsImageModalOpen(false)}>
+                        <button className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
+                            <X size={32} />
+                        </button>
+                        <img
+                            src={car.photos[0]}
+                            alt={car.name}
+                            className="max-w-full max-h-screen object-contain shadow-2xl rounded-sm"
+                            onClick={(e) => e.stopPropagation()}
+                        />
+                    </div>
+                )
+            }
+        </div >
     );
 }
