@@ -2,6 +2,7 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Home, Car, Calendar, Info, LogIn, Users, CarFront } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
+import Footer from './Footer';
 
 export default function Layout() {
   const { pathname } = useLocation();
@@ -81,6 +82,7 @@ export default function Layout() {
       {/* Main Content Area */}
       <main className="flex-1 pb-24 md:pb-8 p-4 md:ml-64 w-full max-w-5xl mx-auto">
         <Outlet />
+        <Footer />
       </main>
 
       {/* Mobile Bottom Navigation - White/Light */}
@@ -106,6 +108,6 @@ export default function Layout() {
           })}
         </div>
       </nav>
-    </div>
+    </div >
   );
 }
