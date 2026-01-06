@@ -41,10 +41,6 @@ export default function CarDetail() {
     if (loading) return <div className="p-12 text-center text-slate-400 font-mono">Načítám vozidlo...</div>;
     if (!car) return <div className="p-12 text-center text-slate-400 font-mono">Vozidlo nenalezeno.</div>;
 
-    const formatPrice = (price?: number) => {
-        if (!price) return null;
-        return new Intl.NumberFormat('cs-CZ', { style: 'currency', currency: 'CZK', maximumFractionDigits: 0 }).format(price);
-    };
 
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 space-y-8">
@@ -127,11 +123,6 @@ export default function CarDetail() {
                                                     <div className="w-2 h-2 rounded-full bg-brand flex-shrink-0" />
                                                     <h3 className="font-black text-lg text-slate-900">{typeof mod === 'string' ? mod : mod.name}</h3>
                                                 </div>
-                                                {typeof mod !== 'string' && mod.price && (
-                                                    <span className="text-sm font-bold text-slate-900 bg-slate-100 px-2 py-1 rounded-md whitespace-nowrap">
-                                                        {formatPrice(mod.price)}
-                                                    </span>
-                                                )}
                                             </div>
 
                                             {typeof mod !== 'string' && (

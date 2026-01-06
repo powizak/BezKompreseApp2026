@@ -12,7 +12,6 @@ export interface CarModification {
   name: string;
   description?: string;
   date?: string;
-  price?: number;
 }
 
 export interface Car {

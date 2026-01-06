@@ -111,8 +111,7 @@ export default function Garage() {
       id: Date.now().toString(),
       name: '',
       type: 'performance',
-      description: '',
-      price: 0
+      description: ''
     };
     setFormData(prev => ({ ...prev, mods: [...prev.mods, newMod] }));
   };
