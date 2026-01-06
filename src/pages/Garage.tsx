@@ -7,6 +7,7 @@ import { Plus, Pencil, Trash2, Camera, CarFront, Gauge, Wrench, X, Save, AlertCi
 import { Link } from 'react-router-dom';
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { compressImage } from '../lib/imageOptimizer';
 
 function cn(...inputs: (string | undefined | null | false)[]) {
   return twMerge(clsx(inputs));
@@ -140,7 +141,8 @@ export default function Garage() {
 
       for (const file of selectedFiles) {
         try {
-          const url = await Effect.runPromise(dataService.uploadCarPhoto(file, tempId));
+          const compressedFile = await compressImage(file);
+          const url = await Effect.runPromise(dataService.uploadCarPhoto(compressedFile, tempId));
           newPhotoUrls.push(url);
         } catch (err) {
           console.error("Upload failed", err);
