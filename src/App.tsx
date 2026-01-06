@@ -11,26 +11,31 @@ import UserProfile from './pages/UserProfile';
 import UsersPage from './pages/Users';
 import CarDetail from './pages/CarDetail';
 import CarsPage from './pages/Cars';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import { CookieConsentProvider } from './contexts/CookieConsentContext';
 
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/cars" element={<CarsPage />} />
-            <Route path="/garage" element={<Garage />} />
-            <Route path="/events" element={<Events />} />
-            <Route path="/events/:id" element={<EventDetail />} />
-            <Route path="/users" element={<UsersPage />} />
-            <Route path="/profile/:id" element={<UserProfile />} />
-            <Route path="/car/:id" element={<CarDetail />} />
-            <Route path="/info" element={<Info />} />
-            <Route path="/login" element={<Login />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <CookieConsentProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/cars" element={<CarsPage />} />
+              <Route path="/garage" element={<Garage />} />
+              <Route path="/events" element={<Events />} />
+              <Route path="/events/:id" element={<EventDetail />} />
+              <Route path="/users" element={<UsersPage />} />
+              <Route path="/profile/:id" element={<UserProfile />} />
+              <Route path="/car/:id" element={<CarDetail />} />
+              <Route path="/info" element={<Info />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </CookieConsentProvider>
     </AuthProvider>
   );
 }

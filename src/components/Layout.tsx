@@ -3,6 +3,7 @@ import { Home, Car, Calendar, Info, LogIn, Users, CarFront } from 'lucide-react'
 import { cn } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 import Footer from './Footer';
+import CookieBanner from './CookieBanner';
 
 export default function Layout() {
   const { pathname } = useLocation();
@@ -108,6 +109,7 @@ export default function Layout() {
           })}
         </div>
       </nav>
+      <CookieBanner />
     </div >
   );
 }
