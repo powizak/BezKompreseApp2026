@@ -55,6 +55,7 @@ const PrivacyPolicy = () => {
                     <h2 className="text-2xl font-semibold text-white">4. Vaše práva</h2>
                     <p className="text-zinc-400 leading-relaxed">
                         Máte právo na přístup ke svým údajům, jejich opravu, výmaz ("právo být zapomenut"), nebo omezení zpracování. Svá data můžete spravovat přímo v nastavení svého profilu.
+                        Pro žádost o výmaz dat se obrátěte na e-mail: <a href="mailto:powizak@gmail.com">powizak@gmail.com</a>
                     </p>
                 </section>
 
