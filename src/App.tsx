@@ -10,6 +10,7 @@ import EventDetail from './pages/EventDetail';
 import UserProfile from './pages/UserProfile';
 import UsersPage from './pages/Users';
 import CarDetail from './pages/CarDetail';
+import CarsPage from './pages/Cars';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
+            <Route path="/cars" element={<CarsPage />} />
             <Route path="/garage" element={<Garage />} />
             <Route path="/events" element={<Events />} />
             <Route path="/events/:id" element={<EventDetail />} />

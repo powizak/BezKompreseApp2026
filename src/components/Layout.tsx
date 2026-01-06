@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Home, Car, Calendar, Info, LogIn, Users } from 'lucide-react';
+import { Home, Car, Calendar, Info, LogIn, Users, CarFront } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -9,6 +9,7 @@ export default function Layout() {
 
   const navItems = [
     { icon: Home, label: 'Feed', path: '/' },
+    { icon: CarFront, label: 'Auta', path: '/cars' },
     { icon: Car, label: 'Garáž', path: '/garage' },
     { icon: Users, label: 'Lidé', path: '/users' },
     { icon: Calendar, label: 'Akce', path: '/events' },

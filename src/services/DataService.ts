@@ -29,6 +29,7 @@ export interface DataService {
     readonly removeFriend: (currentUserId: string, friendId: string) => Effect.Effect<void, DataError>;
     readonly getAllUsers: (limitCount?: number) => Effect.Effect<import("../types").UserProfile[], DataError>;
     readonly getUserEvents: (userId: string) => Effect.Effect<{ created: AppEvent[], joined: AppEvent[] }, DataError>;
+    readonly getAllCars: (limitCount?: number) => Effect.Effect<Car[], DataError>;
     readonly getCarById: (carId: string) => Effect.Effect<Car | undefined, DataError>;
 }
 
@@ -37,6 +38,17 @@ export const DataService = Context.GenericTag<DataService>("DataService");
 export const DataServiceLive = Layer.succeed(
     DataService,
     DataService.of({
+        getAllCars: (limitCount = 50) => Effect.tryPromise({
+            try: async () => {
+                const q = query(
+                    collection(db, "cars"),
+                    limit(limitCount)
+                );
+                const snapshot = await getDocs(q);
+                return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Car));
+            },
+            catch: (e) => new DataError("Failed to fetch all cars", e)
+        }),
         getMyCars: (userId) => Effect.tryPromise({
             try: async () => {
                 const q = query(collection(db, "cars"), where("ownerId", "==", userId));
