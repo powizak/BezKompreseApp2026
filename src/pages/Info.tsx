@@ -68,10 +68,6 @@ export default function Info() {
           })}
         </div>
       </div>
-
-      <footer className="text-center text-xs text-slate-400 py-4">
-        &copy; {new Date().getFullYear()} Bez Komprese Fan App. Not affiliated officially.
-      </footer>
     </div>
   );
 }
