@@ -1,4 +1,4 @@
-import { ShoppingBag, Wrench, Camera, Youtube, Instagram, Facebook } from 'lucide-react';
+import { ShoppingBag, Wrench, Camera, Youtube, Instagram, Facebook, Truck } from 'lucide-react';
 
 export default function Info() {
   const sections = [
@@ -15,6 +15,13 @@ export default function Info() {
       icon: ShoppingBag,
       link: "https://bezkompreseshop.cz",
       color: "bg-green-600"
+    },
+    {
+      title: "Odtahovka Bez Komprese",
+      desc: "Když to nejede, nepanikařte. Vytáhneme vás z bryndy. Rychlý odtah pro Vaše plechové miláčky s lidským přístupem.",
+      icon: Truck,
+      link: "https://kdyztonejede.cz/",
+      color: "bg-orange-600"
     },
     {
       title: "Bez Komprese Media",
