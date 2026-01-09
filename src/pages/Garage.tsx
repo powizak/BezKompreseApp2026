@@ -460,7 +460,7 @@ export default function Garage() {
                 </div>
 
                 {/* Actions */}
-                <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                <div className="absolute top-3 right-3 flex gap-2 opacity-80 group-hover:opacity-100 transition-opacity z-20">
                   <button
                     onClick={() => handleEdit(car)}
                     className="bg-white/90 text-slate-900 p-2 rounded-full shadow-lg hover:bg-white transition-colors"
