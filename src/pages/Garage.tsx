@@ -477,14 +477,14 @@ export default function Garage() {
 
                 {/* Ownership Badge */}
                 {(car.isOwned ?? true) && (
-                  <div className="absolute top-3 right-12 z-20">
+                  <div className="absolute top-3 left-3 z-20">
                     <span className="bg-brand text-slate-900 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg border border-brand-light flex items-center gap-1">
                       V garáži
                     </span>
                   </div>
                 )}
                 {!(car.isOwned ?? true) && (
-                  <div className="absolute top-3 right-12 z-20">
+                  <div className="absolute top-3 left-3 z-20">
                     <span className="bg-slate-800 text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg flex items-center gap-1 opacity-90">
                       Historie
                     </span>
