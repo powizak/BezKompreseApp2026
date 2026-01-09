@@ -12,6 +12,7 @@ import UsersPage from './pages/Users';
 import CarDetail from './pages/CarDetail';
 import CarsPage from './pages/Cars';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import ServiceBook from './pages/ServiceBook';
 import { CookieConsentProvider } from './contexts/CookieConsentContext';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/cars" element={<CarsPage />} />
               <Route path="/garage" element={<Garage />} />
+              <Route path="/garage/:carId/service" element={<ServiceBook />} />
               <Route path="/events" element={<Events />} />
               <Route path="/events/:id" element={<EventDetail />} />
               <Route path="/users" element={<UsersPage />} />

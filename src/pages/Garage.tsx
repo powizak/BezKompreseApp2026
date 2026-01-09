@@ -504,6 +504,17 @@ export default function Garage() {
                     </div>
                   </div>
                 )}
+
+                {/* Service Book Button */}
+                <div className="border-t border-slate-100 pt-3 mt-3">
+                  <Link
+                    to={`/garage/${car.id}/service`}
+                    className="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl hover:bg-black transition-all flex items-center justify-center gap-2 text-sm"
+                  >
+                    <Wrench size={16} />
+                    Servisní knížka
+                  </Link>
+                </div>
               </div>
             </div>
           ))}

@@ -31,6 +31,13 @@ export interface DataService {
     readonly getUserEvents: (userId: string) => Effect.Effect<{ created: AppEvent[], joined: AppEvent[] }, DataError>;
     readonly getAllCars: (limitCount?: number) => Effect.Effect<Car[], DataError>;
     readonly getCarById: (carId: string) => Effect.Effect<Car | undefined, DataError>;
+
+    // Service Records
+    readonly getServiceRecords: (carId: string) => Effect.Effect<import("../types").ServiceRecord[], DataError>;
+    readonly addServiceRecord: (record: Omit<import("../types").ServiceRecord, "id">) => Effect.Effect<string, DataError>;
+    readonly updateServiceRecord: (recordId: string, data: Partial<import("../types").ServiceRecord>) => Effect.Effect<void, DataError>;
+    readonly deleteServiceRecord: (recordId: string) => Effect.Effect<void, DataError>;
+    readonly uploadInvoice: (file: File, recordId: string) => Effect.Effect<string, DataError>;
 }
 
 export const DataService = Context.GenericTag<DataService>("DataService");
@@ -331,6 +338,56 @@ export const DataServiceLive = Layer.succeed(
                 return undefined;
             },
             catch: (e) => new DataError("Failed to fetch car", e)
+        }),
+
+        // Service Records Implementation
+        getServiceRecords: (carId) => Effect.tryPromise({
+            try: async () => {
+                const q = query(
+                    collection(db, "service-records"),
+                    where("carId", "==", carId)
+                );
+                const snapshot = await getDocs(q);
+                const records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as import("../types").ServiceRecord));
+                // Sort by date descending (newest first)
+                return records.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            },
+            catch: (e) => new DataError("Failed to fetch service records", e)
+        }),
+
+        addServiceRecord: (record) => Effect.tryPromise({
+            try: async () => {
+                const docRef = await addDoc(collection(db, "service-records"), record);
+                return docRef.id;
+            },
+            catch: (e) => new DataError("Failed to add service record", e)
+        }),
+
+        updateServiceRecord: (recordId, data) => Effect.tryPromise({
+            try: async () => {
+                const recordRef = doc(db, "service-records", recordId);
+                await updateDoc(recordRef, data);
+            },
+            catch: (e) => new DataError("Failed to update service record", e)
+        }),
+
+        deleteServiceRecord: (recordId) => Effect.tryPromise({
+            try: async () => {
+                const { deleteDoc } = await import("firebase/firestore");
+                const recordRef = doc(db, "service-records", recordId);
+                await deleteDoc(recordRef);
+            },
+            catch: (e) => new DataError("Failed to delete service record", e)
+        }),
+
+        uploadInvoice: (file, recordId) => Effect.tryPromise({
+            try: async () => {
+                const storageRef = ref(storage, `invoices/${recordId}/${Date.now()}_${file.name}`);
+                const snapshot = await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(snapshot.ref);
+                return downloadURL;
+            },
+            catch: (e) => new DataError("Failed to upload invoice", e)
         })
     })
 );
