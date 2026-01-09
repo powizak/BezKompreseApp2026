@@ -24,6 +24,7 @@ export interface Car {
   engine: string;
   power: string;
   stockPower?: string;
+  fuelConsumption?: string; // L/100km
   mods: CarModification[];
   photos: string[];
   isOwned?: boolean;

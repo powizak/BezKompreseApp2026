@@ -25,7 +25,7 @@ export default function Garage() {
   // Form State
   const initialFormState = {
     name: '', make: '', model: '', year: new Date().getFullYear().toString(),
-    engine: '', power: '', stockPower: '', mods: [] as CarModification[], photos: [] as string[], isOwned: true
+    engine: '', power: '', stockPower: '', fuelConsumption: '', mods: [] as CarModification[], photos: [] as string[], isOwned: true
   };
   const [formData, setFormData] = useState(initialFormState);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -63,6 +63,7 @@ export default function Garage() {
       engine: car.engine,
       power: car.power,
       stockPower: car.stockPower || '',
+      fuelConsumption: car.fuelConsumption || '',
       mods: car.mods || [],
       photos: car.photos || [],
       isOwned: car.isOwned ?? true
@@ -162,6 +163,7 @@ export default function Garage() {
         engine: formData.engine,
         power: formData.power,
         stockPower: formData.stockPower,
+        fuelConsumption: formData.fuelConsumption,
         mods: formData.mods,
         photos: finalPhotos,
         isOwned: formData.isOwned
@@ -262,6 +264,10 @@ export default function Garage() {
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Sériový Výkon</label>
                     <input placeholder="Např. 110kW" className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all" value={formData.stockPower} onChange={e => setFormData({ ...formData, stockPower: e.target.value })} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Reálná Spotřeba</label>
+                    <input placeholder="Např. 7.5 L/100km" className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all" value={formData.fuelConsumption} onChange={e => setFormData({ ...formData, fuelConsumption: e.target.value })} />
                   </div>
                 </div>
               </div>
@@ -483,6 +489,15 @@ export default function Garage() {
                       <p className="text-sm font-bold leading-tight">{car.power}</p>
                     </div>
                   </div>
+                  {car.fuelConsumption && (
+                    <div className="flex items-center gap-2 text-slate-600 bg-slate-50 p-2 rounded-lg">
+                      <Gauge className="text-brand" size={18} />
+                      <div>
+                        <p className="text-xs text-slate-400 font-bold uppercase">Spotřeba</p>
+                        <p className="text-sm font-bold leading-tight">{car.fuelConsumption} L/100km</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Mods Preview */}
