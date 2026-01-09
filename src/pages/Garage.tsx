@@ -72,6 +72,20 @@ export default function Garage() {
     setSelectedFiles([]); // Reset new files
   };
 
+  const handleDelete = async (carId: string) => {
+    if (!confirm('Opravdu chcete smazat toto auto? Tato akce je nevratná.')) {
+      return;
+    }
+
+    try {
+      await Effect.runPromise(dataService.deleteCar(carId));
+      fetchCars(); // Refresh the list
+    } catch (err) {
+      console.error('Failed to delete car', err);
+      alert('Nepodařilo se smazat auto. Zkuste to prosím znovu.');
+    }
+  };
+
   const resetForm = () => {
     setFormData(initialFormState);
     setEditingCar(null);
@@ -452,6 +466,12 @@ export default function Garage() {
                     className="bg-white/90 text-slate-900 p-2 rounded-full shadow-lg hover:bg-white transition-colors"
                   >
                     <Pencil size={16} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(car.id)}
+                    className="bg-red-500/90 text-white p-2 rounded-full shadow-lg hover:bg-red-600 transition-colors"
+                  >
+                    <Trash2 size={16} />
                   </button>
                 </div>
 

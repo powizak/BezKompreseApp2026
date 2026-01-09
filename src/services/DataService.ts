@@ -1,5 +1,5 @@
 import { Context, Effect, Layer } from "effect";
-import { collection, addDoc, getDocs, query, where, updateDoc, doc, limit } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where, updateDoc, doc, limit, deleteDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../config/firebase";
 import type { Car, AppEvent, SocialPost } from "../types";
@@ -18,6 +18,7 @@ export interface DataService {
     readonly getMyCars: (userId: string) => Effect.Effect<Car[], DataError>;
     readonly addCar: (car: Omit<Car, "id">) => Effect.Effect<string, DataError>;
     readonly updateCar: (carId: string, data: Partial<Car>) => Effect.Effect<void, DataError>;
+    readonly deleteCar: (carId: string) => Effect.Effect<void, DataError>;
     readonly uploadCarPhoto: (file: File, carId: string) => Effect.Effect<string, DataError>;
     readonly getEvents: Effect.Effect<AppEvent[], DataError>;
     readonly getEventById: (id: string) => Effect.Effect<AppEvent | undefined, DataError>;
@@ -77,6 +78,13 @@ export const DataServiceLive = Layer.succeed(
                 await updateDoc(carRef, data);
             },
             catch: (e) => new DataError("Failed to update car", e)
+        }),
+        deleteCar: (carId) => Effect.tryPromise({
+            try: async () => {
+                const carRef = doc(db, "cars", carId);
+                await deleteDoc(carRef);
+            },
+            catch: (e) => new DataError("Failed to delete car", e)
         }),
         uploadCarPhoto: (file, carId) => Effect.tryPromise({
             try: async () => {
