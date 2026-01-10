@@ -116,7 +116,7 @@ export default function CarDetail() {
                         <div className="flex flex-wrap items-center gap-4 text-white font-bold uppercase tracking-widest text-[10px] md:text-xs">
                             <span className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl backdrop-blur-md border border-white/10"><Calendar size={14} className="text-brand" /> {car.year}</span>
                             <span className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl backdrop-blur-md border border-white/10"><Gauge size={14} className="text-brand" /> {car.engine}</span>
-                            <span className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl backdrop-blur-md border border-white/10">< Zap size={14} className="text-brand" /> {car.power}</span>
+                            <span className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl backdrop-blur-md border border-white/10"><Zap size={14} className="text-brand" /> {car.power} kW</span>
                         </div>
                     </div>
 
@@ -151,14 +151,14 @@ export default function CarDetail() {
                                 <span className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-4">
                                     <Zap size={14} className="text-brand" /> Aktuální výkon
                                 </span>
-                                <div className="text-5xl font-black text-slate-900 italic tracking-tighter">{car.power}</div>
+                                <div className="text-5xl font-black text-slate-900 italic tracking-tighter">{car.power} kW</div>
                             </div>
                             <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100 relative overflow-hidden group">
                                 <Zap className="absolute -right-4 -bottom-4 w-32 h-32 text-slate-200/20 -rotate-12 transition-transform group-hover:scale-110" />
                                 <span className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-4">
                                     <Zap size={14} className="opacity-50" /> Sériový výkon
                                 </span>
-                                <div className="text-5xl font-black text-slate-200 italic tracking-tighter">{car.stockPower || '-'}</div>
+                                <div className="text-5xl font-black text-slate-200 italic tracking-tighter">{car.stockPower ? `${car.stockPower} kW` : '-'}</div>
                             </div>
                         </div>
 

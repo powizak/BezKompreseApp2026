@@ -166,7 +166,7 @@ export default function CarsPage() {
                                     <Calendar size={14} className="text-brand" /> {car.year}
                                 </span>
                                 <span className="flex items-center gap-1 font-bold bg-slate-50 px-2 py-1 rounded-md border border-slate-100">
-                                    <Gauge size={14} className="text-brand" /> {car.power}
+                                    <Gauge size={14} className="text-brand" /> {car.power} kW
                                 </span>
                             </div>
                         </Link>
