@@ -85,7 +85,6 @@ export interface ServiceRecord {
 
   // Where it was done
   serviceProvider?: string; // "Autoservis XY" / "Doma"
-  invoice?: string; // URL to invoice photo
 
   // Next service
   nextServiceMileage?: number;

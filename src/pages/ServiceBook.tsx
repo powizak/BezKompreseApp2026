@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
@@ -6,12 +6,11 @@ import { useAuth } from '../contexts/AuthContext';
 import type { Car, ServiceRecord, ServicePart } from '../types';
 import {
     ArrowLeft, Plus, Gauge, Wrench, DollarSign, MapPin,
-    FileText, Trash2, Pencil, X, Save, AlertCircle, Camera, TrendingUp,
+    FileText, Trash2, Pencil, X, Save, AlertCircle, TrendingUp,
     Clock, Package
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cs } from 'date-fns/locale';
-import { compressImage } from '../lib/imageOptimizer';
 
 const SERVICE_TEMPLATES = [
     { category: 'oil', title: 'Výměna oleje + filtry', interval: 10000, type: 'scheduled' },
@@ -25,8 +24,6 @@ export default function ServiceBook() {
     const { carId } = useParams<{ carId: string }>();
     const { user } = useAuth();
     const navigate = useNavigate();
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
     const [car, setCar] = useState<Car | null>(null);
     const [records, setRecords] = useState<ServiceRecord[]>([]);
     const [loading, setLoading] = useState(true);
@@ -34,7 +31,6 @@ export default function ServiceBook() {
     const [editingRecord, setEditingRecord] = useState<ServiceRecord | null>(null);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [selectedInvoice, setSelectedInvoice] = useState<File | null>(null);
 
     // Form State
     const initialFormState = {
@@ -163,7 +159,6 @@ export default function ServiceBook() {
         setFormData(initialFormState);
         setEditingRecord(null);
         setShowForm(false);
-        setSelectedInvoice(null);
         setError(null);
     };
 
@@ -175,15 +170,6 @@ export default function ServiceBook() {
         setError(null);
 
         try {
-            let invoiceUrl = editingRecord?.invoice;
-
-            // Upload invoice if selected
-            if (selectedInvoice) {
-                const tempRecordId = editingRecord?.id || `temp_${Date.now()}`;
-                const compressedFile = await compressImage(selectedInvoice);
-                invoiceUrl = await Effect.runPromise(dataService.uploadInvoice(compressedFile, tempRecordId));
-            }
-
             const recordData: any = {
                 carId,
                 ownerId: user.uid,
@@ -201,7 +187,6 @@ export default function ServiceBook() {
             if (formData.laborCost) recordData.laborCost = parseFloat(formData.laborCost);
             if (formData.partsCost) recordData.partsCost = parseFloat(formData.partsCost);
             if (formData.serviceProvider) recordData.serviceProvider = formData.serviceProvider;
-            if (invoiceUrl) recordData.invoice = invoiceUrl;
             if (formData.nextServiceMileage) recordData.nextServiceMileage = parseInt(formData.nextServiceMileage);
             if (formData.nextServiceDate) recordData.nextServiceDate = new Date(formData.nextServiceDate).toISOString();
 
@@ -506,37 +491,17 @@ export default function ServiceBook() {
                                 </div>
                             </div>
 
-                            {/* Service Provider & Invoice */}
+                            {/* Service Provider */}
                             <div className="mb-6">
                                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Servis</h4>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Kde provedeno</label>
-                                        <input
-                                            placeholder="Autoservis Novák / Doma"
-                                            className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all"
-                                            value={formData.serviceProvider}
-                                            onChange={e => setFormData({ ...formData, serviceProvider: e.target.value })}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Faktura (foto)</label>
-                                        <button
-                                            type="button"
-                                            onClick={() => fileInputRef.current?.click()}
-                                            className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl hover:bg-slate-100 transition-all flex items-center justify-center gap-2 text-slate-600"
-                                        >
-                                            <Camera size={18} />
-                                            {selectedInvoice ? selectedInvoice.name : editingRecord?.invoice ? 'Změnit fakturu' : 'Nahrát fakturu'}
-                                        </button>
-                                        <input
-                                            ref={fileInputRef}
-                                            type="file"
-                                            accept="image/*"
-                                            className="hidden"
-                                            onChange={e => setSelectedInvoice(e.target.files?.[0] || null)}
-                                        />
-                                    </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Kde provedeno</label>
+                                    <input
+                                        placeholder="Autoservis Novák / Doma"
+                                        className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all"
+                                        value={formData.serviceProvider}
+                                        onChange={e => setFormData({ ...formData, serviceProvider: e.target.value })}
+                                    />
                                 </div>
                             </div>
 
@@ -695,20 +660,6 @@ export default function ServiceBook() {
                                             </div>
                                         )}
                                     </div>
-
-                                    {record.invoice && (
-                                        <div className="mt-3 pt-3 border-t border-slate-100">
-                                            <a
-                                                href={record.invoice}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-xs text-brand font-bold hover:underline flex items-center gap-1"
-                                            >
-                                                <FileText size={14} />
-                                                Zobrazit fakturu
-                                            </a>
-                                        </div>
-                                    )}
                                 </div>
                             </div>
                         </div>

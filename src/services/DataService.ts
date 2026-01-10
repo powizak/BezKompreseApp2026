@@ -38,7 +38,6 @@ export interface DataService {
     readonly addServiceRecord: (record: Omit<import("../types").ServiceRecord, "id">) => Effect.Effect<string, DataError>;
     readonly updateServiceRecord: (recordId: string, data: Partial<import("../types").ServiceRecord>) => Effect.Effect<void, DataError>;
     readonly deleteServiceRecord: (recordId: string) => Effect.Effect<void, DataError>;
-    readonly uploadInvoice: (file: File, recordId: string) => Effect.Effect<string, DataError>;
 }
 
 export const DataService = Context.GenericTag<DataService>("DataService");
@@ -386,16 +385,6 @@ export const DataServiceLive = Layer.succeed(
                 await deleteDoc(recordRef);
             },
             catch: (e) => new DataError("Failed to delete service record", e)
-        }),
-
-        uploadInvoice: (file, recordId) => Effect.tryPromise({
-            try: async () => {
-                const storageRef = ref(storage, `invoices/${recordId}/${Date.now()}_${file.name}`);
-                const snapshot = await uploadBytes(storageRef, file);
-                const downloadURL = await getDownloadURL(snapshot.ref);
-                return downloadURL;
-            },
-            catch: (e) => new DataError("Failed to upload invoice", e)
         })
     })
 );
