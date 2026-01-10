@@ -24,7 +24,6 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Rychlé Šablony**: Předvyplněné formuláře pro běžné operace (olej, brzdy, pneumatiky)
 - **Nákladová Analýza**: Grafy celkových nákladů a průměrných měsíčních výdajů
 - **Upomínky**: Automatické připomínky nadcházejícího servisu podle km nebo data
-- **Faktury**: Možnost nahrání fotek faktur ke každému záznamu
 - **Evidence Dílů**: Detailní seznam použitých dílů a materiálu
 - **Timeline**: Chronologický přehled celé historie servisu
 
