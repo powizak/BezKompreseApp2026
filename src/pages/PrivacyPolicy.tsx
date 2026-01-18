@@ -41,6 +41,9 @@ const PrivacyPolicy = () => {
                         <li>Profilová fotografie</li>
                         <li>Informace o vašich autech, která do aplikace vložíte</li>
                         <li>Poloha (GPS souřadnice) – pouze pokud aktivujete funkci Tracker</li>
+                        <li>Chatové zprávy a historie komunikace</li>
+                        <li>Seznam přátel a sociální interakce</li>
+                        <li>Vámi vytvořené události a srazy</li>
                     </ul>
                 </section>
 
