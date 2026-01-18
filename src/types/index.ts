@@ -1,9 +1,20 @@
+export type TrackerStatus = 'Dáme pokec?' | 'Závod?' | 'Projížďka?' | 'Jen tak' | 'Na kafi' | 'V garáži';
+
+export interface TrackerSettings {
+  isEnabled: boolean;
+  allowContact: boolean;
+  status: TrackerStatus;
+  privacyRadius: number; // in meters
+}
+
 export interface UserProfile {
   uid: string;
   displayName: string | null;
   email: string | null;
   photoURL: string | null;
   friends?: string[]; // Array of user UIDs
+  homeLocation?: { lat: number; lng: number };
+  trackerSettings?: TrackerSettings;
 }
 
 export interface CarModification {

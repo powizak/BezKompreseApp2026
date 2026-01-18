@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Home, Car, Calendar, Info, LogIn, Users, CarFront } from 'lucide-react';
+import { Home, Car, Calendar, Info, LogIn, Users, CarFront, Navigation } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 import Footer from './Footer';
@@ -13,6 +13,7 @@ export default function Layout() {
     { icon: Home, label: 'Feed', path: '/' },
     { icon: CarFront, label: 'Auta', path: '/cars' },
     { icon: Car, label: 'Garáž', path: '/garage' },
+    { icon: Navigation, label: 'Mapa', path: '/tracker' },
     { icon: Users, label: 'Lidé', path: '/users' },
     { icon: Calendar, label: 'Akce', path: '/events' },
     { icon: Info, label: 'Info', path: '/info' },

@@ -13,6 +13,7 @@ import CarDetail from './pages/CarDetail';
 import CarsPage from './pages/Cars';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import ServiceBook from './pages/ServiceBook';
+import Tracker from './pages/Tracker';
 import { CookieConsentProvider } from './contexts/CookieConsentContext';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
               <Route path="/info" element={<Info />} />
               <Route path="/login" element={<Login />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/tracker" element={<Tracker />} />
             </Route>
           </Routes>
         </BrowserRouter>

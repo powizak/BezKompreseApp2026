@@ -4,7 +4,19 @@ import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
 import type { UserProfile, Car, AppEvent } from '../types';
-import { Car as CarIcon, UserPlus, UserMinus, Users, Calendar, MapPin, User, ChevronRight } from 'lucide-react';
+import { Car as CarIcon, UserPlus, UserMinus, Users, Calendar, MapPin, User, ChevronRight, Settings, Shield, Save } from 'lucide-react';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix Leaflet icon issue
+// @ts-ignore
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
 export default function UserProfilePage() {
     const { id } = useParams<{ id: string }>();
@@ -15,7 +27,15 @@ export default function UserProfilePage() {
     const [friends, setFriends] = useState<UserProfile[]>([]);
     const [loading, setLoading] = useState(true);
     const [isFriend, setIsFriend] = useState(false);
-    const [activeTab, setActiveTab] = useState<'garage' | 'events' | 'friends'>('garage');
+    const [activeTab, setActiveTab] = useState<'garage' | 'events' | 'friends' | 'settings'>('garage');
+    const [saving, setSaving] = useState(false);
+    const [homeLocation, setHomeLocation] = useState<{ lat: number; lng: number } | undefined>(undefined);
+    const [trackerSettings, setTrackerSettings] = useState<import('../types').TrackerSettings>({
+        isEnabled: false,
+        allowContact: true,
+        status: 'Jen tak',
+        privacyRadius: 500
+    });
 
     useEffect(() => {
         if (!id) return;
@@ -32,6 +52,10 @@ export default function UserProfilePage() {
             if (result) {
                 setProfile(result.profile);
                 setCars(result.cars);
+                setHomeLocation(result.profile.homeLocation);
+                if (result.profile.trackerSettings) {
+                    setTrackerSettings(result.profile.trackerSettings);
+                }
 
                 // 2. Events
                 const eventResult = await Effect.runPromise(dataService.getUserEvents(id));
@@ -80,6 +104,42 @@ export default function UserProfilePage() {
             setIsFriend(true);
         }
     };
+
+    const saveSettings = async () => {
+        if (!currentUser || !id) return;
+        setSaving(true);
+
+        const dataService = Effect.runSync(
+            Effect.gen(function* (_) {
+                return yield* _(DataService);
+            }).pipe(Effect.provide(DataServiceLive))
+        );
+
+        try {
+            // Firestore doesn't accept 'undefined'. Strip it or use null.
+            const updateData: any = { trackerSettings };
+            if (homeLocation !== undefined) {
+                updateData.homeLocation = homeLocation;
+            }
+
+            await Effect.runPromise(dataService.updateProfile(currentUser.uid, updateData));
+            alert('Nastavení úspěšně uloženo!');
+        } catch (e) {
+            console.error('Update failed:', e);
+            alert('Chyba při ukládání nastavení. Zkontrolujte konzoli.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    function LocationPicker() {
+        useMapEvents({
+            click(e) {
+                setHomeLocation({ lat: e.latlng.lat, lng: e.latlng.lng });
+            },
+        });
+        return homeLocation ? <Marker position={[homeLocation.lat, homeLocation.lng]} /> : null;
+    }
 
     if (loading) return <div className="p-10 text-center text-slate-500">Načítám profil...</div>;
     if (!profile) return <div className="p-10 text-center text-slate-500">Uživatel nenalezen.</div>;
@@ -136,6 +196,11 @@ export default function UserProfilePage() {
                 <button onClick={() => setActiveTab('friends')} className={`pb-3 px-4 text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-2 ${activeTab === 'friends' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
                     <Users size={18} /> Přátelé <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 text-slate-500">{friends.length}</span>
                 </button>
+                {isMe && (
+                    <button onClick={() => setActiveTab('settings')} className={`pb-3 px-4 text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-2 ${activeTab === 'settings' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
+                        <Settings size={18} /> Nastavení
+                    </button>
+                )}
             </div>
 
             {/* Content Sections */}
@@ -252,6 +317,104 @@ export default function UserProfilePage() {
                                 <p className="font-bold">Seznam přátel je prázdný</p>
                             </div>
                         )}
+                    </div>
+                )}
+
+                {/* Settings Tab */}
+                {activeTab === 'settings' && isMe && (
+                    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4">
+                        <section className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2 bg-brand/10 text-brand rounded-xl">
+                                    <Shield size={24} />
+                                </div>
+                                <div>
+                                    <h2 className="text-xl font-black italic uppercase tracking-tighter">Nastavení Trackeru</h2>
+                                    <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Soukromí a viditelnost</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-6">
+                                    <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                        <div>
+                                            <h3 className="font-bold text-slate-900">Vidět na mapě</h3>
+                                            <p className="text-xs text-slate-500">Sdílet moji polohu s ostatními</p>
+                                        </div>
+                                        <button
+                                            onClick={() => setTrackerSettings(prev => ({ ...prev, isEnabled: !prev.isEnabled }))}
+                                            className={`w-12 h-6 rounded-full transition-colors relative ${trackerSettings.isEnabled ? 'bg-brand' : 'bg-slate-300'}`}
+                                        >
+                                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${trackerSettings.isEnabled ? 'left-7' : 'left-1'}`} />
+                                        </button>
+                                    </div>
+
+                                    <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                        <div>
+                                            <h3 className="font-bold text-slate-900">Povolit kontakt</h3>
+                                            <p className="text-xs text-slate-500">Ostatní mi mohou psát z mapy</p>
+                                        </div>
+                                        <button
+                                            onClick={() => setTrackerSettings(prev => ({ ...prev, allowContact: !prev.allowContact }))}
+                                            className={`w-12 h-6 rounded-full transition-colors relative ${trackerSettings.allowContact ? 'bg-brand' : 'bg-slate-300'}`}
+                                        >
+                                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${trackerSettings.allowContact ? 'left-7' : 'left-1'}`} />
+                                        </button>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Můj Status</label>
+                                        <select
+                                            value={trackerSettings.status}
+                                            onChange={(e) => setTrackerSettings(prev => ({ ...prev, status: e.target.value as any }))}
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand/20 appearance-none"
+                                        >
+                                            <option value="Dáme pokec?">Dáme pokec?</option>
+                                            <option value="Závod?">Závod?</option>
+                                            <option value="Projížďka?">Projížďka?</option>
+                                            <option value="Jen tak">Jen tak</option>
+                                            <option value="Na kafi">Na kafi</option>
+                                            <option value="V garáži">V garáži</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-end">
+                                        <div>
+                                            <h3 className="font-bold text-slate-900">Bydliště (Privacy Zone)</h3>
+                                            <p className="text-xs text-slate-500">Klikni do mapy pro nastavení středu zóny</p>
+                                        </div>
+                                    </div>
+                                    <div className="h-48 rounded-2xl overflow-hidden border border-slate-200 shadow-inner relative z-0">
+                                        <MapContainer
+                                            center={homeLocation ? [homeLocation.lat, homeLocation.lng] : [49.8175, 15.4730]}
+                                            zoom={13}
+                                            className="h-full w-full"
+                                        >
+                                            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                                            <LocationPicker />
+                                        </MapContainer>
+                                        <div className="absolute top-2 right-2 bg-white/90 backdrop-blur px-2 py-1 rounded text-[10px] font-bold border border-slate-200 pointer-events-none">
+                                            Zone: 500m radius
+                                        </div>
+                                    </div>
+                                    <p className="text-[10px] text-slate-400 italic font-medium px-2">
+                                        * Poloha se automaticky skryje, pokud budete v okruhu 500m od tohoto bodu. Nikdo neuvidí přesnou polohu vašeho bydliště.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="pt-6 border-t border-slate-100 flex justify-end">
+                                <button
+                                    onClick={saveSettings}
+                                    disabled={saving}
+                                    className="bg-brand text-brand-contrast px-8 py-3 rounded-2xl font-black uppercase italic tracking-tighter shadow-lg shadow-brand/20 hover:bg-brand-dark transition-all flex items-center gap-2 disabled:opacity-50"
+                                >
+                                    {saving ? 'Ukládám...' : <><Save size={18} /> Uložit nastavení</>}
+                                </button>
+                            </div>
+                        </section>
                     </div>
                 )}
             </div>
