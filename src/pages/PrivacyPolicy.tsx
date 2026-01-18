@@ -40,11 +40,25 @@ const PrivacyPolicy = () => {
                         <li>Uživatelské jméno</li>
                         <li>Profilová fotografie</li>
                         <li>Informace o vašich autech, která do aplikace vložíte</li>
+                        <li>Poloha (GPS souřadnice) – pouze pokud aktivujete funkci Tracker</li>
                     </ul>
                 </section>
 
                 <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-white">3. Cookies</h2>
+                    <h2 className="text-2xl font-semibold text-white">3. Sledování polohy (Tracker)</h2>
+                    <p className="text-zinc-400 leading-relaxed">
+                        Aplikace obsahuje volitelnou funkci sdílení polohy ("Tracker"), která umožňuje zobrazit vaši aktuální polohu ostatním uživatelům na mapě.
+                    </p>
+                    <ul className="list-disc pl-5 space-y-2 text-zinc-400">
+                        <li><strong>Aktivace:</strong> Sběr polohy probíhá POUZE tehdy, pokud funkci ručně zapnete tlačítkem "Spustit sledování" nebo v nastavení profilu.</li>
+                        <li><strong>Ukládání:</strong> Vaše aktuální GPS souřadnice a status jsou ukládány do naší databáze (Google Firestore, Cloud) do kolekce `presence`.</li>
+                        <li><strong>Doba uchování:</strong> Ukládá se pouze aktuální poloha, která se neustále přepisuje. Historii pohybu neukládáme. Při vypnutí sledování jsou data z databáze odstraněna.</li>
+                        <li><strong>Soukromí (Privacy Zone):</strong> Pokud si v profilu nastavíte "Bydliště", vaše přesná poloha se v okruhu 500m od tohoto bodu automaticky skryje/zmaskuje, aby nebylo možné identifikovat, kde bydlíte.</li>
+                    </ul>
+                </section>
+
+                <section className="space-y-4">
+                    <h2 className="text-2xl font-semibold text-white">4. Cookies</h2>
                     <p className="text-zinc-400 leading-relaxed">
                         Aplikace používá technologie cookies pro zajištění funkčnosti (přihlášení, sessions). Tyto technické cookies jsou nezbytné pro chod aplikace.
                         Kromě toho můžeme využívat analytické nástroje (např. Google Analytics) pro zlepšování našich služeb, pokud nám k tomu dáte souhlas.
@@ -52,7 +66,7 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-white">4. Vaše práva</h2>
+                    <h2 className="text-2xl font-semibold text-white">5. Vaše práva</h2>
                     <p className="text-zinc-400 leading-relaxed">
                         Máte právo na přístup ke svým údajům, jejich opravu, výmaz ("právo být zapomenut"), nebo omezení zpracování. Svá data můžete spravovat přímo v nastavení svého profilu.
                         Pro žádost o výmaz dat se obrátěte na e-mail: <a href="mailto:powizak@gmail.com">powizak@gmail.com</a>

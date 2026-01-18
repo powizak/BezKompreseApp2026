@@ -1,4 +1,4 @@
-import { ShoppingBag, Wrench, Camera, Youtube, Instagram, Facebook, Truck } from 'lucide-react';
+import { ShoppingBag, Wrench, Camera, Youtube, Instagram, Facebook, Truck, Shield } from 'lucide-react';
 
 export default function Info() {
   const sections = [
@@ -60,6 +60,18 @@ export default function Info() {
             </a>
           )
         })}
+      </div>
+
+      <div className="grid gap-4 mt-8">
+        <a href="/privacy" className="flex items-center gap-4 bg-slate-50 p-5 rounded-2xl border border-slate-200 hover:bg-slate-100 transition-all group">
+          <div className="bg-slate-200 text-slate-600 p-3 rounded-xl group-hover:bg-slate-300 transition-colors">
+            <Shield size={24} />
+          </div>
+          <div>
+            <h3 className="font-bold text-lg mb-1 text-slate-800">Ochrana soukromí a GDPR</h3>
+            <p className="text-sm text-slate-500">Informace o tom, jak shromažďujeme a chráníme vaše data, včetně polohy.</p>
+          </div>
+        </a>
       </div>
 
       <div className="bg-slate-100 p-8 rounded-3xl text-center">
