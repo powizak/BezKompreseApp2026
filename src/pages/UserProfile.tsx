@@ -123,10 +123,10 @@ export default function UserProfilePage() {
             }
 
             await Effect.runPromise(dataService.updateProfile(currentUser.uid, updateData));
-            alert('Nastavení úspěšně uloženo!');
+            // alert('Nastavení úspěšně uloženo!');
         } catch (e) {
             console.error('Update failed:', e);
-            alert('Chyba při ukládání nastavení. Zkontrolujte konzoli.');
+            // alert('Chyba při ukládání nastavení. Zkontrolujte konzoli.');
         } finally {
             setSaving(false);
         }
