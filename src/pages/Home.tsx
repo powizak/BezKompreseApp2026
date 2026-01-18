@@ -1,14 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
-import type { SocialPost } from '../types';
+import type { SocialPost, SocialPlatform } from '../types';
 import { Play, Instagram, Facebook, Youtube, Image, Film, ArrowRight } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { cs } from 'date-fns/locale';
 
+type FilterType = 'all' | SocialPlatform;
+
 export default function Home() {
   const [feed, setFeed] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState<FilterType>('all');
 
   useEffect(() => {
     const dataService = Effect.runSync(
@@ -22,6 +25,11 @@ export default function Home() {
       setLoading(false);
     });
   }, []);
+
+  const filteredFeed = useMemo(() => {
+    if (activeFilter === 'all') return feed;
+    return feed.filter(post => post.platform === activeFilter);
+  }, [feed, activeFilter]);
 
   if (loading) return <div className="p-10 text-center text-slate-500 font-mono">Načítám feed...</div>;
 
@@ -44,6 +52,13 @@ export default function Home() {
     }
   }
 
+  const filters: { value: FilterType; label: string; icon?: React.ReactNode }[] = [
+    { value: 'all', label: 'Vše' },
+    { value: 'youtube', label: 'YouTube', icon: <Youtube size={14} className="text-[#FF0000]" /> },
+    { value: 'instagram', label: 'Instagram', icon: <Instagram size={14} className="text-[#E1306C]" /> },
+    { value: 'facebook', label: 'Facebook', icon: <Facebook size={14} className="text-[#1877F2]" /> },
+  ];
+
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <section>
@@ -52,8 +67,30 @@ export default function Home() {
           Novinky
         </h2>
 
+        {/* Filter Bar */}
+        <div className="mb-6 flex items-center gap-2 flex-wrap">
+          {filters.map(filter => (
+            <button
+              key={filter.value}
+              onClick={() => setActiveFilter(filter.value)}
+              className={`
+                px-4 py-2 rounded-full font-bold text-xs uppercase tracking-wide
+                transition-all duration-300 ease-out
+                flex items-center gap-2
+                ${activeFilter === filter.value
+                  ? 'bg-brand text-brand-contrast shadow-lg shadow-brand/30 scale-105'
+                  : 'bg-white border border-slate-200 text-slate-700 hover:border-brand/50 hover:shadow-md hover:scale-102'
+                }
+              `}
+            >
+              {filter.icon}
+              {filter.label}
+            </button>
+          ))}
+        </div>
+
         <div className="grid gap-6">
-          {feed.map(post => (
+          {filteredFeed.map(post => (
             <a key={post.id} href={post.url} target="_blank" rel="noopener noreferrer" className="group block bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-xl hover:shadow-brand/10 transition-all hover:-translate-y-1">
 
               {/* Header */}
