@@ -129,7 +129,9 @@ export default function Tracker() {
                         location: { lat: latitude, lng: longitude },
                         lastActive: new Date(),
                         allowContact: user.trackerSettings?.allowContact || false
-                    }));
+                    })).catch(err => {
+                        console.error("Failed to update presence:", err);
+                    });
                 } else if (user) {
                     // If invisible or near home, ensure we are removed from map
                     Effect.runPromise(dataService.removePresence(user.uid));

@@ -2,7 +2,7 @@ import { Context, Effect, Layer, Stream } from "effect";
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../config/firebase";
 import type { UserProfile } from "../types";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 
 // Define the Error type
 export class AuthError {
@@ -53,33 +53,52 @@ export const AuthServiceLive = Layer.succeed(
       catch: (error) => new AuthError("Failed to logout", error)
     }),
     currentUser: Stream.async<UserProfile | null>((emit) => {
-      onAuthStateChanged(auth, async (user) => {
-        if (user) {
-          // Also sync on auth state restore to ensure fresh data
-          const userRef = doc(db, "users", user.uid);
+      // Keep track of unsubscribe function
+      let unsubscribeDoc: (() => void) | null = null;
+
+      const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
+        // Clean up previous listener if any
+        if (unsubscribeDoc) {
+          unsubscribeDoc();
+          unsubscribeDoc = null;
+        }
+
+        if (firebaseUser) {
+          // 1. Ensure basic auth data is synced
+          const userRef = doc(db, "users", firebaseUser.uid);
           await setDoc(userRef, {
-            uid: user.uid,
-            displayName: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL
+            uid: firebaseUser.uid,
+            displayName: firebaseUser.displayName,
+            email: firebaseUser.email,
+            photoURL: firebaseUser.photoURL
           }, { merge: true });
 
-          // Allow fetching friends list which is not in auth object
-          const snap = await getDoc(userRef);
-          const data = snap.data() as UserProfile | undefined;
-
-          emit.single({
-            uid: user.uid,
-            displayName: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL,
-            friends: data?.friends || []
+          // 2. Listen to the document
+          const { onSnapshot } = await import("firebase/firestore");
+          unsubscribeDoc = onSnapshot(userRef, (snap) => {
+            const data = snap.data() as UserProfile | undefined;
+            if (data) {
+              emit.single(data);
+            } else {
+              // Fallback
+              emit.single({
+                uid: firebaseUser.uid,
+                displayName: firebaseUser.displayName,
+                email: firebaseUser.email,
+                photoURL: firebaseUser.photoURL,
+                friends: []
+              });
+            }
           });
         } else {
           emit.single(null);
         }
       });
-      return Effect.void;
+
+      return Effect.sync(() => {
+        unsubscribeAuth();
+        if (unsubscribeDoc) unsubscribeDoc();
+      });
     })
   })
 );
