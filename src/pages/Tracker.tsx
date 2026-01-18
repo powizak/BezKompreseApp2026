@@ -92,7 +92,14 @@ export default function Tracker() {
             stopTracking();
         }
         return () => stopTracking();
-    }, [trackingEnabled, user?.trackerSettings?.isEnabled]);
+    }, [
+        trackingEnabled,
+        user?.trackerSettings?.isEnabled,
+        user?.trackerSettings?.status,
+        user?.trackerSettings?.allowContact,
+        user?.trackerSettings?.privacyRadius,
+        user?.homeLocation
+    ]);
 
     const startTracking = () => {
         if (!navigator.geolocation) return;
