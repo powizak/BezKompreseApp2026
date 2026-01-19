@@ -4,7 +4,7 @@ import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
 import type { UserProfile, Car, AppEvent } from '../types';
-import { Car as CarIcon, UserPlus, UserMinus, Users, Calendar, MapPin, User, ChevronRight, Settings, Shield, Save } from 'lucide-react';
+import { Car as CarIcon, UserPlus, UserMinus, Users, Calendar, MapPin, User, ChevronRight, Settings, Shield, Save, CarFront, Gauge } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -211,49 +211,47 @@ export default function UserProfilePage() {
                         {cars.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {cars.map(car => (
-                                    <Link to={`/car/${car.id}`} key={car.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-slate-100 group block">
-                                        <div className="h-48 bg-slate-100 relative overflow-hidden">
+                                    <Link to={`/car/${car.id}`} key={car.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden group hover:shadow-xl transition-all duration-300 block">
+                                        {/* Image */}
+                                        <div className="aspect-video bg-slate-100 relative overflow-hidden">
                                             {car.photos && car.photos.length > 0 ? (
-                                                <img src={car.photos[0]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={car.name} />
+                                                <img src={car.photos[0]} alt={car.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                             ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-slate-300">
-                                                    <CarIcon size={48} opacity={0.2} />
+                                                <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
+                                                    <CarFront size={48} strokeWidth={1.5} />
                                                 </div>
                                             )}
-                                            <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4 pt-12">
-                                                <h3 className="text-white font-black text-xl italic uppercase tracking-wide">{car.name}</h3>
+                                            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
+                                            <div className="absolute bottom-0 left-0 p-4 text-white">
+                                                <h3 className="font-black text-xl tracking-tight leading-none mb-1">{car.name}</h3>
+                                                <p className="text-sm font-medium opacity-90">{car.make} {car.model}</p>
                                             </div>
+
                                             {/* Ownership Badge */}
                                             {(car.isOwned ?? true) && (
-                                                <div className="absolute top-2 right-2 z-10">
+                                                <div className="absolute top-3 right-3 z-20">
                                                     <span className="bg-brand text-slate-900 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg border border-brand-light flex items-center gap-1">
                                                         V garáži
                                                     </span>
                                                 </div>
                                             )}
                                             {!(car.isOwned ?? true) && (
-                                                <div className="absolute top-2 right-2 z-10">
+                                                <div className="absolute top-3 right-3 z-20">
                                                     <span className="bg-slate-800 text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg flex items-center gap-1 opacity-90">
                                                         Historie
                                                     </span>
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="p-5">
-                                            <div className="flex justify-between items-center text-sm font-bold text-slate-600 mb-3">
-                                                <span>{car.year}</span>
-                                                <span>{car.engine}</span>
-                                            </div>
-                                            <div className="flex flex-wrap gap-2">
-                                                {car.mods.slice(0, 3).map((mod, i) => (
-                                                    <span key={i} className="bg-slate-50 text-slate-500 text-[10px] px-2 py-1 rounded-md uppercase font-bold tracking-wider border border-slate-200">
-                                                        {typeof mod === 'string' ? mod : mod.name}
-                                                    </span>
-                                                ))}
-                                                {car.mods.length > 3 && (
-                                                    <span className="bg-slate-50 text-slate-400 text-[10px] px-2 py-1 rounded-md uppercase font-bold tracking-wider border border-slate-200">+{car.mods.length - 3}</span>
-                                                )}
-                                            </div>
+
+                                        {/* Info */}
+                                        <div className="p-4 flex justify-between items-center text-slate-600 text-sm">
+                                            <span className="flex items-center gap-1 font-bold bg-slate-50 px-2 py-1 rounded-md border border-slate-100">
+                                                <Calendar size={14} className="text-brand" /> {car.year}
+                                            </span>
+                                            <span className="flex items-center gap-1 font-bold bg-slate-50 px-2 py-1 rounded-md border border-slate-100">
+                                                <Gauge size={14} className="text-brand" /> {car.power} kW
+                                            </span>
                                         </div>
                                     </Link>
                                 ))}
