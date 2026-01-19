@@ -68,7 +68,7 @@ export default function Layout() {
       </aside>
 
       {/* Mobile Top Bar - Black Theme */}
-      <header className="md:hidden sticky top-0 z-10 bg-[#111111] text-white shadow-md p-4 flex justify-between items-center border-b border-white/10">
+      <header className="md:hidden sticky top-0 z-30 bg-[#111111] text-white shadow-md p-4 flex justify-between items-center border-b border-white/10">
         <img src="/logo.svg" alt="Bez Komprese" className="h-6" />
         {user ? (
           <Link to={`/profile/${user.uid}`} className="w-8 h-8 rounded-full bg-white/10 overflow-hidden ring-1 ring-brand block">
