@@ -186,7 +186,7 @@ export default function UserProfilePage() {
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex justify-start md:justify-start gap-2 md:gap-4 border-b border-slate-100 pb-1 overflow-x-auto scrollbar-hide">
+            <div className="sticky top-0 bg-slate-50/95 backdrop-blur-sm z-20 -mx-4 px-4 py-2 flex justify-start md:justify-start gap-2 md:gap-4 border-b border-slate-100 pb-1 overflow-x-auto scrollbar-hide">
                 <button onClick={() => setActiveTab('garage')} className={`pb-3 px-2 md:px-4 text-xs md:text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-1 md:gap-2 whitespace-nowrap flex-shrink-0 ${activeTab === 'garage' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
                     <CarIcon size={16} className="md:w-[18px] md:h-[18px]" /> Garáž <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 text-slate-500">{cars.length}</span>
                 </button>
