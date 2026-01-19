@@ -21,6 +21,7 @@ export default function Garage() {
   const [editingCar, setEditingCar] = useState<Car | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [carToDelete, setCarToDelete] = useState<string | null>(null);
 
   // Form State
   const initialFormState = {
@@ -72,18 +73,48 @@ export default function Garage() {
     setSelectedFiles([]); // Reset new files
   };
 
-  const handleDelete = async (carId: string) => {
-    if (!confirm('Opravdu chcete smazat toto auto? Tato akce je nevratná.')) {
-      return;
-    }
+  const handleDeleteClick = (e: React.MouseEvent, carId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Delete button clicked for car:', carId);
+    setCarToDelete(carId);
+  };
+
+  const confirmDelete = async () => {
+    if (!carToDelete) return;
+
+    console.log('User confirmed deletion, proceeding...');
 
     try {
-      await Effect.runPromise(dataService.deleteCar(carId));
-      fetchCars(); // Refresh the list
+      // Optimistically update UI immediately
+      console.log('Updating UI optimistically...');
+      setCars(prevCars => {
+        const filtered = prevCars.filter(car => car.id !== carToDelete);
+        console.log('Cars after filter:', filtered.length, 'from', prevCars.length);
+        return filtered;
+      });
+
+      // Close modal
+      setCarToDelete(null);
+
+      // Then delete from database
+      console.log('Deleting from database...');
+      await Effect.runPromise(dataService.deleteCar(carToDelete));
+      console.log('Database deletion successful');
+
+      // Optionally refresh to ensure sync (in case of errors)
+      fetchCars();
     } catch (err) {
       console.error('Failed to delete car', err);
       alert('Nepodařilo se smazat auto. Zkuste to prosím znovu.');
+      // Refresh to restore the correct state
+      fetchCars();
     }
+  };
+
+  const cancelDelete = () => {
+    console.log('User cancelled deletion');
+    setCarToDelete(null);
   };
 
   const resetForm = () => {
@@ -227,6 +258,37 @@ export default function Garage() {
           <span className="font-bold hidden sm:inline">Přidat auto</span>
         </button>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {carToDelete && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-red-500 text-white p-4 flex items-center gap-3">
+              <AlertCircle size={24} />
+              <h3 className="font-bold text-lg">Smazat vozidlo</h3>
+            </div>
+            <div className="p-6">
+              <p className="text-slate-700 mb-6">
+                Opravdu chcete smazat toto auto? Tato akce je <strong>nevratná</strong> a smažou se i všechny související záznamy.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={cancelDelete}
+                  className="flex-1 bg-slate-100 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 transition-all"
+                >
+                  Zrušit
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="flex-1 bg-red-500 text-white font-bold py-3 rounded-xl hover:bg-red-600 transition-all shadow-lg shadow-red-500/20"
+                >
+                  Smazat
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showForm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
@@ -468,7 +530,7 @@ export default function Garage() {
                     <Pencil size={16} />
                   </button>
                   <button
-                    onClick={() => handleDelete(car.id)}
+                    onClick={(e) => handleDeleteClick(e, car.id)}
                     className="bg-red-500/90 text-white p-2 rounded-full shadow-lg hover:bg-red-600 transition-colors"
                   >
                     <Trash2 size={16} />
