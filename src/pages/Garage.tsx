@@ -129,8 +129,8 @@ export default function Garage() {
     if (e.target.files) {
       const files = Array.from(e.target.files);
       const validFiles = files.filter(file => {
-        if (file.size > 2 * 1024 * 1024) {
-          alert(`Fotka ${file.name} je příliš velká (max 2MB).`);
+        if (file.size > 5 * 1024 * 1024) {
+          alert(`Fotka ${file.name} je příliš velká (max 5MB).`);
           return false;
         }
         return true;
@@ -396,7 +396,7 @@ export default function Garage() {
                   accept="image/png, image/jpeg, image/webp"
                   multiple
                 />
-                <p className="text-xs text-slate-400 mt-2 text-center sm:text-left">Max 4 fotky, každá do 2MB.</p>
+                <p className="text-xs text-slate-400 mt-2 text-center sm:text-left">Max 4 fotky, každá do 5MB.</p>
               </div>
 
               {/* Mods */}
