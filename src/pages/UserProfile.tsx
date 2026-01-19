@@ -186,19 +186,19 @@ export default function UserProfilePage() {
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex justify-center md:justify-start gap-4 border-b border-slate-100 pb-1">
-                <button onClick={() => setActiveTab('garage')} className={`pb-3 px-4 text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-2 ${activeTab === 'garage' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
-                    <CarIcon size={18} /> Garáž <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 text-slate-500">{cars.length}</span>
+            <div className="flex justify-start md:justify-start gap-2 md:gap-4 border-b border-slate-100 pb-1 overflow-x-auto scrollbar-hide">
+                <button onClick={() => setActiveTab('garage')} className={`pb-3 px-2 md:px-4 text-xs md:text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-1 md:gap-2 whitespace-nowrap flex-shrink-0 ${activeTab === 'garage' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
+                    <CarIcon size={16} className="md:w-[18px] md:h-[18px]" /> Garáž <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 text-slate-500">{cars.length}</span>
                 </button>
-                <button onClick={() => setActiveTab('events')} className={`pb-3 px-4 text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-2 ${activeTab === 'events' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
-                    <Calendar size={18} /> Akce <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 text-slate-500">{events.length}</span>
+                <button onClick={() => setActiveTab('events')} className={`pb-3 px-2 md:px-4 text-xs md:text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-1 md:gap-2 whitespace-nowrap flex-shrink-0 ${activeTab === 'events' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
+                    <Calendar size={16} className="md:w-[18px] md:h-[18px]" /> Akce <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 text-slate-500">{events.length}</span>
                 </button>
-                <button onClick={() => setActiveTab('friends')} className={`pb-3 px-4 text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-2 ${activeTab === 'friends' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
-                    <Users size={18} /> Přátelé <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 text-slate-500">{friends.length}</span>
+                <button onClick={() => setActiveTab('friends')} className={`pb-3 px-2 md:px-4 text-xs md:text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-1 md:gap-2 whitespace-nowrap flex-shrink-0 ${activeTab === 'friends' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
+                    <Users size={16} className="md:w-[18px] md:h-[18px]" /> Přátelé <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 text-slate-500">{friends.length}</span>
                 </button>
                 {isMe && (
-                    <button onClick={() => setActiveTab('settings')} className={`pb-3 px-4 text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-2 ${activeTab === 'settings' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
-                        <Settings size={18} /> Nastavení
+                    <button onClick={() => setActiveTab('settings')} className={`pb-3 px-2 md:px-4 text-xs md:text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-1 md:gap-2 whitespace-nowrap flex-shrink-0 ${activeTab === 'settings' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
+                        <Settings size={16} className="md:w-[18px] md:h-[18px]" /> Nastavení
                     </button>
                 )}
             </div>

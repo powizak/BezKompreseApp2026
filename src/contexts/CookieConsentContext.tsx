@@ -6,6 +6,7 @@ interface CookieConsentContextType {
     consent: ConsentStatus;
     acceptCookies: () => void;
     declineCookies: () => void;
+    resetConsent: () => void;
 }
 
 const CookieConsentContext = createContext<CookieConsentContextType | undefined>(undefined);
@@ -30,8 +31,13 @@ export const CookieConsentProvider = ({ children }: { children: ReactNode }) => 
         localStorage.setItem('cookie_consent', 'denied');
     };
 
+    const resetConsent = () => {
+        setConsent('pending');
+        localStorage.removeItem('cookie_consent');
+    };
+
     return (
-        <CookieConsentContext.Provider value={{ consent, acceptCookies, declineCookies }}>
+        <CookieConsentContext.Provider value={{ consent, acceptCookies, declineCookies, resetConsent }}>
             {children}
         </CookieConsentContext.Provider>
     );
