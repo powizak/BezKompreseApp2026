@@ -6,6 +6,7 @@ import type { AppEvent } from '../types';
 import { MapPin, Map as MapIcon, List, Plus, X, ChevronRight } from 'lucide-react';
 import EventMap from '../components/EventMap';
 import { Link } from 'react-router-dom';
+import LoginRequired from '../components/LoginRequired';
 
 export default function Events() {
     const { user } = useAuth();
@@ -31,8 +32,12 @@ export default function Events() {
     };
 
     useEffect(() => {
-        loadEvents();
-    }, []);
+        if (user) {
+            loadEvents();
+        } else {
+            setLoading(false);
+        }
+    }, [user]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -60,6 +65,16 @@ export default function Events() {
     };
 
 
+
+    if (!user) {
+        return (
+            <LoginRequired
+                title="Kalendář akcí je zamčený"
+                message="Pro zobrazení srazů a akcí se musíte přihlásit."
+                icon={MapIcon}
+            />
+        );
+    }
 
     return (
         <div>

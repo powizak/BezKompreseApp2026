@@ -2,10 +2,13 @@ import { useEffect, useState, useMemo } from 'react';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import type { Car } from '../types';
+import { useAuth } from '../contexts/AuthContext';
+import LoginRequired from '../components/LoginRequired';
 import { Link } from 'react-router-dom';
 import { CarFront, Filter, X, Search, Calendar, Gauge } from 'lucide-react';
 
 export default function CarsPage() {
+    const { user } = useAuth();
     const [cars, setCars] = useState<Car[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -23,13 +26,17 @@ export default function CarsPage() {
     );
 
     useEffect(() => {
+        if (!user) {
+            setLoading(false);
+            return;
+        }
         const loadCars = async () => {
             const fetchedCars = await Effect.runPromise(dataService.getAllCars(100)); // Fetch up to 100 cars
             setCars(fetchedCars);
             setLoading(false);
         };
         loadCars();
-    }, []);
+    }, [user]);
 
     // Extract unique filter options based on available data
     const filterOptions = useMemo(() => {
@@ -58,6 +65,16 @@ export default function CarsPage() {
             <div className="flex justify-center items-center py-20">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
             </div>
+        );
+    }
+
+    if (!user) {
+        return (
+            <LoginRequired
+                title="Prohlížení aut je zamčené"
+                message="Pro zobrazení garáží ostatních uživatelů se musíte přihlásit."
+                icon={CarFront}
+            />
         );
     }
 

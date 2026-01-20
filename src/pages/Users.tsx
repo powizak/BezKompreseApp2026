@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import type { UserProfile } from '../types';
 import { Search, Users as UsersIcon, UserPlus, UserMinus, User, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import LoginRequired from '../components/LoginRequired';
 
 export default function UsersPage() {
     const { user: currentUser } = useAuth();
@@ -48,8 +49,12 @@ export default function UsersPage() {
     };
 
     useEffect(() => {
-        loadUsers();
-    }, []);
+        if (currentUser) {
+            loadUsers();
+        } else {
+            setLoading(false);
+        }
+    }, [currentUser]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -74,6 +79,16 @@ export default function UsersPage() {
         // straightforward way:
         loadUsers(searchQuery);
     };
+
+    if (!currentUser) {
+        return (
+            <LoginRequired
+                title="Komunita je zamčená"
+                message="Pro hledání parťáků a prohlížení profilů se musíte přihlásit."
+                icon={UsersIcon}
+            />
+        );
+    }
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">

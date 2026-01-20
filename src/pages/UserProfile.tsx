@@ -8,6 +8,7 @@ import { Car as CarIcon, UserPlus, UserMinus, Users, Calendar, MapPin, User, Che
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import LoginRequired from '../components/LoginRequired';
 
 // Fix Leaflet icon issue
 // @ts-ignore
@@ -38,7 +39,7 @@ export default function UserProfilePage() {
     });
 
     useEffect(() => {
-        if (!id) return;
+        if (!id || !currentUser) return;
 
         const fetchData = async () => {
             const dataService = Effect.runSync(
@@ -145,6 +146,16 @@ export default function UserProfilePage() {
     if (!profile) return <div className="p-10 text-center text-slate-500">Uživatel nenalezen.</div>;
 
     const isMe = currentUser?.uid === profile.uid;
+
+    if (!currentUser) {
+        return (
+            <LoginRequired
+                title="Profil je zamčený"
+                message="Pro zobrazení profilů uživatelů se musíte přihlásit."
+                icon={User}
+            />
+        );
+    }
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">

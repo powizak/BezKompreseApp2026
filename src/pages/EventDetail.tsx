@@ -6,6 +6,7 @@ import type { AppEvent, UserProfile } from '../types';
 import { MapPin, Calendar, ArrowLeft, Share2, Check, User, AlertCircle } from 'lucide-react';
 import EventMap from '../components/EventMap';
 import { useAuth } from '../contexts/AuthContext';
+import LoginRequired from '../components/LoginRequired';
 
 export default function EventDetail() {
     const { id } = useParams();
@@ -17,7 +18,8 @@ export default function EventDetail() {
     const [joined, setJoined] = useState(false);
 
     useEffect(() => {
-        if (!id) return;
+        if (!id || !user) return; // Wait for auth check
+
 
         const fetchData = async () => {
             const dataService = Effect.runSync(
@@ -44,6 +46,16 @@ export default function EventDetail() {
     }, [id, navigate]);
 
     if (loading || !event) return <div className="p-10 text-center font-mono">Načítám detail...</div>;
+
+    if (!user) {
+        return (
+            <LoginRequired
+                title="Detail akce je zamčený"
+                message="Pro zobrazení detailů akcí se musíte přihlásit."
+                icon={Calendar}
+            />
+        );
+    }
 
     return (
         <div className="max-w-2xl mx-auto pb-10 relative">

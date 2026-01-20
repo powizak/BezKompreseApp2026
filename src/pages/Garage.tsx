@@ -13,6 +13,8 @@ function cn(...inputs: (string | undefined | null | false)[]) {
   return twMerge(clsx(inputs));
 }
 
+import LoginRequired from '../components/LoginRequired';
+
 export default function Garage() {
   const { user } = useAuth();
   const [cars, setCars] = useState<Car[]>([]);
@@ -231,16 +233,11 @@ export default function Garage() {
   };
 
   if (!user) return (
-    <div className="flex flex-col items-center justify-center min-h-[50vh] p-6 text-center">
-      <div className="bg-slate-100 p-6 rounded-full mb-4">
-        <CarFront size={48} className="text-slate-400" />
-      </div>
-      <h2 className="text-2xl font-bold mb-2">Garáž je zamčená</h2>
-      <p className="text-slate-500 mb-6 max-w-sm">Pro správu svých vozidel a úprav se musíte přihlásit do svého účtu.</p>
-      <Link to="/login" className="bg-brand text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-brand-dark transition-all transform hover:scale-105">
-        Přihlásit se
-      </Link>
-    </div>
+    <LoginRequired
+      title="Garáž je zamčená"
+      message="Pro správu svých vozidel a úprav se musíte přihlásit do svého účtu."
+      icon={CarFront}
+    />
   );
 
   return (

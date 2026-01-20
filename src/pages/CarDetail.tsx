@@ -3,10 +3,13 @@ import { useParams, Link } from 'react-router-dom';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import type { Car, UserProfile } from '../types';
-import { Car as CarIcon, Calendar, Gauge, Wrench, User, ChevronLeft, ChevronRight, X, Zap, ArrowUpRight } from 'lucide-react';
+import { Car as CarIcon, Calendar, Gauge, Wrench, User, ChevronLeft, ChevronRight, X, Zap, ArrowUpRight, CarFront } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import LoginRequired from '../components/LoginRequired';
 
 export default function CarDetail() {
     const { id } = useParams<{ id: string }>();
+    const { user } = useAuth();
     const [car, setCar] = useState<Car | null>(null);
     const [owner, setOwner] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
@@ -15,7 +18,8 @@ export default function CarDetail() {
     const [activeImageIndex, setActiveImageIndex] = useState(0);
 
     useEffect(() => {
-        if (!id) return;
+        if (!id || !user) return;
+
 
         const loadCar = async () => {
             const dataService = Effect.runSync(
@@ -55,6 +59,16 @@ export default function CarDetail() {
     if (loading) return <div className="p-12 text-center text-slate-400 font-mono">Načítám vozidlo...</div>;
     if (!car) return <div className="p-12 text-center text-slate-400 font-mono">Vozidlo nenalezeno.</div>;
 
+
+    if (!user) {
+        return (
+            <LoginRequired
+                title="Detail auta je zamčený"
+                message="Pro zobrazení detailů a úprav vozidla se musíte přihlásit."
+                icon={CarFront}
+            />
+        );
+    }
 
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 space-y-8">

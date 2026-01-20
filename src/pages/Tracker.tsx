@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Navigation, MessageCircle, Shield, User } from 'lucide-react';
 import type { PresenceInfo } from '../types/chat';
 import ChatDrawer from '../components/ChatDrawer';
+import LoginRequired from '../components/LoginRequired';
 import 'leaflet/dist/leaflet.css';
 
 // Fix Leaflet icon issue
@@ -211,6 +212,16 @@ export default function Tracker() {
             Effect.runPromise(dataService.removePresence(user.uid));
         }
     };
+
+    if (!user) {
+        return (
+            <LoginRequired
+                title="Live Tracker je zamčený"
+                message="Pro zobrazení mapy a polohy ostatních uživatelů se musíte přihlásit."
+                icon={Navigation}
+            />
+        );
+    }
 
     return (
         <div className="h-[calc(100vh-120px)] flex flex-col space-y-4 animate-in fade-in zoom-in-95 duration-500">
