@@ -3,7 +3,7 @@ import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
 import type { Car, CarModification } from '../types';
-import { Plus, Pencil, Trash2, Camera, CarFront, Gauge, Wrench, X, Save, AlertCircle } from 'lucide-react';
+import { Plus, Pencil, Trash2, Camera, CarFront, Gauge, Wrench, X, Save, AlertCircle, Fuel } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -599,14 +599,21 @@ export default function Garage() {
                   </div>
                 )}
 
-                {/* Service Book Button */}
-                <div className="border-t border-slate-100 pt-3 mt-3">
+                {/* Action Buttons */}
+                <div className="grid grid-cols-2 gap-2 border-t border-slate-100 pt-3 mt-3">
                   <Link
                     to={`/garage/${car.id}/service`}
-                    className="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl hover:bg-black transition-all flex items-center justify-center gap-2 text-sm"
+                    className="bg-slate-900 text-white font-bold py-2.5 rounded-xl hover:bg-black transition-all flex items-center justify-center gap-2 text-sm shadow-sm"
                   >
                     <Wrench size={16} />
-                    Servisní knížka
+                    Servis
+                  </Link>
+                  <Link
+                    to={`/garage/${car.id}/fuel`}
+                    className="bg-brand text-slate-900 font-bold py-2.5 rounded-xl hover:bg-brand-dark transition-all flex items-center justify-center gap-2 text-sm shadow-sm"
+                  >
+                    <Fuel size={16} />
+                    Tankování
                   </Link>
                 </div>
               </div>

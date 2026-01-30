@@ -14,6 +14,7 @@ import CarsPage from './pages/Cars';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import ServiceBook from './pages/ServiceBook';
+import FuelTracker from './pages/FuelTracker';
 import Tracker from './pages/Tracker';
 import { CookieConsentProvider } from './contexts/CookieConsentContext';
 
@@ -28,6 +29,7 @@ function App() {
               <Route path="/cars" element={<CarsPage />} />
               <Route path="/garage" element={<Garage />} />
               <Route path="/garage/:carId/service" element={<ServiceBook />} />
+              <Route path="/garage/:carId/fuel" element={<FuelTracker />} />
               <Route path="/events" element={<Events />} />
               <Route path="/events/:id" element={<EventDetail />} />
               <Route path="/users" element={<UsersPage />} />

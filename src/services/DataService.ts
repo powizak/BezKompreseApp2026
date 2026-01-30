@@ -5,7 +5,7 @@ import {
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../config/firebase";
-import type { Car, AppEvent, SocialPost, UserProfile, ServiceRecord } from "../types";
+import type { Car, AppEvent, SocialPost, UserProfile, ServiceRecord, FuelRecord } from "../types";
 import type { PresenceInfo, Message } from "../types/chat";
 
 export class DataError {
@@ -55,6 +55,12 @@ export interface DataService {
     readonly addServiceRecord: (record: Omit<ServiceRecord, "id">) => Effect.Effect<string, DataError>;
     readonly updateServiceRecord: (recordId: string, data: Partial<ServiceRecord>) => Effect.Effect<void, DataError>;
     readonly deleteServiceRecord: (recordId: string) => Effect.Effect<void, DataError>;
+
+    // Fuel Records
+    readonly getFuelRecords: (carId: string) => Effect.Effect<FuelRecord[], DataError>;
+    readonly addFuelRecord: (record: Omit<FuelRecord, "id">) => Effect.Effect<string, DataError>;
+    readonly updateFuelRecord: (recordId: string, data: Partial<FuelRecord>) => Effect.Effect<void, DataError>;
+    readonly deleteFuelRecord: (recordId: string) => Effect.Effect<void, DataError>;
 }
 
 export const DataService = Context.GenericTag<DataService>("DataService");
@@ -359,6 +365,43 @@ export const DataServiceLive = Layer.succeed(
                 await deleteDoc(recordRef);
             },
             catch: (e) => new DataError("Failed to delete service record", e)
+        }),
+
+        getFuelRecords: (carId) => Effect.tryPromise({
+            try: async () => {
+                const q = query(
+                    collection(db, "fuel-records"),
+                    where("carId", "==", carId)
+                );
+                const snapshot = await getDocs(q);
+                const records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as FuelRecord));
+                return records.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            },
+            catch: (e) => new DataError("Failed to fetch fuel records", e)
+        }),
+
+        addFuelRecord: (record) => Effect.tryPromise({
+            try: async () => {
+                const docRef = await addDoc(collection(db, "fuel-records"), record);
+                return docRef.id;
+            },
+            catch: (e) => new DataError("Failed to add fuel record", e)
+        }),
+
+        updateFuelRecord: (recordId, data) => Effect.tryPromise({
+            try: async () => {
+                const recordRef = doc(db, "fuel-records", recordId);
+                await updateDoc(recordRef, data);
+            },
+            catch: (e) => new DataError("Failed to update fuel record", e)
+        }),
+
+        deleteFuelRecord: (recordId) => Effect.tryPromise({
+            try: async () => {
+                const recordRef = doc(db, "fuel-records", recordId);
+                await deleteDoc(recordRef);
+            },
+            catch: (e) => new DataError("Failed to delete fuel record", e)
         }),
 
         updateProfile: (userId, data) => Effect.tryPromise({

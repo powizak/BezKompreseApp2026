@@ -101,3 +101,19 @@ export interface ServiceRecord {
   nextServiceMileage?: number;
   nextServiceDate?: string;
 }
+
+export interface FuelRecord {
+  id: string;
+  carId: string;
+  ownerId: string;
+  date: string; // ISO string
+  mileage: number; // Tachometer km
+  liters: number;
+  pricePerLiter: number;
+  totalPrice: number;
+  fullTank: boolean;
+  station?: string;
+  notes?: string;
+  consumption?: number; // l/100km (calculated)
+  distanceDelta?: number; // km since last refuel (calculated)
+}
