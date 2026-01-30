@@ -4,7 +4,7 @@ import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
 import type { UserProfile, Car, AppEvent } from '../types';
-import { Car as CarIcon, UserPlus, UserMinus, Users, Calendar, MapPin, User, ChevronRight, Settings, Shield, Save, CarFront, Gauge } from 'lucide-react';
+import { Car as CarIcon, UserPlus, UserMinus, Users, Calendar, MapPin, User, ChevronRight, Settings, Shield, Save, CarFront, Gauge, Fuel } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -37,6 +37,7 @@ export default function UserProfilePage() {
         status: 'Jen tak',
         privacyRadius: 500
     });
+    const [shareFuelConsumption, setShareFuelConsumption] = useState(false);
 
     useEffect(() => {
         if (!id || !currentUser) return;
@@ -57,6 +58,7 @@ export default function UserProfilePage() {
                 if (result.profile.trackerSettings) {
                     setTrackerSettings(result.profile.trackerSettings);
                 }
+                setShareFuelConsumption(!!result.profile.shareFuelConsumption);
 
                 // 2. Events
                 const eventResult = await Effect.runPromise(dataService.getUserEvents(id));
@@ -118,7 +120,10 @@ export default function UserProfilePage() {
 
         try {
             // Firestore doesn't accept 'undefined'. Strip it or use null.
-            const updateData: any = { trackerSettings };
+            const updateData: any = {
+                trackerSettings,
+                shareFuelConsumption
+            };
             if (homeLocation !== undefined) {
                 updateData.homeLocation = homeLocation;
             }
@@ -412,6 +417,41 @@ export default function UserProfilePage() {
                                         * Poloha se automaticky skryje, pokud budete v okruhu 500m od tohoto bodu. Nikdo neuvidí přesnou polohu vašeho bydliště.
                                     </p>
                                 </div>
+                            </div>
+
+                            <div className="pt-6 border-t border-slate-100 flex justify-end">
+                                <button
+                                    onClick={saveSettings}
+                                    disabled={saving}
+                                    className="bg-brand text-brand-contrast px-8 py-3 rounded-2xl font-black uppercase italic tracking-tighter shadow-lg shadow-brand/20 hover:bg-brand-dark transition-all flex items-center gap-2 disabled:opacity-50"
+                                >
+                                    {saving ? 'Ukládám...' : <><Save size={18} /> Uložit nastavení</>}
+                                </button>
+                            </div>
+                        </section>
+
+                        <section className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2 bg-brand/10 text-brand rounded-xl">
+                                    <Fuel size={24} />
+                                </div>
+                                <div>
+                                    <h2 className="text-xl font-black italic uppercase tracking-tighter">Ostatní nastavení</h2>
+                                    <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Veřejné informace</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                <div>
+                                    <h3 className="font-bold text-slate-900">Sdílet spotřebu paliva</h3>
+                                    <p className="text-xs text-slate-500">Zobrazit průměrnou spotřebu u mých vozidel ostatním</p>
+                                </div>
+                                <button
+                                    onClick={() => setShareFuelConsumption(!shareFuelConsumption)}
+                                    className={`w-12 h-6 rounded-full transition-colors relative ${shareFuelConsumption ? 'bg-brand' : 'bg-slate-300'}`}
+                                >
+                                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${shareFuelConsumption ? 'left-7' : 'left-1'}`} />
+                                </button>
                             </div>
 
                             <div className="pt-6 border-t border-slate-100 flex justify-end">

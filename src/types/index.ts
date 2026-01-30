@@ -15,6 +15,7 @@ export interface UserProfile {
   friends?: string[]; // Array of user UIDs
   homeLocation?: { lat: number; lng: number };
   trackerSettings?: TrackerSettings;
+  shareFuelConsumption?: boolean;
 }
 
 export interface CarModification {

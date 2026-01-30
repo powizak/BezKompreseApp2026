@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import type { Car, UserProfile } from '../types';
-import { Car as CarIcon, Calendar, Gauge, Wrench, User, ChevronLeft, ChevronRight, X, Zap, ArrowUpRight, CarFront } from 'lucide-react';
+import { Car as CarIcon, Calendar, Gauge, Wrench, User, ChevronLeft, ChevronRight, X, Zap, ArrowUpRight, CarFront, Fuel } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import LoginRequired from '../components/LoginRequired';
 
@@ -12,6 +12,7 @@ export default function CarDetail() {
     const { user } = useAuth();
     const [car, setCar] = useState<Car | null>(null);
     const [owner, setOwner] = useState<UserProfile | null>(null);
+    const [fuelStats, setFuelStats] = useState<{ avg: number; distance: number } | null>(null);
     const [loading, setLoading] = useState(true);
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
@@ -35,6 +36,24 @@ export default function CarDetail() {
                 const ownerResult = await Effect.runPromise(dataService.getUserProfile(fetchedCar.ownerId));
                 if (ownerResult) {
                     setOwner(ownerResult.profile);
+
+                    // If owner shares consumption, fetch fuel records
+                    if (ownerResult.profile.shareFuelConsumption) {
+                        const fuelRecords = await Effect.runPromise(dataService.getFuelRecords(id));
+                        const validConsumptions = fuelRecords.filter(r => r.consumption !== undefined && r.consumption !== null);
+
+                        if (validConsumptions.length > 0) {
+                            const avg = validConsumptions.reduce((sum, r) => sum + (r.consumption || 0), 0) / validConsumptions.length;
+
+                            // Calculate distance from first to last full tank
+                            const sorted = [...fuelRecords].sort((a, b) => a.mileage - b.mileage);
+                            const fullTanks = sorted.filter(r => r.fullTank);
+                            if (fullTanks.length >= 2) {
+                                const distance = fullTanks[fullTanks.length - 1].mileage - fullTanks[0].mileage;
+                                setFuelStats({ avg, distance });
+                            }
+                        }
+                    }
                 }
             }
 
@@ -174,6 +193,26 @@ export default function CarDetail() {
                                 </span>
                                 <div className="text-5xl font-black text-slate-200 italic tracking-tighter">{car.stockPower ? `${car.stockPower} kW` : '-'}</div>
                             </div>
+
+                            {fuelStats && (
+                                <div className="bg-white p-8 rounded-3xl border-2 border-brand/20 relative overflow-hidden group col-span-full shadow-lg shadow-brand/5">
+                                    <Fuel className="absolute -right-4 -bottom-4 w-32 h-32 text-brand/5 -rotate-12 transition-transform group-hover:scale-110" />
+                                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                                        <div>
+                                            <span className="text-xs font-black text-brand uppercase tracking-[0.2em] flex items-center gap-2 mb-4">
+                                                <Fuel size={14} /> Reálná průměrná spotřeba
+                                            </span>
+                                            <div className="text-6xl font-black text-slate-900 italic tracking-tighter">
+                                                {fuelStats.avg.toFixed(2).replace('.', ',')} <span className="text-xl font-bold not-italic text-slate-400">l/100km</span>
+                                            </div>
+                                        </div>
+                                        <div className="bg-slate-50 px-6 py-4 rounded-2xl border border-slate-100">
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Měřeno na trase</p>
+                                            <p className="text-2xl font-black text-slate-900 italic">{fuelStats.distance.toLocaleString()} km</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Mods List */}
