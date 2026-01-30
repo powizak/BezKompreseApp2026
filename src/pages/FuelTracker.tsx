@@ -146,10 +146,10 @@ export default function FuelTracker() {
                 pricePerLiter: pricePerLiterNum,
                 totalPrice: totalPriceNum,
                 fullTank: formData.fullTank,
-                station: formData.station,
-                notes: formData.notes,
-                consumption,
-                distanceDelta
+                station: formData.station || "",
+                notes: formData.notes || "",
+                consumption: consumption ?? null,
+                distanceDelta: distanceDelta ?? null
             };
 
             if (editingRecord) {
