@@ -40,6 +40,7 @@ const PrivacyPolicy = () => {
                         <li>Uživatelské jméno</li>
                         <li>Profilová fotografie</li>
                         <li>Informace o vašich autech, která do aplikace vložíte</li>
+                        <li>Záznamy o tankování, spotřebě paliva a nájezdu vozidel</li>
                         <li>Poloha (GPS souřadnice) – pouze pokud aktivujete funkci Tracker</li>
                         <li>Chatové zprávy a historie komunikace</li>
                         <li>Seznam přátel a sociální interakce</li>
@@ -48,7 +49,19 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-white">3. Sledování polohy (Tracker)</h2>
+                    <h2 className="text-2xl font-semibold text-white">3. Tankování a sdílení spotřeby paliva</h2>
+                    <p className="text-zinc-400 leading-relaxed">
+                        Aplikace umožňuje evidovat tankování a vypočítat průměrnou spotřebu paliva vašich vozidel.
+                    </p>
+                    <ul className="list-disc pl-5 space-y-2 text-zinc-400">
+                        <li><strong>Soukromé data:</strong> Všechny záznamy o tankování (datum, množství paliva, cena, nájezd) jsou ve výchozím stavu soukromé a vidíte je pouze vy.</li>
+                        <li><strong>Sdílení:</strong> V nastavení profilu můžete dobrovolně aktivovat funkci "Sdílet spotřebu paliva", která umožní ostatním uživatelům vidět průměrnou spotřebu vašich vozidel a celkovou vzdálenost, na které byla měřena. Podrobné záznamy (ceny, datum, stanice) zůstávají i při zapnutém sdílení soukromé.</li>
+                        <li><strong>Ovládání:</strong> Tuto funkci můžete kdykoliv zapnout nebo vypnout. Po vypnutí se vaše data ihned přestanou zobrazovat ostatním uživatelům.</li>
+                    </ul>
+                </section>
+
+                <section className="space-y-4">
+                    <h2 className="text-2xl font-semibold text-white">4. Sledování polohy (Tracker)</h2>
                     <p className="text-zinc-400 leading-relaxed">
                         Aplikace obsahuje volitelnou funkci sdílení polohy ("Tracker"), která umožňuje zobrazit vaši aktuální polohu ostatním uživatelům na mapě.
                     </p>
@@ -61,7 +74,7 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-white">4. Cookies</h2>
+                    <h2 className="text-2xl font-semibold text-white">5. Cookies</h2>
                     <p className="text-zinc-400 leading-relaxed">
                         Aplikace používá technologie cookies pro zajištění funkčnosti (přihlášení, sessions). Tyto technické cookies jsou nezbytné pro chod aplikace.
                         Kromě toho můžeme využívat analytické nástroje (např. Google Analytics) pro zlepšování našich služeb, pokud nám k tomu dáte souhlas.
@@ -69,7 +82,7 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-white">5. Vaše práva</h2>
+                    <h2 className="text-2xl font-semibold text-white">6. Vaše práva</h2>
                     <p className="text-zinc-400 leading-relaxed">
                         Máte právo na přístup ke svým údajům, jejich opravu, výmaz ("právo být zapomenut"), nebo omezení zpracování. Svá data můžete spravovat přímo v nastavení svého profilu.
                         Pro žádost o výmaz dat se obrátěte na e-mail: <a href="mailto:powizak@gmail.com">powizak@gmail.com</a>

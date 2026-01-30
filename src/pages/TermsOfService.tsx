@@ -59,7 +59,14 @@ const TermsOfService = () => {
                 </section>
 
                 <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-white">6. Změny podmínek</h2>
+                    <h2 className="text-2xl font-semibold text-white">6. Tankování a spotřeba paliva</h2>
+                    <p className="text-zinc-400 leading-relaxed">
+                        Aplikace umožňuje evidovat tankování a sledovat spotřebu paliva vašich vozidel. Uživatel může dobrovolně sdílet průměrnou spotřebu s ostatními uživateli zapnutím funkce v nastavení profilu. Tato data slouží pouze pro informační účely. Provozovatel nezaručuje přesnost vypočítané spotřeby a nenese odpovědnost za případná rozhodnutí učiněná na základě těchto informací.
+                    </p>
+                </section>
+
+                <section className="space-y-4">
+                    <h2 className="text-2xl font-semibold text-white">7. Změny podmínek</h2>
                     <p className="text-zinc-400 leading-relaxed">
                         Tyto podmínky můžeme kdykoli aktualizovat. O významných změnách budeme uživatele informovat v rámci aplikace.
                     </p>
