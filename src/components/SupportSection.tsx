@@ -1,4 +1,4 @@
-import { Youtube, Car } from 'lucide-react';
+import { Youtube, Car, Heart } from 'lucide-react';
 
 export default function SupportSection() {
     return (
@@ -16,6 +16,9 @@ export default function SupportSection() {
                     </a>
                     <a href="https://www.youtube.com/channel/UCw7nrQwqRDvG6Q3CSEmcOSw/join" target="_blank" rel="noopener noreferrer" className="bg-[#FF0000] text-white font-black uppercase tracking-wider py-3 px-6 rounded-xl hover:bg-white hover:text-[#FF0000] transition-colors shadow-lg shadow-black/20 text-center text-sm flex items-center justify-center gap-2">
                         <Youtube size={18} className="fill-current" /> Členství
+                    </a>
+                    <a href="#" className="bg-gradient-to-r from-pink-500 to-rose-500 text-white font-black uppercase tracking-wider py-3 px-6 rounded-xl hover:from-white hover:to-white hover:text-rose-500 transition-all shadow-lg shadow-rose-500/20 text-center text-sm flex items-center justify-center gap-2 group/heart">
+                        <Heart size={18} className="fill-current group-hover/heart:animate-pulse" /> Podpořit
                     </a>
                 </div>
             </div>
