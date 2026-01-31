@@ -109,6 +109,12 @@ npm run build
 firebase deploy
 ```
 
-## Licence
+## Licence a Přispívání
+© 2026 Jakub Prošek. Všechna práva vyhrazena.
+
+Zdrojový kód je zveřejněn za účelem transparentnosti a umožnění komunitního vývoje (Pull Requests) pro **tuto konkrétní aplikaci**.
+
+- **✅ Povoleno:** Prohlížení kódu, učení se z něj, navrhování změn a oprav (Fork + Pull Request) do tohoto repozitáře.
+- **❌ Zakázáno:** Redistribuce, prodej, nebo provozování upravených kopií aplikace pod vlastním jménem bez výslovného souhlasu autora.
 
 Tento projekt je vytvořen pro fanoušky kanálu Bez Komprese.
