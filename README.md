@@ -38,6 +38,9 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Seznam Uživatelů**: Procházení celé komunity
 - **Veřejné Garáže**: Inspirace od ostatních autíčkářů
 
+### 💡 Myšlenky pro budoucí verze
+- V [ideas.md](./ideas.md) najdete některé myšlenky pro budoucí verze aplikace, které můžete sami navrhovat.
+
 ## Technologie
 
 *   **Runtime:** Node.js (nebo Bun)
