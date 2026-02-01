@@ -84,11 +84,38 @@ function spreadMarkers(presences: PresenceInfo[], threshold = 50): SpreadPresenc
     return result;
 }
 
-function MapUpdater({ center }: { center: [number, number] }) {
+function MapUpdater({ center, isAutoFollow, onAutoFollowChange }: {
+    center: [number, number];
+    isAutoFollow: boolean;
+    onAutoFollowChange: (enabled: boolean) => void;
+}) {
     const map = useMap();
+
     useEffect(() => {
-        if (center) map.flyTo(center, 13);
-    }, [center, map]);
+        if (isAutoFollow && center) {
+            map.flyTo(center, map.getZoom() || 13);
+        }
+    }, [center, isAutoFollow, map]);
+
+    useEffect(() => {
+        const handleInteraction = () => {
+            if (isAutoFollow) {
+                onAutoFollowChange(false);
+            }
+        };
+
+        const container = map.getContainer();
+        container.addEventListener('mousedown', handleInteraction);
+        container.addEventListener('touchstart', handleInteraction, { passive: true });
+        container.addEventListener('wheel', handleInteraction, { passive: true });
+
+        return () => {
+            container.removeEventListener('mousedown', handleInteraction);
+            container.removeEventListener('touchstart', handleInteraction);
+            container.removeEventListener('wheel', handleInteraction);
+        };
+    }, [map, isAutoFollow, onAutoFollowChange]);
+
     return null;
 }
 
@@ -100,6 +127,7 @@ export default function Tracker() {
     const [trackingEnabled, setTrackingEnabled] = useState(false);
     const [activeChat, setActiveChat] = useState<{ roomId: string; name: string } | null>(null);
     const [chatLoading, setChatLoading] = useState(false);
+    const [isAutoFollow, setIsAutoFollow] = useState(true);
     const watchId = useRef<number | null>(null);
 
     const dataService = Effect.runSync(
@@ -243,7 +271,11 @@ export default function Tracker() {
                         </div>
                     )}
                     <button
-                        onClick={() => setTrackingEnabled(!trackingEnabled)}
+                        onClick={() => {
+                            const newStatus = !trackingEnabled;
+                            setTrackingEnabled(newStatus);
+                            if (newStatus) setIsAutoFollow(true);
+                        }}
                         className={`px-6 py-2 rounded-full font-black uppercase text-xs tracking-wider transition-all shadow-md ${trackingEnabled
                             ? 'bg-red-50 text-red-500 border border-red-100 hover:bg-red-100'
                             : 'bg-brand text-brand-contrast hover:bg-brand-dark'
@@ -251,6 +283,15 @@ export default function Tracker() {
                     >
                         {trackingEnabled ? 'Zastavit sledování' : 'Spustit sledování'}
                     </button>
+                    {trackingEnabled && !isAutoFollow && (
+                        <button
+                            onClick={() => setIsAutoFollow(true)}
+                            className="p-2 bg-blue-50 text-blue-600 rounded-full shadow-sm border border-blue-100 animate-pulse hover:bg-blue-100 transition-all"
+                            title="Sledovat moji polohu"
+                        >
+                            <Navigation size={18} />
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -357,7 +398,13 @@ export default function Tracker() {
                         </Marker>
                     ))}
 
-                    {myLoc && <MapUpdater center={myLoc} />}
+                    {myLoc && (
+                        <MapUpdater
+                            center={myLoc}
+                            isAutoFollow={isAutoFollow}
+                            onAutoFollowChange={setIsAutoFollow}
+                        />
+                    )}
                 </MapContainer>
 
                 {!trackingEnabled && (
