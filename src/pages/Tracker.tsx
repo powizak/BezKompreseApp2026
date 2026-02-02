@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import MarkerClusterGroup from 'react-leaflet-cluster';
 import L from 'leaflet';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
@@ -32,56 +33,6 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return R * c; // in meters
-}
-
-// Function to spread out markers that are too close to each other
-type SpreadPresence = PresenceInfo & { offsetLat?: number; offsetLng?: number };
-
-function spreadMarkers(presences: PresenceInfo[], threshold = 50): SpreadPresence[] {
-    const result: SpreadPresence[] = presences.map(p => ({ ...p }));
-    const clusters: number[][] = [];
-
-    // Find clusters of nearby users
-    result.forEach((p, i) => {
-        if (!p.location) return;
-        let foundCluster = false;
-
-        for (const cluster of clusters) {
-            const firstInCluster = result[cluster[0]];
-            if (firstInCluster.location) {
-                const dist = calculateDistance(
-                    p.location.lat, p.location.lng,
-                    firstInCluster.location.lat, firstInCluster.location.lng
-                );
-                if (dist < threshold) {
-                    cluster.push(i);
-                    foundCluster = true;
-                    break;
-                }
-            }
-        }
-
-        if (!foundCluster) {
-            clusters.push([i]);
-        }
-    });
-
-    // Spread out each cluster in a circle
-    clusters.forEach(cluster => {
-        if (cluster.length > 1) {
-            const radius = 0.0002; // ~20 meters in degrees
-            cluster.forEach((idx, position) => {
-                const angle = (2 * Math.PI * position) / cluster.length;
-                const person = result[idx];
-                if (person.location) {
-                    person.offsetLat = person.location.lat + radius * Math.cos(angle);
-                    person.offsetLng = person.location.lng + radius * Math.sin(angle);
-                }
-            });
-        }
-    });
-
-    return result;
 }
 
 function MapUpdater({ center, isAutoFollow, onAutoFollowChange }: {
@@ -119,6 +70,15 @@ function MapUpdater({ center, isAutoFollow, onAutoFollowChange }: {
     return null;
 }
 
+// Custom icon create function for clusters
+const createClusterCustomIcon = function (cluster: any) {
+    return L.divIcon({
+        html: `<div class="flex items-center justify-center w-full h-full bg-brand text-brand-contrast font-black rounded-full border-4 border-white shadow-xl text-sm">${cluster.getChildCount()}</div>`,
+        className: 'custom-marker-cluster',
+        iconSize: L.point(40, 40, true),
+    });
+}
+
 export default function Tracker() {
     const { user } = useAuth();
     const { openChat } = useChat();
@@ -135,9 +95,6 @@ export default function Tracker() {
             return yield* _(DataService);
         }).pipe(Effect.provide(DataServiceLive))
     );
-
-    // Spread out markers that are too close to each other
-    const spreadOthers = spreadMarkers(others);
 
     useEffect(() => {
         // Subscribe to others' presence
@@ -303,100 +260,105 @@ export default function Tracker() {
                 >
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-                    {myLoc && !isNearHome && (
-                        <Marker position={myLoc} icon={L.divIcon({
-                            className: 'custom-icon',
-                            html: `
-                                <div class="flex flex-col items-center">
-                                    <div class="px-2 py-0.5 bg-white border-2 border-white text-[10px] font-bold rounded-full shadow-sm mb-[-6px] z-20 relative max-w-[100px] truncate text-center text-slate-700">
-                                        ${user?.trackerSettings?.status || 'Jen tak'}
-                                    </div>
-                                    <div class="relative z-10">
-                                        <div class="w-12 h-12 rounded-full border-4 border-white shadow-2xl overflow-hidden bg-slate-100 relative z-10">
-                                            ${user?.photoURL
-                                    ? `<img src="${user.photoURL}" class="w-full h-full object-cover" />`
-                                    : `<div class="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                                </div>`
-                                }
-                                        </div>
-                                        <div class="absolute -inset-2 bg-brand/30 rounded-full animate-ping z-0"></div>
-                                    </div>
-                                </div>
-                            `,
-                            iconSize: [48, 68], // Height increased to accommodate status
-                            iconAnchor: [24, 48], // Anchored at bottom center of the whole group effectively
-                            popupAnchor: [0, -48]
-                        })}>
-                            <Popup>
-                                <div className="p-1">
-                                    <p className="font-black italic uppercase text-xs">Ty (Live)</p>
-                                    <p className="text-[10px] text-slate-500">{user?.trackerSettings?.status || 'Jen tak'}</p>
-                                </div>
-                            </Popup>
-                        </Marker>
-                    )}
-
-                    {spreadOthers.map(p => p.location && (
-                        <Marker
-                            key={p.uid}
-                            position={[
-                                p.offsetLat || p.location.lat,
-                                p.offsetLng || p.location.lng
-                            ]}
-                            icon={L.divIcon({
+                    <MarkerClusterGroup
+                        chunkedLoading
+                        iconCreateFunction={createClusterCustomIcon}
+                    >
+                        {myLoc && !isNearHome && (
+                            <Marker position={myLoc} icon={L.divIcon({
                                 className: 'custom-icon',
                                 html: `
-                                <div class="flex flex-col items-center transform transition-transform hover:scale-110 origin-bottom">
-                                    <div class="px-2 py-0.5 bg-white border-2 border-white text-[10px] font-bold rounded-full shadow-sm mb-[-4px] z-20 relative max-w-[80px] truncate text-center text-slate-700">
-                                        ${p.status || 'Jen tak'}
-                                    </div>
-                                    <div class="w-10 h-10 rounded-full border-2 border-white shadow-xl overflow-hidden bg-slate-100 z-10">
-                                        ${p.photoURL
-                                        ? `<img src="${p.photoURL}" class="w-full h-full object-cover" />`
-                                        : `<div class="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                           </div>`
-                                    }
-                                    </div>
-                                </div>
-                            `,
-                                iconSize: [40, 60],
-                                iconAnchor: [20, 42],
-                                popupAnchor: [0, -42]
-                            })}>
-                            <Popup>
-                                <div className="p-2 min-w-[150px]">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-100">
-                                            {p.photoURL ? <img src={p.photoURL} alt={p.displayName} /> : <div className="w-full h-full bg-slate-100 flex items-center justify-center"><User size={16} /></div>}
+                                    <div class="flex flex-col items-center">
+                                        <div class="px-2 py-0.5 bg-white border-2 border-white text-[10px] font-bold rounded-full shadow-sm mb-[-6px] z-20 relative max-w-[100px] truncate text-center text-slate-700">
+                                            ${user?.trackerSettings?.status || 'Jen tak'}
                                         </div>
-                                        <h4 className="font-bold text-sm">{p.displayName}</h4>
+                                        <div class="relative z-10">
+                                            <div class="w-12 h-12 rounded-full border-4 border-white shadow-2xl overflow-hidden bg-slate-100 relative z-10">
+                                                ${user?.photoURL
+                                        ? `<img src="${user.photoURL}" class="w-full h-full object-cover" />`
+                                        : `<div class="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                                    </div>`
+                                    }
+                                            </div>
+                                            <div class="absolute -inset-2 bg-brand/30 rounded-full animate-ping z-0"></div>
+                                        </div>
                                     </div>
-                                    <p className="text-xs bg-slate-50 p-2 rounded-lg font-medium text-slate-600 mb-3 border border-slate-100">
-                                        "{p.status || 'Jen tak'}"
-                                    </p>
-                                    {p.allowContact && (
-                                        <button
-                                            onClick={async () => {
-                                                if (!user) return;
-                                                setChatLoading(true);
-                                                try {
-                                                    const roomId = await Effect.runPromise(dataService.getOrCreateChatRoom(user.uid, p.uid));
-                                                    openChat(roomId, p.uid, p.displayName);
-                                                } finally {
-                                                    setChatLoading(false);
-                                                }
-                                            }}
-                                            className="w-full bg-brand text-brand-contrast py-1.5 rounded-xl text-[10px] font-black uppercase italic tracking-wider flex items-center justify-center gap-2 hover:bg-brand-dark transition-all shadow-sm"
-                                        >
-                                            <MessageCircle size={14} /> {chatLoading ? 'Načítám...' : 'Chat'}
-                                        </button>
-                                    )}
-                                </div>
-                            </Popup>
-                        </Marker>
-                    ))}
+                                `,
+                                iconSize: [48, 68], // Height increased to accommodate status
+                                iconAnchor: [24, 48], // Anchored at bottom center of the whole group effectively
+                                popupAnchor: [0, -48]
+                            })}>
+                                <Popup>
+                                    <div className="p-1">
+                                        <p className="font-black italic uppercase text-xs">Ty (Live)</p>
+                                        <p className="text-[10px] text-slate-500">{user?.trackerSettings?.status || 'Jen tak'}</p>
+                                    </div>
+                                </Popup>
+                            </Marker>
+                        )}
+
+                        {others.map(p => p.location && (
+                            <Marker
+                                key={p.uid}
+                                position={[
+                                    p.location.lat,
+                                    p.location.lng
+                                ]}
+                                icon={L.divIcon({
+                                    className: 'custom-icon',
+                                    html: `
+                                    <div class="flex flex-col items-center transform transition-transform hover:scale-110 origin-bottom">
+                                        <div class="px-2 py-0.5 bg-white border-2 border-white text-[10px] font-bold rounded-full shadow-sm mb-[-4px] z-20 relative max-w-[80px] truncate text-center text-slate-700">
+                                            ${p.status || 'Jen tak'}
+                                        </div>
+                                        <div class="w-10 h-10 rounded-full border-2 border-white shadow-xl overflow-hidden bg-slate-100 z-10">
+                                            ${p.photoURL
+                                            ? `<img src="${p.photoURL}" class="w-full h-full object-cover" />`
+                                            : `<div class="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                            </div>`
+                                        }
+                                        </div>
+                                    </div>
+                                `,
+                                    iconSize: [40, 60],
+                                    iconAnchor: [20, 42],
+                                    popupAnchor: [0, -42]
+                                })}>
+                                <Popup>
+                                    <div className="p-2 min-w-[150px]">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-100">
+                                                {p.photoURL ? <img src={p.photoURL} alt={p.displayName} /> : <div className="w-full h-full bg-slate-100 flex items-center justify-center"><User size={16} /></div>}
+                                            </div>
+                                            <h4 className="font-bold text-sm">{p.displayName}</h4>
+                                        </div>
+                                        <p className="text-xs bg-slate-50 p-2 rounded-lg font-medium text-slate-600 mb-3 border border-slate-100">
+                                            "{p.status || 'Jen tak'}"
+                                        </p>
+                                        {p.allowContact && (
+                                            <button
+                                                onClick={async () => {
+                                                    if (!user) return;
+                                                    setChatLoading(true);
+                                                    try {
+                                                        const roomId = await Effect.runPromise(dataService.getOrCreateChatRoom(user.uid, p.uid));
+                                                        openChat(roomId, p.uid, p.displayName);
+                                                    } finally {
+                                                        setChatLoading(false);
+                                                    }
+                                                }}
+                                                className="w-full bg-brand text-brand-contrast py-1.5 rounded-xl text-[10px] font-black uppercase italic tracking-wider flex items-center justify-center gap-2 hover:bg-brand-dark transition-all shadow-sm"
+                                            >
+                                                <MessageCircle size={14} /> {chatLoading ? 'Načítám...' : 'Chat'}
+                                            </button>
+                                        )}
+                                    </div>
+                                </Popup>
+                            </Marker>
+                        ))}
+                    </MarkerClusterGroup>
 
                     {myLoc && (
                         <MapUpdater
