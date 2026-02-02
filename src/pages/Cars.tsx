@@ -40,10 +40,16 @@ export default function CarsPage() {
 
     // Extract unique filter options based on available data
     const filterOptions = useMemo(() => {
-        const makes = Array.from(new Set(cars.map(c => c.make).filter(Boolean))).sort();
-        const models = Array.from(new Set(cars.map(c => c.model).filter(Boolean))).sort();
-        // For engines, it might be too diverse, but let's try
-        const engines = Array.from(new Set(cars.map(c => c.engine).filter(Boolean))).sort();
+        const getUnique = (arr: (string | undefined)[]) => {
+            const trimmed = arr.map(s => s?.trim()).filter((s): s is string => !!s);
+            return Array.from(new Set(trimmed))
+                .filter((val, idx, self) => self.findIndex(v => v.toLowerCase() === val.toLowerCase()) === idx)
+                .sort();
+        };
+
+        const makes = getUnique(cars.map(c => c.make));
+        const models = getUnique(cars.map(c => c.model));
+        const engines = getUnique(cars.map(c => c.engine));
 
         return { makes, models, engines };
     }, [cars]);
@@ -51,9 +57,9 @@ export default function CarsPage() {
     // Apply filters
     const filteredCars = useMemo(() => {
         return cars.filter(car => {
-            if (filters.make && car.make !== filters.make) return false;
-            if (filters.model && car.model !== filters.model) return false;
-            if (filters.engine && car.engine !== filters.engine) return false;
+            if (filters.make && car.make.trim().toLowerCase() !== filters.make.toLowerCase()) return false;
+            if (filters.model && car.model.trim().toLowerCase() !== filters.model.toLowerCase()) return false;
+            if (filters.engine && car.engine.trim().toLowerCase() !== filters.engine.toLowerCase()) return false;
             return true;
         });
     }, [cars, filters]);
@@ -113,7 +119,13 @@ export default function CarsPage() {
                         disabled={!filters.make && filterOptions.makes.length > 0} // Optional UX choice
                     >
                         <option value="">Všechny modely</option>
-                        {filterOptions.models.filter(m => !filters.make || cars.some(c => c.make === filters.make && c.model === m)).map(model => (
+                        {filterOptions.models.filter(m =>
+                            !filters.make ||
+                            cars.some(c =>
+                                c.make.trim().toLowerCase() === filters.make.toLowerCase() &&
+                                c.model.trim().toLowerCase() === m.toLowerCase()
+                            )
+                        ).map(model => (
                             <option key={model} value={model}>{model}</option>
                         ))}
                     </select>
