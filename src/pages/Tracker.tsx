@@ -4,9 +4,9 @@ import L from 'leaflet';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
+import { useChat } from '../contexts/ChatContext';
 import { Navigation, MessageCircle, Shield, User } from 'lucide-react';
 import type { PresenceInfo } from '../types/chat';
-import ChatDrawer from '../components/ChatDrawer';
 import LoginRequired from '../components/LoginRequired';
 import 'leaflet/dist/leaflet.css';
 
@@ -121,11 +121,11 @@ function MapUpdater({ center, isAutoFollow, onAutoFollowChange }: {
 
 export default function Tracker() {
     const { user } = useAuth();
+    const { openChat } = useChat();
     const [others, setOthers] = useState<PresenceInfo[]>([]);
     const [myLoc, setMyLoc] = useState<[number, number] | null>(null);
     const [isNearHome, setIsNearHome] = useState(false);
     const [trackingEnabled, setTrackingEnabled] = useState(false);
-    const [activeChat, setActiveChat] = useState<{ roomId: string; name: string } | null>(null);
     const [chatLoading, setChatLoading] = useState(false);
     const [isAutoFollow, setIsAutoFollow] = useState(true);
     const watchId = useRef<number | null>(null);
@@ -383,7 +383,7 @@ export default function Tracker() {
                                                 setChatLoading(true);
                                                 try {
                                                     const roomId = await Effect.runPromise(dataService.getOrCreateChatRoom(user.uid, p.uid));
-                                                    setActiveChat({ roomId, name: p.displayName });
+                                                    openChat(roomId, p.uid, p.displayName);
                                                 } finally {
                                                     setChatLoading(false);
                                                 }
@@ -427,14 +427,6 @@ export default function Tracker() {
                     </div>
                 )}
             </div>
-
-            {activeChat && (
-                <ChatDrawer
-                    roomId={activeChat.roomId}
-                    recipientName={activeChat.name}
-                    onClose={() => setActiveChat(null)}
-                />
-            )}
         </div>
     );
 }

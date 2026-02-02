@@ -6,7 +6,7 @@ import {
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../config/firebase";
 import type { Car, AppEvent, SocialPost, UserProfile, ServiceRecord, FuelRecord } from "../types";
-import type { PresenceInfo, Message } from "../types/chat";
+import type { PresenceInfo, Message, ChatRoom } from "../types/chat";
 
 export class DataError {
     readonly _tag = "DataError";
@@ -49,6 +49,7 @@ export interface DataService {
     readonly getOrCreateChatRoom: (userA: string, userB: string) => Effect.Effect<string, DataError>;
     readonly sendMessage: (roomId: string, message: Omit<Message, "id" | "createdAt">) => Effect.Effect<void, DataError>;
     readonly getMessagesStream: (roomId: string) => Effect.Effect<ReadableStream<Message[]>, DataError>;
+    readonly getUserChatsStream: (userId: string) => Effect.Effect<ReadableStream<ChatRoom[]>, DataError>;
 
     // Service Records
     readonly getServiceRecords: (carId: string) => Effect.Effect<ServiceRecord[], DataError>;
@@ -494,6 +495,28 @@ export const DataServiceLive = Layer.succeed(
                             ...doc.data()
                         } as Message));
                         controller.enqueue(messages);
+                    }, (error) => controller.error(error));
+                    return () => unsubscribe();
+                }
+            });
+        }),
+
+        getUserChatsStream: (userId) => Effect.sync(() => {
+            return new ReadableStream({
+                start(controller) {
+                    const q = query(
+                        collection(db, "chats"),
+                        where("participants", "array-contains", userId),
+                        orderBy("updatedAt", "desc")
+                    );
+
+                    const unsubscribe = onSnapshot(q, (snapshot) => {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const chats = snapshot.docs.map(doc => ({
+                            id: doc.id,
+                            ...doc.data()
+                        } as any)); // Using any to avoid strict typecheck on ChatRoom vs DocData for now
+                        controller.enqueue(chats);
                     }, (error) => controller.error(error));
                     return () => unsubscribe();
                 }

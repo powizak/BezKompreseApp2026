@@ -1,13 +1,19 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Home, Car, Calendar, Info, LogIn, Users, CarFront, Navigation } from 'lucide-react';
+import { Home, Car, Calendar, Info, LogIn, Users, CarFront, Navigation, MessageSquare } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
+import { useChat } from '../contexts/ChatContext';
 import Footer from './Footer';
 import CookieBanner from './CookieBanner';
+import ChatDrawer from './ChatDrawer';
+import SupportSection from './SupportSection';
 
 export default function Layout() {
   const { pathname } = useLocation();
   const { user, logout } = useAuth();
+  const { activeChat, closeChat, unreadMap, openChat } = useChat();
+
+  const unreadCount = Object.keys(unreadMap).length;
 
   const navItems = [
     { icon: Home, label: 'Feed', path: '/' },
@@ -48,6 +54,7 @@ export default function Layout() {
           })}
         </nav>
 
+        {/* Desktop User Section */}
         <div className="p-4 border-t border-slate-800">
           {user ? (
             <div className="flex items-center gap-3 px-4 py-2">
@@ -82,8 +89,11 @@ export default function Layout() {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 pb-24 md:pb-8 p-4 md:ml-64 w-full max-w-5xl mx-auto">
-        <Outlet />
+      <main className="flex-1 pb-24 md:pb-8 p-4 md:ml-64 w-full max-w-5xl mx-auto flex flex-col min-h-screen">
+        <div className="flex-1">
+          <Outlet />
+        </div>
+        <SupportSection />
         <Footer />
       </main>
 
@@ -110,7 +120,39 @@ export default function Layout() {
           })}
         </div>
       </nav>
+
       <CookieBanner />
-    </div >
+
+      {/* Global Chat Drawer */}
+      {activeChat && (
+        <ChatDrawer
+          roomId={activeChat.roomId}
+          recipientName={activeChat.recipientName}
+          onClose={closeChat}
+        />
+      )}
+
+      {/* Floating Unread Message Indicator (Simple Toast) */}
+      {unreadCount > 0 && !activeChat && (
+        <button
+          onClick={() => {
+            // Determine which chat to open. For now, just open the first one in keys
+            // Real impl would show a list or open the latest
+            const roomId = Object.keys(unreadMap)[0];
+            openChat(roomId, "Unknown", "Chat"); // We need recipient details here, handled loosely for now
+          }}
+          className="fixed bottom-20 right-4 md:bottom-8 md:right-8 bg-brand text-brand-contrast px-4 py-3 rounded-full shadow-xl z-50 animate-bounce flex items-center gap-3 font-bold"
+        >
+          <div className="relative">
+            <MessageSquare size={24} />
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">
+              {unreadCount}
+            </span>
+          </div>
+          <span>Nová zpráva</span>
+        </button>
+      )}
+
+    </div>
   );
 }
