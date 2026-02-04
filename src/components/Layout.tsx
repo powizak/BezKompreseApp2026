@@ -75,17 +75,19 @@ export default function Layout() {
       </aside>
 
       {/* Mobile Top Bar - Black Theme */}
-      <header className="md:hidden sticky top-0 z-30 bg-[#111111] text-white shadow-md p-4 flex justify-between items-center border-b border-white/10">
-        <img src="/logo.svg" alt="Bez Komprese" className="h-6" />
-        {user ? (
-          <Link to={`/profile/${user.uid}`} className="w-8 h-8 rounded-full bg-white/10 overflow-hidden ring-1 ring-brand block">
-            {user.photoURL ? <img src={user.photoURL} alt="User" className="w-full h-full object-cover" /> : <div className="p-1 h-full w-full flex items-center justify-center"><Car size={16} /></div>}
-          </Link>
-        ) : (
-          <Link to="/login" className="text-sm font-bold text-brand hover:underline flex items-center gap-1 uppercase tracking-wider">
-            <LogIn size={16} /> Login
-          </Link>
-        )}
+      <header className="md:hidden sticky top-0 z-30 bg-[#111111] text-white shadow-md pt-safe border-b border-white/10">
+        <div className="p-4 flex justify-between items-center w-full">
+          <img src="/logo.svg" alt="Bez Komprese" className="h-6" />
+          {user ? (
+            <Link to={`/profile/${user.uid}`} className="w-8 h-8 rounded-full bg-white/10 overflow-hidden ring-1 ring-brand block">
+              {user.photoURL ? <img src={user.photoURL} alt="User" className="w-full h-full object-cover" /> : <div className="p-1 h-full w-full flex items-center justify-center"><Car size={16} /></div>}
+            </Link>
+          ) : (
+            <Link to="/login" className="text-sm font-bold text-brand hover:underline flex items-center gap-1 uppercase tracking-wider">
+              <LogIn size={16} /> Login
+            </Link>
+          )}
+        </div>
       </header>
 
       {/* Main Content Area */}
@@ -98,7 +100,7 @@ export default function Layout() {
       </main>
 
       {/* Mobile Bottom Navigation - White/Light */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 safe-area-bottom z-20 pb-safe">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-20 pb-safe">
         <div className="flex justify-around items-center h-16 max-w-md mx-auto">
           {navItems.map((item) => {
             const Icon = item.icon;

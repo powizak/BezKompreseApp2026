@@ -1,5 +1,6 @@
 import { Context, Effect, Layer, Stream } from "effect";
-import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut, onAuthStateChanged, getRedirectResult } from "firebase/auth";
+import { Capacitor } from "@capacitor/core";
 import { auth, db } from "../config/firebase";
 import type { UserProfile } from "../types";
 import { doc, setDoc } from "firebase/firestore";
@@ -32,6 +33,15 @@ export const AuthServiceLive = Layer.succeed(
     login: Effect.tryPromise({
       try: async () => {
         const provider = new GoogleAuthProvider();
+
+        // If we are on a native platform (Android/iOS), signInWithPopup usually fails.
+        // We use signInWithRedirect instead.
+        if (Capacitor.isNativePlatform()) {
+          await signInWithRedirect(auth, provider);
+          // The page will redirect away. result will be handled on return.
+          return {} as UserProfile;
+        }
+
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
         const profile: UserProfile = {
@@ -39,7 +49,6 @@ export const AuthServiceLive = Layer.succeed(
           displayName: user.displayName,
           email: user.email,
           photoURL: user.photoURL,
-          // We don't overwrite friends on login, handled by merge: true
         };
 
         await setDoc(doc(db, "users", user.uid), profile, { merge: true });
@@ -57,6 +66,18 @@ export const AuthServiceLive = Layer.succeed(
       let unsubscribeDoc: (() => void) | null = null;
 
       const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
+        // Handle redirect result if we just returned from login
+        if (Capacitor.isNativePlatform()) {
+          try {
+            const redirectResult = await getRedirectResult(auth);
+            if (redirectResult?.user) {
+              firebaseUser = redirectResult.user;
+            }
+          } catch (e) {
+            console.error("Redirect error", e);
+          }
+        }
+
         // Clean up previous listener if any
         if (unsubscribeDoc) {
           unsubscribeDoc();
