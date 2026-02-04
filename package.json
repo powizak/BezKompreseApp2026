@@ -12,6 +12,7 @@
     "cap:ios": "npx cap open ios"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@rollup/rollup-win32-x64-msvc": "^4.54.0",
     "@types/leaflet": "^1.9.21",
     "@types/react": "^19.2.7",
