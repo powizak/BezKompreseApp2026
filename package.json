@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "cap:sync": "npm run build && npx cap sync",
+    "cap:android": "npx cap open android",
+    "cap:ios": "npx cap open ios"
   },
   "devDependencies": {
     "@rollup/rollup-win32-x64-msvc": "^4.54.0",
@@ -23,6 +26,10 @@
     "vite": "^7.2.4"
   },
   "dependencies": {
+    "@capacitor/android": "^8.0.2",
+    "@capacitor/cli": "^8.0.2",
+    "@capacitor/core": "^8.0.2",
+    "@capacitor/ios": "^8.0.2",
     "@radix-ui/react-slot": "^1.2.4",
     "@types/leaflet.markercluster": "^1.5.6",
     "class-variance-authority": "^0.7.1",
