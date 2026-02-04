@@ -1,6 +1,7 @@
 import { Context, Effect, Layer, Stream } from "effect";
-import { GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut, onAuthStateChanged, getRedirectResult } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
 import { Capacitor } from "@capacitor/core";
+import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
 import { auth, db } from "../config/firebase";
 import type { UserProfile } from "../types";
 import { doc, setDoc } from "firebase/firestore";
@@ -34,12 +35,19 @@ export const AuthServiceLive = Layer.succeed(
       try: async () => {
         const provider = new GoogleAuthProvider();
 
-        // If we are on a native platform (Android/iOS), signInWithPopup usually fails.
-        // We use signInWithRedirect instead.
+        // Use Native Plugin for mobile to avoid the "localhost" redirect issue
         if (Capacitor.isNativePlatform()) {
-          await signInWithRedirect(auth, provider);
-          // The page will redirect away. result will be handled on return.
-          return {} as UserProfile;
+          const result = await FirebaseAuthentication.signInWithGoogle();
+          if (!result.user) throw new Error("No user returned from native login");
+
+          const profile: UserProfile = {
+            uid: result.user.uid,
+            displayName: result.user.displayName,
+            email: result.user.email,
+            photoURL: result.user.photoUrl,
+          };
+          await setDoc(doc(db, "users", result.user.uid), profile, { merge: true });
+          return profile;
         }
 
         const result = await signInWithPopup(auth, provider);
@@ -66,18 +74,6 @@ export const AuthServiceLive = Layer.succeed(
       let unsubscribeDoc: (() => void) | null = null;
 
       const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
-        // Handle redirect result if we just returned from login
-        if (Capacitor.isNativePlatform()) {
-          try {
-            const redirectResult = await getRedirectResult(auth);
-            if (redirectResult?.user) {
-              firebaseUser = redirectResult.user;
-            }
-          } catch (e) {
-            console.error("Redirect error", e);
-          }
-        }
-
         // Clean up previous listener if any
         if (unsubscribeDoc) {
           unsubscribeDoc();
