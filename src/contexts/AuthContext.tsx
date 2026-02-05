@@ -26,12 +26,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Subscribe to user changes
     const stream = authService.currentUser;
-    
+
     const runStream = async () => {
       await Effect.runPromise(
         Stream.runForEach(stream, (u) => Effect.sync(() => {
-            setUser(u);
-            setLoading(false);
+          setUser(u);
+          setLoading(false);
         }))
       );
     };

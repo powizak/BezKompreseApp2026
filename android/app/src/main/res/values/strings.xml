@@ -2,6 +2,8 @@
 <resources>
     <string name="app_name">Bez Komprese</string>
     <string name="title_activity_main">Bez Komprese</string>
-    <string name="package_name">com.bezkomprese.app</string>
-    <string name="custom_url_scheme">com.bezkomprese.app</string>
+    <string name="package_name">cz.bezkomprese.app</string>
+    <string name="custom_url_scheme">cz.bezkomprese.app</string>
+    <string name="server_client_id">123625634373-bag47knc8gj4gohv8n5ruc1ol1ileidm.apps.googleusercontent.com</string>
+    <string name="default_web_client_id">123625634373-bag47knc8gj4gohv8n5ruc1ol1ileidm.apps.googleusercontent.com</string>
 </resources>

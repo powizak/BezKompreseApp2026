@@ -1,4 +1,4 @@
-package com.bezkomprese.app;
+package cz.bezkomprese.app;
 
 import com.getcapacitor.BridgeActivity;
 

@@ -1,5 +1,5 @@
 import { Context, Effect, Layer, Stream } from "effect";
-import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, signInWithCredential } from "firebase/auth";
 import { Capacitor } from "@capacitor/core";
 import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
 import { auth, db } from "../config/firebase";
@@ -38,7 +38,27 @@ export const AuthServiceLive = Layer.succeed(
         // Use Native Plugin for mobile to avoid the "localhost" redirect issue
         if (Capacitor.isNativePlatform()) {
           const result = await FirebaseAuthentication.signInWithGoogle();
+          console.log("DEBUG: Native Login Result:", JSON.stringify(result));
+
           if (!result.user) throw new Error("No user returned from native login");
+
+          // CRITICAL FIX: Bridge native auth to JS SDK
+          // This ensures 'auth.currentUser' is set, so Firestore knows who we are.
+          const idToken = (result as any).credential?.idToken || (result.user as any).idToken;
+          if (idToken) {
+            console.log("DEBUG: idToken received, attempting bridge sign-in...");
+            const credential = GoogleAuthProvider.credential(idToken);
+            try {
+              await signInWithCredential(auth, credential);
+              console.log("DEBUG: Bridge sign-in successful");
+            } catch (bridgeError) {
+              console.error("DEBUG: Bridge sign-in FAILED:", bridgeError);
+              throw bridgeError;
+            }
+          } else {
+            console.error("CRITICAL: No idToken received. Available fields:", Object.keys(result.user));
+            // Without this token, Firestore write below will likely fail with permission-denied
+          }
 
           const profile: UserProfile = {
             uid: result.user.uid,
