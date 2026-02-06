@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import L from 'leaflet';
+import { Geolocation } from '@capacitor/geolocation';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
@@ -88,7 +89,8 @@ export default function Tracker() {
     const [trackingEnabled, setTrackingEnabled] = useState(false);
     const [chatLoading, setChatLoading] = useState(false);
     const [isAutoFollow, setIsAutoFollow] = useState(true);
-    const watchId = useRef<number | null>(null);
+
+    const watchId = useRef<string | null>(null);
 
     const dataService = Effect.runSync(
         Effect.gen(function* (_) {
@@ -140,57 +142,74 @@ export default function Tracker() {
         user?.homeLocation
     ]);
 
-    const startTracking = () => {
-        if (!navigator.geolocation) return;
+    const startTracking = async () => {
+        try {
+            const hasPermission = await Geolocation.checkPermissions();
 
-        // Clear existing watch if any to avoid duplicates
-        if (watchId.current !== null) {
-            navigator.geolocation.clearWatch(watchId.current);
+            if (hasPermission.location !== 'granted') {
+                const request = await Geolocation.requestPermissions();
+                if (request.location !== 'granted') {
+                    console.error("Location permission denied");
+                    return;
+                }
+            }
+
+            // Clear existing watch if any to avoid duplicates
+            if (watchId.current !== null) {
+                Geolocation.clearWatch({ id: watchId.current });
+            }
+
+            watchId.current = await Geolocation.watchPosition(
+                { enableHighAccuracy: true },
+                (pos, err) => {
+                    if (err) {
+                        console.error(err);
+                        return;
+                    }
+                    if (!pos) return;
+
+                    const { latitude, longitude } = pos.coords;
+                    setMyLoc([latitude, longitude]);
+
+                    let tooClose = false;
+                    if (user?.homeLocation) {
+                        const dist = calculateDistance(
+                            latitude, longitude,
+                            user.homeLocation.lat, user.homeLocation.lng
+                        );
+                        tooClose = dist < (user.trackerSettings?.privacyRadius || 500);
+                        setIsNearHome(tooClose);
+                    }
+
+                    const isVisible = user?.trackerSettings?.isEnabled ?? false;
+
+                    // Update presence only if visible and not near home
+                    if (user && isVisible && !tooClose) {
+                        Effect.runPromise(dataService.updatePresence({
+                            uid: user.uid,
+                            displayName: user.displayName || 'Anonymous',
+                            photoURL: user.photoURL || '',
+                            status: user.trackerSettings?.status || 'Jen tak',
+                            location: { lat: latitude, lng: longitude },
+                            lastActive: new Date(),
+                            allowContact: user.trackerSettings?.allowContact || false
+                        })).catch(err => {
+                            console.error("Failed to update presence:", err);
+                        });
+                    } else if (user) {
+                        // If invisible or near home, ensure we are removed from map
+                        Effect.runPromise(dataService.removePresence(user.uid));
+                    }
+                }
+            );
+        } catch (e) {
+            console.error("Error starting tracking", e);
         }
-
-        watchId.current = navigator.geolocation.watchPosition(
-            (pos) => {
-                const { latitude, longitude } = pos.coords;
-                setMyLoc([latitude, longitude]);
-
-                let tooClose = false;
-                if (user?.homeLocation) {
-                    const dist = calculateDistance(
-                        latitude, longitude,
-                        user.homeLocation.lat, user.homeLocation.lng
-                    );
-                    tooClose = dist < (user.trackerSettings?.privacyRadius || 500);
-                    setIsNearHome(tooClose);
-                }
-
-                const isVisible = user?.trackerSettings?.isEnabled ?? false;
-
-                // Update presence only if visible and not near home
-                if (user && isVisible && !tooClose) {
-                    Effect.runPromise(dataService.updatePresence({
-                        uid: user.uid,
-                        displayName: user.displayName || 'Anonymous',
-                        photoURL: user.photoURL || '',
-                        status: user.trackerSettings?.status || 'Jen tak',
-                        location: { lat: latitude, lng: longitude },
-                        lastActive: new Date(),
-                        allowContact: user.trackerSettings?.allowContact || false
-                    })).catch(err => {
-                        console.error("Failed to update presence:", err);
-                    });
-                } else if (user) {
-                    // If invisible or near home, ensure we are removed from map
-                    Effect.runPromise(dataService.removePresence(user.uid));
-                }
-            },
-            (err) => console.error(err),
-            { enableHighAccuracy: true }
-        );
     };
 
     const stopTracking = () => {
         if (watchId.current !== null) {
-            navigator.geolocation.clearWatch(watchId.current);
+            Geolocation.clearWatch({ id: watchId.current });
             watchId.current = null;
         }
         if (user?.uid) {
