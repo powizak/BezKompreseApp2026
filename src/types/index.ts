@@ -118,3 +118,22 @@ export interface FuelRecord {
   consumption?: number; // l/100km (calculated)
   distanceDelta?: number; // km since last refuel (calculated)
 }
+
+// Help Beacon (S.O.S.) types
+export type BeaconType = 'breakdown' | 'empty_tank' | 'accident' | 'flat_tire' | 'other';
+export type BeaconStatus = 'active' | 'help_coming' | 'resolved';
+
+export interface HelpBeacon {
+  id: string;
+  userId: string;
+  displayName: string;
+  photoURL: string | null;
+  location: { lat: number; lng: number };
+  beaconType: BeaconType;
+  description?: string;
+  status: BeaconStatus;
+  createdAt: any; // Firebase Timestamp
+  updatedAt: any;
+  helperId?: string; // UID of user who is coming to help
+  helperName?: string; // Display name of helper
+}

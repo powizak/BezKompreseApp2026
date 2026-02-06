@@ -7,9 +7,11 @@ import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
 import { useChat } from '../contexts/ChatContext';
-import { Navigation, MessageCircle, Shield, User } from 'lucide-react';
+import { Navigation, MessageCircle, Shield, User, AlertTriangle, Wrench, Fuel, CircleSlash, HelpCircle, Phone, CheckCircle } from 'lucide-react';
 import type { PresenceInfo } from '../types/chat';
+import type { HelpBeacon, BeaconType } from '../types';
 import LoginRequired from '../components/LoginRequired';
+import HelpBeaconModal from '../components/HelpBeaconModal';
 import 'leaflet/dist/leaflet.css';
 
 // Fix Leaflet icon issue
@@ -90,6 +92,12 @@ export default function Tracker() {
     const [chatLoading, setChatLoading] = useState(false);
     const [isAutoFollow, setIsAutoFollow] = useState(true);
 
+    // Help Beacon state
+    const [beacons, setBeacons] = useState<HelpBeacon[]>([]);
+    const [showSOSModal, setShowSOSModal] = useState(false);
+    const [sosLoading, setSOSLoading] = useState(false);
+    const [myBeacon, setMyBeacon] = useState<HelpBeacon | null>(null);
+
     const watchId = useRef<string | null>(null);
 
     const dataService = Effect.runSync(
@@ -125,6 +133,44 @@ export default function Tracker() {
             }
         };
     }, [user?.uid]);
+
+    // Subscribe to active help beacons
+    useEffect(() => {
+        const beaconEffect = dataService.getActiveBeaconsStream();
+        const stream = Effect.runSync(beaconEffect);
+        const reader = stream.getReader();
+
+        let isActive = true;
+        const read = async () => {
+            while (isActive) {
+                const { value, done } = await reader.read();
+                if (done) break;
+                if (value) {
+                    // Filter to beacons within 50km and update myBeacon if exists
+                    const filtered = value.filter(b => {
+                        if (b.userId === user?.uid) {
+                            setMyBeacon(b);
+                            return false; // Don't show own beacon in list
+                        }
+                        if (!myLoc) return true; // Show all if no location yet
+                        const dist = calculateDistance(myLoc[0], myLoc[1], b.location.lat, b.location.lng);
+                        return dist <= 50000; // 50km
+                    });
+                    setBeacons(filtered);
+
+                    // Clear myBeacon if not in the list anymore
+                    const myBeaconInList = value.find(b => b.userId === user?.uid);
+                    if (!myBeaconInList) setMyBeacon(null);
+                }
+            }
+        };
+        read();
+
+        return () => {
+            isActive = false;
+            reader.cancel();
+        };
+    }, [user?.uid, myLoc]);
 
     useEffect(() => {
         if (trackingEnabled) {
@@ -214,6 +260,68 @@ export default function Tracker() {
         }
         if (user?.uid) {
             Effect.runPromise(dataService.removePresence(user.uid));
+        }
+    };
+
+    // S.O.S. Beacon handlers
+    const handleSOSSubmit = async (beaconType: BeaconType, description?: string) => {
+        if (!user || !myLoc) return;
+
+        setSOSLoading(true);
+        try {
+            await Effect.runPromise(dataService.createHelpBeacon({
+                userId: user.uid,
+                displayName: user.displayName || 'Anonymous',
+                photoURL: user.photoURL,
+                location: { lat: myLoc[0], lng: myLoc[1] },
+                beaconType,
+                description,
+                status: 'active'
+            }));
+            setShowSOSModal(false);
+        } catch (err) {
+            console.error("Failed to create beacon:", err);
+        } finally {
+            setSOSLoading(false);
+        }
+    };
+
+    const handleRespondToBeacon = async (beacon: HelpBeacon) => {
+        if (!user) return;
+        try {
+            await Effect.runPromise(dataService.respondToBeacon(beacon.id, user.uid, user.displayName || 'Anonymous'));
+        } catch (err) {
+            console.error("Failed to respond to beacon:", err);
+        }
+    };
+
+    const handleResolveBeacon = async () => {
+        if (!myBeacon) return;
+        try {
+            await Effect.runPromise(dataService.deleteHelpBeacon(myBeacon.id));
+            setMyBeacon(null);
+        } catch (err) {
+            console.error("Failed to resolve beacon:", err);
+        }
+    };
+
+    const getBeaconIcon = (type: BeaconType) => {
+        switch (type) {
+            case 'breakdown': return <Wrench size={16} />;
+            case 'empty_tank': return <Fuel size={16} />;
+            case 'accident': return <AlertTriangle size={16} />;
+            case 'flat_tire': return <CircleSlash size={16} />;
+            default: return <HelpCircle size={16} />;
+        }
+    };
+
+    const getBeaconLabel = (type: BeaconType) => {
+        switch (type) {
+            case 'breakdown': return 'Porucha';
+            case 'empty_tank': return 'Prázdná nádrž';
+            case 'accident': return 'Nehoda';
+            case 'flat_tire': return 'Defekt';
+            default: return 'Jiné';
         }
     };
 
@@ -379,6 +487,70 @@ export default function Tracker() {
                         ))}
                     </MarkerClusterGroup>
 
+                    {/* Help Beacon markers */}
+                    {beacons.map(beacon => (
+                        <Marker
+                            key={beacon.id}
+                            position={[beacon.location.lat, beacon.location.lng]}
+                            icon={L.divIcon({
+                                className: 'beacon-marker',
+                                html: `
+                                    <div class="relative">
+                                        <div class="absolute -inset-4 bg-red-500/30 rounded-full animate-ping"></div>
+                                        <div class="absolute -inset-2 bg-red-500/50 rounded-full animate-pulse"></div>
+                                        <div class="relative w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-orange-500 border-4 border-white shadow-2xl flex items-center justify-center text-white">
+                                            <span class="text-lg">🆘</span>
+                                        </div>
+                                    </div>
+                                `,
+                                iconSize: [48, 48],
+                                iconAnchor: [24, 24],
+                                popupAnchor: [0, -24]
+                            })}
+                        >
+                            <Popup>
+                                <div className="p-3 min-w-[180px]">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-red-100">
+                                            {beacon.photoURL ? (
+                                                <img src={beacon.photoURL} alt={beacon.displayName} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="w-full h-full bg-red-50 flex items-center justify-center text-red-400">
+                                                    <User size={20} />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-sm">{beacon.displayName}</h4>
+                                            <div className="flex items-center gap-1 text-red-500 text-xs font-bold">
+                                                {getBeaconIcon(beacon.beaconType)}
+                                                {getBeaconLabel(beacon.beaconType)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {beacon.description && (
+                                        <p className="text-xs bg-red-50 p-2 rounded-lg text-slate-600 mb-3 border border-red-100">
+                                            "{beacon.description}"
+                                        </p>
+                                    )}
+                                    {beacon.status === 'help_coming' && beacon.helperName && (
+                                        <div className="text-xs bg-green-50 text-green-600 p-2 rounded-lg mb-3 border border-green-100 flex items-center gap-2">
+                                            <CheckCircle size={14} /> {beacon.helperName} jede na pomoc
+                                        </div>
+                                    )}
+                                    {beacon.status === 'active' && beacon.userId !== user?.uid && (
+                                        <button
+                                            onClick={() => handleRespondToBeacon(beacon)}
+                                            className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-2 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 hover:shadow-lg transition-all"
+                                        >
+                                            <Phone size={14} /> Jedu pomoct!
+                                        </button>
+                                    )}
+                                </div>
+                            </Popup>
+                        </Marker>
+                    ))}
+
                     {myLoc && (
                         <MapUpdater
                             center={myLoc}
@@ -387,6 +559,47 @@ export default function Tracker() {
                         />
                     )}
                 </MapContainer>
+
+                {/* Floating S.O.S. Button */}
+                {trackingEnabled && !myBeacon && myLoc && (
+                    <button
+                        onClick={() => setShowSOSModal(true)}
+                        className="absolute bottom-6 left-6 z-20 w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white shadow-2xl shadow-red-500/40 flex items-center justify-center hover:scale-110 transition-all active:scale-95"
+                        title="S.O.S. - Potřebuji pomoc"
+                    >
+                        <span className="text-2xl font-black">🆘</span>
+                    </button>
+                )}
+
+                {/* My Active Beacon Status */}
+                {myBeacon && (
+                    <div className="absolute bottom-6 left-6 right-6 z-20 bg-gradient-to-r from-red-500 to-orange-500 text-white p-4 rounded-2xl shadow-2xl shadow-red-500/30">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center animate-pulse">
+                                    <span className="text-xl">🆘</span>
+                                </div>
+                                <div>
+                                    <p className="font-black text-sm uppercase tracking-wider">
+                                        Tvůj S.O.S. je aktivní
+                                    </p>
+                                    <p className="text-xs text-white/80">
+                                        {getBeaconLabel(myBeacon.beaconType)}
+                                        {myBeacon.status === 'help_coming' && myBeacon.helperName && (
+                                            <span className="ml-2">• {myBeacon.helperName} jede!</span>
+                                        )}
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={handleResolveBeacon}
+                                className="px-4 py-2 bg-white text-red-500 rounded-xl font-black text-xs uppercase hover:bg-white/90 transition-all flex items-center gap-2"
+                            >
+                                <CheckCircle size={14} /> Vyřešeno
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {!trackingEnabled && (
                     <div className="absolute inset-0 z-10 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-8 text-center">
@@ -408,6 +621,15 @@ export default function Tracker() {
                     </div>
                 )}
             </div>
+
+            {/* S.O.S. Modal */}
+            <HelpBeaconModal
+                isOpen={showSOSModal}
+                onClose={() => setShowSOSModal(false)}
+                onSubmit={handleSOSSubmit}
+                isLoading={sosLoading}
+            />
         </div>
     );
 }
+

@@ -19,6 +19,8 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - 🆘 S.O.S. Tlačítko (Community Assist)
 - Uživatelům v okolí (např. do 50 km) přijde notifikace "Fellow petrolhead needs help".
 - Možnost definovat, co potřebuji (nářadí, startovací kabely, odvoz).
+- Možnost označit událost různými stavy (aktuální, pomoc na cestě, vyřešeno)
+- Možno označit ikonkami různé typy problémů (porucha, prázdná nádrž, nehoda, ...)
 
 ### Databáze trackdays
 - v ČR není aktuálně žádná funkční

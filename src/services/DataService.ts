@@ -5,7 +5,7 @@ import {
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../config/firebase";
-import type { Car, AppEvent, SocialPost, UserProfile, ServiceRecord, FuelRecord } from "../types";
+import type { Car, AppEvent, SocialPost, UserProfile, ServiceRecord, FuelRecord, HelpBeacon } from "../types";
 import type { PresenceInfo, Message, ChatRoom } from "../types/chat";
 
 export class DataError {
@@ -50,6 +50,13 @@ export interface DataService {
     readonly sendMessage: (roomId: string, message: Omit<Message, "id" | "createdAt">) => Effect.Effect<void, DataError>;
     readonly getMessagesStream: (roomId: string) => Effect.Effect<ReadableStream<Message[]>, DataError>;
     readonly getUserChatsStream: (userId: string) => Effect.Effect<ReadableStream<ChatRoom[]>, DataError>;
+
+    // Help Beacon (S.O.S.)
+    readonly createHelpBeacon: (beacon: Omit<HelpBeacon, "id" | "createdAt" | "updatedAt">) => Effect.Effect<string, DataError>;
+    readonly updateHelpBeacon: (beaconId: string, data: Partial<HelpBeacon>) => Effect.Effect<void, DataError>;
+    readonly deleteHelpBeacon: (beaconId: string) => Effect.Effect<void, DataError>;
+    readonly getActiveBeaconsStream: () => Effect.Effect<ReadableStream<HelpBeacon[]>, DataError>;
+    readonly respondToBeacon: (beaconId: string, helperId: string, helperName: string) => Effect.Effect<void, DataError>;
 
     // Service Records
     readonly getServiceRecords: (carId: string) => Effect.Effect<ServiceRecord[], DataError>;
@@ -521,6 +528,72 @@ export const DataServiceLive = Layer.succeed(
                     return () => unsubscribe();
                 }
             });
+        }),
+
+        // Help Beacon (S.O.S.) implementations
+        createHelpBeacon: (beacon) => Effect.tryPromise({
+            try: async () => {
+                const docRef = await addDoc(collection(db, "help-beacons"), {
+                    ...beacon,
+                    status: 'active',
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                });
+                return docRef.id;
+            },
+            catch: (e) => new DataError("Failed to create help beacon", e)
+        }),
+
+        updateHelpBeacon: (beaconId, data) => Effect.tryPromise({
+            try: async () => {
+                const beaconRef = doc(db, "help-beacons", beaconId);
+                await updateDoc(beaconRef, {
+                    ...data,
+                    updatedAt: serverTimestamp()
+                });
+            },
+            catch: (e) => new DataError("Failed to update help beacon", e)
+        }),
+
+        deleteHelpBeacon: (beaconId) => Effect.tryPromise({
+            try: async () => {
+                const beaconRef = doc(db, "help-beacons", beaconId);
+                await deleteDoc(beaconRef);
+            },
+            catch: (e) => new DataError("Failed to delete help beacon", e)
+        }),
+
+        getActiveBeaconsStream: () => Effect.sync(() => {
+            return new ReadableStream({
+                start(controller) {
+                    const q = query(
+                        collection(db, "help-beacons"),
+                        where("status", "in", ["active", "help_coming"])
+                    );
+
+                    const unsubscribe = onSnapshot(q, (snapshot) => {
+                        const beacons = snapshot.docs.map(doc => ({
+                            id: doc.id,
+                            ...doc.data()
+                        } as HelpBeacon));
+                        controller.enqueue(beacons);
+                    }, (error) => controller.error(error));
+                    return () => unsubscribe();
+                }
+            });
+        }),
+
+        respondToBeacon: (beaconId, helperId, helperName) => Effect.tryPromise({
+            try: async () => {
+                const beaconRef = doc(db, "help-beacons", beaconId);
+                await updateDoc(beaconRef, {
+                    status: 'help_coming',
+                    helperId,
+                    helperName,
+                    updatedAt: serverTimestamp()
+                });
+            },
+            catch: (e) => new DataError("Failed to respond to beacon", e)
         })
     })
 );
