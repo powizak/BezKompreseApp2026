@@ -718,13 +718,19 @@ export const DataServiceLive = Layer.succeed(
         // Event Comments
         getEventComments: (eventId) => Effect.tryPromise({
             try: async () => {
+                // Note: No orderBy to avoid requiring composite index
                 const q = query(
                     collection(db, "event-comments"),
-                    where("eventId", "==", eventId),
-                    orderBy("createdAt", "desc")
+                    where("eventId", "==", eventId)
                 );
                 const snapshot = await getDocs(q);
-                return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as EventComment));
+                const comments = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as EventComment));
+                // Sort in memory by createdAt descending
+                return comments.sort((a, b) => {
+                    const aTime = a.createdAt?.toMillis?.() || 0;
+                    const bTime = b.createdAt?.toMillis?.() || 0;
+                    return bTime - aTime;
+                });
             },
             catch: (e) => new DataError("Failed to fetch event comments", e)
         }),
