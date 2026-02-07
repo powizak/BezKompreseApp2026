@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Effect } from 'effect';
-import { Bell, BellOff, AlertTriangle, Calendar, Users, MessageCircle, RefreshCw, Info, Moon, Layers, ExternalLink, Check } from 'lucide-react';
+import { Bell, BellOff, AlertTriangle, Calendar, Users, MessageCircle, RefreshCw, Info, Moon, Layers, ExternalLink, Check, Car } from 'lucide-react';
 import { NotificationService, NotificationServiceLive, type NotificationPermissionStatus } from '../services/NotificationService';
 import type { NotificationSettings, EventType } from '../types';
 import { EVENT_TYPE_LABELS } from '../types';
@@ -200,6 +200,15 @@ export default function NotificationSettingsSection({ settings, onChange, userId
                     description="Nové verze aplikace a důležité novinky"
                     enabled={settings.appUpdates}
                     onToggle={() => onChange({ ...settings, appUpdates: !settings.appUpdates })}
+                    disabled={!settings.enabled}
+                />
+
+                <SettingRow
+                    icon={Car}
+                    title="Digitální kaslík"
+                    description="STK, lékárnička, pojištění, dálniční známka"
+                    enabled={settings.vehicleReminders}
+                    onToggle={() => onChange({ ...settings, vehicleReminders: !settings.vehicleReminders })}
                     disabled={!settings.enabled}
                 />
 

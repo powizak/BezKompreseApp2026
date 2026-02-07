@@ -18,6 +18,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Tuning & Úpravy**: Sledování všech modifikací a vylepšení
 - **Historie Vlastnictví**: Označení aut, která již nevlastníte
 - **🆕 Servisní Knížka**: Kompletní digitální evidence servisu
+- **🆕 Digitální Kaslík**: Sledování platnosti STK, lékárničky, dálniční známky a pojištění (upozornění předem)
 
 ### 🔧 Servisní Knížka (NOVÉ!)
 - **Digitální Evidence**: Sledování všech servisních zásahů a oprav
@@ -57,6 +58,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Komentáře k akcím**: Notifikace o nových komentářích u akcí, kterých se účastníte
 - **Změny v akcích**: Upozornění při změně data nebo místa akce
 - **Přátelé**: Notifikace při přidání do přátel
+- **🆕 Digitální Kaslík**: Upozornění na vypršení STK, lékárničky, pojištění nebo dálniční známky
 - **Tiché hodiny**: Nastavitelný čas, kdy notifikace nepřijdou
 
 ### 💡 Myšlenky pro budoucí verze

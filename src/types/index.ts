@@ -43,7 +43,28 @@ export interface Car {
   mods: CarModification[];
   photos: string[];
   isOwned?: boolean;
+  reminders?: VehicleReminder[];
 }
+
+// Vehicle Reminder Types ("Digitální Kaslík")
+export type ReminderType = 'stk' | 'first_aid_kit' | 'highway_vignette' | 'liability_insurance';
+
+export interface VehicleReminder {
+  type: ReminderType;
+  expirationDate: string; // ISO date string
+  notifyEnabled: boolean;
+}
+
+export const REMINDER_CONFIG: Record<ReminderType, {
+  label: string;
+  warningDays: number[]; // Days before expiration to notify
+  icon: string; // Lucide icon name for future use
+}> = {
+  stk: { label: 'Platnost STK', warningDays: [90, 30], icon: 'ClipboardCheck' },
+  first_aid_kit: { label: 'Lékárnička', warningDays: [30], icon: 'Cross' },
+  highway_vignette: { label: 'Dálniční známka', warningDays: [30], icon: 'BadgeCheck' },
+  liability_insurance: { label: 'Povinné ručení', warningDays: [60], icon: 'Shield' }
+};
 
 // Event Types
 export type EventType = 'minisraz' | 'velky_sraz' | 'trackday' | 'vyjizdka';
@@ -201,6 +222,7 @@ export interface NotificationSettings {
   eventComments: boolean;      // Comments on events I'm attending
   eventChanges: boolean;       // Changes to events I'm attending
   appUpdates: boolean;         // General info, new versions
+  vehicleReminders: boolean;   // Digitální kaslík (STK, lékárnička, pojištění...)
 
   // Digest mode (group notifications)
   digestMode: boolean;
@@ -215,5 +237,6 @@ export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
   eventComments: true,
   eventChanges: true,
   appUpdates: true,
+  vehicleReminders: true,
   digestMode: false
 };

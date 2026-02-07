@@ -2,8 +2,8 @@ import { useEffect, useState, useRef } from 'react';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
-import type { Car, CarModification } from '../types';
-import { Plus, Pencil, Trash2, Camera, CarFront, Gauge, Wrench, X, Save, AlertCircle, Fuel } from 'lucide-react';
+import type { Car, CarModification, VehicleReminder } from '../types';
+import { Plus, Pencil, Trash2, Camera, CarFront, Gauge, Wrench, X, Save, AlertCircle, Fuel, FileCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -14,6 +14,24 @@ function cn(...inputs: (string | undefined | null | false)[]) {
 }
 
 import LoginRequired from '../components/LoginRequired';
+import VehicleRemindersEditor from '../components/VehicleRemindersEditor';
+
+// Helper to determine worst reminder status for a car
+function getReminderStatus(reminders?: VehicleReminder[]): 'green' | 'yellow' | 'red' | null {
+  if (!reminders?.length) return null;
+  const now = new Date();
+  let hasYellow = false;
+
+  for (const r of reminders) {
+    if (!r.expirationDate) continue;
+    const exp = new Date(r.expirationDate);
+    const daysLeft = Math.ceil((exp.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (daysLeft < 0) return 'red'; // Any expired = red immediately
+    if (daysLeft <= 30) hasYellow = true;
+  }
+  return hasYellow ? 'yellow' : 'green';
+}
 
 export default function Garage() {
   const { user } = useAuth();
@@ -28,7 +46,8 @@ export default function Garage() {
   // Form State
   const initialFormState = {
     name: '', make: '', model: '', year: new Date().getFullYear().toString(),
-    engine: '', power: 0, stockPower: 0, fuelConsumption: '', mods: [] as CarModification[], photos: [] as string[], isOwned: true
+    engine: '', power: 0, stockPower: 0, fuelConsumption: '', mods: [] as CarModification[], photos: [] as string[], isOwned: true,
+    reminders: [] as VehicleReminder[]
   };
   const [formData, setFormData] = useState(initialFormState);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -69,7 +88,8 @@ export default function Garage() {
       fuelConsumption: car.fuelConsumption || '',
       mods: car.mods || [],
       photos: car.photos || [],
-      isOwned: car.isOwned ?? true
+      isOwned: car.isOwned ?? true,
+      reminders: car.reminders || []
     });
     setShowForm(true);
     setSelectedFiles([]); // Reset new files
@@ -213,7 +233,8 @@ export default function Garage() {
         fuelConsumption: formData.fuelConsumption,
         mods: formData.mods,
         photos: finalPhotos,
-        isOwned: formData.isOwned
+        isOwned: formData.isOwned,
+        reminders: formData.reminders
       };
 
       if (editingCar) {
@@ -451,6 +472,18 @@ export default function Garage() {
                 </div>
               </div>
 
+              {/* Digitální Kaslík - Vehicle Reminders */}
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <FileCheck size={16} className="text-slate-400" />
+                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Digitální Kaslík</h4>
+                </div>
+                <VehicleRemindersEditor
+                  reminders={formData.reminders}
+                  onChange={(reminders) => setFormData({ ...formData, reminders })}
+                />
+              </div>
+
               {/* Ownership Status */}
               <div className="mb-8 p-4 bg-slate-50 rounded-xl border border-slate-200">
                 <label className="flex items-center gap-3 cursor-pointer">
@@ -549,6 +582,25 @@ export default function Garage() {
                     </span>
                   </div>
                 )}
+
+                {/* Reminder Status Dot */}
+                {(() => {
+                  const status = getReminderStatus(car.reminders);
+                  if (!status) return null;
+                  const colors = {
+                    green: 'bg-green-500 shadow-green-500/50',
+                    yellow: 'bg-yellow-500 shadow-yellow-500/50',
+                    red: 'bg-red-500 shadow-red-500/50 animate-pulse'
+                  };
+                  return (
+                    <div className="absolute bottom-3 right-3 z-20">
+                      <span
+                        className={`w-3 h-3 rounded-full ${colors[status]} shadow-lg block`}
+                        title={status === 'green' ? 'Vše v pořádku' : status === 'yellow' ? 'Blíží se expirace' : 'Prošlá platnost!'}
+                      />
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Specs */}

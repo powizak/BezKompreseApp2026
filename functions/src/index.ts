@@ -12,3 +12,4 @@ export { onSosBeaconCreated } from "./notifications/onSosBeacon";
 export { onEventCommentCreated } from "./notifications/onEventComment";
 export { onEventUpdated } from "./notifications/onEventUpdate";
 export { onFriendAdded } from "./notifications/onFriendRequest";
+export { checkVehicleReminders } from "./notifications/onVehicleReminderCheck";

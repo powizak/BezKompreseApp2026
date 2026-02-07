@@ -12,6 +12,7 @@ Současný stav: Servisní knížka řeší opravy, seznam tankování pak spot�
 Současný stav: Tracker ukazuje polohu, ale neumožňuje koordinaci. Návrh:
 
 ### ✅ Help Beacon - IMPLEMENTOVÁNO
+### ✅ Digitální Kaslík (Reminder Status) - IMPLEMENTOVÁNO
 Uživatel v nouzi (porucha, prázdná nádrž) může vyslat signál.
 - 🆘 S.O.S. Tlačítko (Community Assist) - plovoucí tlačítko na mapě
 - Uživatelům v okolí (do 50 km) se zobrazí beacon na mapě
