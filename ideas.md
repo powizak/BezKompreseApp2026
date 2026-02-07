@@ -10,17 +10,22 @@ Současný stav: Servisní knížka řeší opravy, seznam tankování pak spot�
 
 ## 2. Komunitní a Sociální Funkce (Roadstr style)
 Současný stav: Tracker ukazuje polohu, ale neumožňuje koordinaci. Návrh:
+
+### ✅ Help Beacon - IMPLEMENTOVÁNO
+Uživatel v nouzi (porucha, prázdná nádrž) může vyslat signál.
+- 🆘 S.O.S. Tlačítko (Community Assist) - plovoucí tlačítko na mapě
+- Uživatelům v okolí (do 50 km) se zobrazí beacon na mapě
+- Možnost definovat typ problému (porucha, prázdná nádrž, nehoda, defekt, jiné)
+- Možnost přidat popis situace
+- Možnost označit událost různými stavy (aktivní, pomoc na cestě, vyřešeno)
+- Ikonky pro různé typy problémů
+- Tlačítko "Jedu pomoct!" pro ostatní uživatele
+- Pulsující červený marker na mapě pro aktivní beacony
+
 ### 🚗 Organizované Vyjížďky a Trasy (Group Rides)
 - Sdílení tras: Uživatelé mohou vytvořit a nasdílet trasu vyjížďky (GPX import/export).
 - Konvoj Mód: Vylepšení Trackeru pro konkrétní akci – vidíte pořadí aut v koloně, upozornění "ztratili jsme se" pokud se někdo odpojí.
 Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" nebo "samá díra".
-
-### Help Beacon: Uživatel v nouzi (porucha, prázdná nádrž) může vyslat signál.
-- 🆘 S.O.S. Tlačítko (Community Assist)
-- Uživatelům v okolí (např. do 50 km) přijde notifikace "Fellow petrolhead needs help".
-- Možnost definovat, co potřebuji (nářadí, startovací kabely, odvoz).
-- Možnost označit událost různými stavy (aktuální, pomoc na cestě, vyřešeno)
-- Možno označit ikonkami různé typy problémů (porucha, prázdná nádrž, nehoda, ...)
 
 ### Databáze trackdays
 - v ČR není aktuálně žádná funkční

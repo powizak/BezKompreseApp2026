@@ -38,6 +38,18 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Seznam Uživatelů**: Procházení celé komunity
 - **Veřejné Garáže**: Inspirace od ostatních autíčkářů
 
+### 📍 Live Tracker (NOVÉ!)
+- **Real-time Mapa**: Zobrazení polohy ostatních uživatelů v reálném čase
+- **Privacy Zóny**: Automatické skrytí polohy v blízkosti domova
+- **Statusy**: Nastavení statusu (Dáme pokec?, Závod?, Projížďka?, atd.)
+- **🆘 Help Beacon**: S.O.S. systém pro nouzové situace
+  - Plovoucí S.O.S. tlačítko na mapě
+  - 5 typů problémů (porucha, prázdná nádrž, nehoda, defekt, jiné)
+  - Pulsující červený marker viditelný do 50 km
+  - Tlačítko "Jedu pomoct!" pro ostatní uživatele
+  - Možnost přidat popis situace
+  - Sledování stavu (aktivní, pomoc na cestě, vyřešeno)
+
 ### 💡 Myšlenky pro budoucí verze
 - V [ideas.md](./ideas.md) najdete některé myšlenky pro budoucí verze aplikace, které můžete sami navrhovat.
 
@@ -89,6 +101,8 @@ Aplikace používá následující kolekce:
 - `cars` - Vozidla uživatelů
 - `events` - Komunitní akce a srazy
 - `service-records` - Záznamy ze servisní knížky
+- `presence` - Real-time poloha uživatelů pro Live Tracker
+- `help-beacons` - S.O.S. signály pro nouzové situace
 
 ## Struktura projektu
 
