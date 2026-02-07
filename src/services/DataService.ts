@@ -5,7 +5,7 @@ import {
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../config/firebase";
-import type { Car, AppEvent, SocialPost, UserProfile, ServiceRecord, FuelRecord, HelpBeacon } from "../types";
+import type { Car, AppEvent, SocialPost, UserProfile, ServiceRecord, FuelRecord, HelpBeacon, EventType } from "../types";
 import type { PresenceInfo, Message, ChatRoom } from "../types/chat";
 
 export class DataError {
@@ -25,8 +25,12 @@ export interface DataService {
     readonly deleteCar: (carId: string) => Effect.Effect<void, DataError>;
     readonly uploadCarPhoto: (file: File, carId: string) => Effect.Effect<string, DataError>;
     readonly getEvents: Effect.Effect<AppEvent[], DataError>;
+    readonly getEventsFiltered: (filters: { eventType?: EventType; upcoming?: boolean }) => Effect.Effect<AppEvent[], DataError>;
     readonly getEventById: (id: string) => Effect.Effect<AppEvent | undefined, DataError>;
     readonly addEvent: (event: Omit<AppEvent, "id">) => Effect.Effect<string, DataError>;
+    readonly updateEvent: (eventId: string, data: Partial<AppEvent>) => Effect.Effect<void, DataError>;
+    readonly deleteEvent: (eventId: string) => Effect.Effect<void, DataError>;
+    readonly uploadEventImage: (file: File, eventId: string) => Effect.Effect<string, DataError>;
     readonly getSocialFeed: Effect.Effect<SocialPost[], DataError>;
     readonly getUserProfile: (userId: string) => Effect.Effect<{ profile: UserProfile, cars: Car[] } | null, DataError>;
     readonly searchUsers: (query: string) => Effect.Effect<UserProfile[], DataError>;
@@ -145,10 +149,93 @@ export const DataServiceLive = Layer.succeed(
         }),
         addEvent: (event) => Effect.tryPromise({
             try: async () => {
-                const docRef = await addDoc(collection(db, "events"), event);
+                // Filter out undefined values as Firestore doesn't accept them
+                const cleanEvent = Object.fromEntries(
+                    Object.entries(event).filter(([_, v]) => v !== undefined)
+                );
+                const docRef = await addDoc(collection(db, "events"), cleanEvent);
                 return docRef.id;
             },
             catch: (e) => new DataError("Failed to add event", e)
+        }),
+        getEventsFiltered: (filters) => Effect.tryPromise({
+            try: async () => {
+                const constraints: any[] = [];
+
+                if (filters.eventType) {
+                    constraints.push(where("eventType", "==", filters.eventType));
+                }
+
+                const q = constraints.length > 0
+                    ? query(collection(db, "events"), ...constraints)
+                    : query(collection(db, "events"));
+
+                const snapshot = await getDocs(q);
+                let events = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as AppEvent));
+
+                // Filter by upcoming in memory (Firestore doesn't support complex date comparisons easily)
+                if (filters.upcoming !== undefined) {
+                    const now = new Date().toISOString();
+                    events = events.filter(e => filters.upcoming ? e.date >= now : e.date < now);
+                }
+
+                // Sort by date
+                return events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+            },
+            catch: (e) => new DataError("Failed to fetch filtered events", e)
+        }),
+        updateEvent: (eventId, data) => Effect.tryPromise({
+            try: async () => {
+                const eventRef = doc(db, "events", eventId);
+                await updateDoc(eventRef, data);
+            },
+            catch: (e) => new DataError("Failed to update event", e)
+        }),
+        deleteEvent: (eventId) => Effect.tryPromise({
+            try: async () => {
+                const eventRef = doc(db, "events", eventId);
+                await deleteDoc(eventRef);
+            },
+            catch: (e) => new DataError("Failed to delete event", e)
+        }),
+        uploadEventImage: (file, eventId) => Effect.tryPromise({
+            try: async () => {
+                // Resize image before upload (similar to car photos)
+                const resizedBlob = await new Promise<Blob>((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_SIZE = 1200;
+                        let { width, height } = img;
+
+                        if (width > height && width > MAX_SIZE) {
+                            height = (height * MAX_SIZE) / width;
+                            width = MAX_SIZE;
+                        } else if (height > MAX_SIZE) {
+                            width = (width * MAX_SIZE) / height;
+                            height = MAX_SIZE;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx?.drawImage(img, 0, 0, width, height);
+                        canvas.toBlob(
+                            (blob) => blob ? resolve(blob) : reject(new Error('Failed to create blob')),
+                            'image/webp',
+                            0.85
+                        );
+                    };
+                    img.onerror = reject;
+                    img.src = URL.createObjectURL(file);
+                });
+
+                const storageRef = ref(storage, `events/${eventId}/${Date.now()}.webp`);
+                const snapshot = await uploadBytes(storageRef, resizedBlob);
+                const downloadURL = await getDownloadURL(snapshot.ref);
+                return downloadURL;
+            },
+            catch: (e) => new DataError("Failed to upload event image", e)
         }),
         getSocialFeed: Effect.tryPromise({
             try: async () => {

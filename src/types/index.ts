@@ -16,6 +16,7 @@ export interface UserProfile {
   homeLocation?: { lat: number; lng: number };
   trackerSettings?: TrackerSettings;
   shareFuelConsumption?: boolean;
+  isOrganizer?: boolean; // Can create trackday events
 }
 
 export interface CarModification {
@@ -42,15 +43,40 @@ export interface Car {
   isOwned?: boolean;
 }
 
+// Event Types
+export type EventType = 'minisraz' | 'velky_sraz' | 'trackday' | 'vyjizdka';
+
+export const EVENT_TYPE_LABELS: Record<EventType, string> = {
+  minisraz: 'Minisraz',
+  velky_sraz: 'Velký sraz',
+  trackday: 'Trackday',
+  vyjizdka: 'Vyjížďka'
+};
+
+export const EVENT_TYPE_COLORS: Record<EventType, { bg: string; text: string }> = {
+  minisraz: { bg: 'bg-blue-100', text: 'text-blue-700' },
+  velky_sraz: { bg: 'bg-purple-100', text: 'text-purple-700' },
+  trackday: { bg: 'bg-green-100', text: 'text-green-700' },
+  vyjizdka: { bg: 'bg-orange-100', text: 'text-orange-700' }
+};
+
 export interface AppEvent {
   id: string;
   creatorId: string;
   title: string;
   description: string;
   date: string;
+  endDate?: string; // Optional end date for multi-day events
   location: string;
-  coordinates?: { lat: number; lng: number }; // Added for map
-  type: 'official' | 'meetup';
+  coordinates?: { lat: number; lng: number };
+  eventType: EventType;
+  imageUrl?: string;
+  // Trackday specific fields
+  registrationUrl?: string;
+  price?: string;
+  capacity?: number;
+  rules?: string;
+  contactInfo?: string;
 }
 
 export type SocialPlatform = 'youtube' | 'instagram' | 'facebook';

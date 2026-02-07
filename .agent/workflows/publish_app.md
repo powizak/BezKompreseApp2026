@@ -2,6 +2,10 @@
 description: Build, deploy to Firebase Hosting, and push changes to GitHub. Use this workflow to publish the app.
 ---
 
+0. Increment the verion of app in package.json
+// turbo
+change the version of app (mainVersion.Subversion.Change) by the changes made in app (mainVersion is only for Main releases, which has to be said by user) 
+
 1. Build the production version of the app
 // turbo
 npm run build
