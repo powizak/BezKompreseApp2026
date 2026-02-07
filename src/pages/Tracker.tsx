@@ -564,7 +564,7 @@ export default function Tracker() {
                 {trackingEnabled && !myBeacon && myLoc && (
                     <button
                         onClick={() => setShowSOSModal(true)}
-                        className="absolute bottom-6 left-6 z-20 w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white shadow-2xl shadow-red-500/40 flex items-center justify-center hover:scale-110 transition-all active:scale-95"
+                        className="absolute bottom-6 left-6 z-[1000] w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white shadow-2xl shadow-red-500/40 flex items-center justify-center hover:scale-110 transition-all active:scale-95"
                         title="S.O.S. - Potřebuji pomoc"
                     >
                         <span className="text-2xl font-black">🆘</span>
@@ -573,7 +573,7 @@ export default function Tracker() {
 
                 {/* My Active Beacon Status */}
                 {myBeacon && (
-                    <div className="absolute bottom-6 left-6 right-6 z-20 bg-gradient-to-r from-red-500 to-orange-500 text-white p-4 rounded-2xl shadow-2xl shadow-red-500/30">
+                    <div className="absolute bottom-6 left-6 right-6 z-[1000] bg-gradient-to-r from-red-500 to-orange-500 text-white p-4 rounded-2xl shadow-2xl shadow-red-500/30">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center animate-pulse">
