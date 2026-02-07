@@ -24,3 +24,11 @@ git commit -m "chore: build and deploy"
 6. Push changes to GitHub
 // turbo
 git push
+
+7. Sync project for Android
+// turbo
+npx cap sync android
+
+8. Open Android Studio
+// turbo
+npx cap open android
