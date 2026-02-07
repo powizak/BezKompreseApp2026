@@ -14,25 +14,29 @@ npm run build
 // turbo
 npx firebase deploy --only hosting
 
-3. Check the status of the repository
+3. Update information about app
+// turbo 
+Update @readme.md and @ideas.md by the changes that was made in current run (ideas only if there were some changes to it)
+
+4. Check the status of the repository
 // turbo
 git status
 
-4. Stage all changes for commit
+5. Stage all changes for commit
 // turbo
 git add .
 
-5. Commit the changes (Update the message as needed)
+6. Commit the changes (Update the message as needed)
 git commit -m "chore: build and deploy"
 
-6. Push changes to GitHub
+7. Push changes to GitHub
 // turbo
 git push
 
-7. Sync project for Android
+8. Sync project for Android
 // turbo
 npx cap sync android
 
-8. Open Android Studio
+9. Open Android Studio
 // turbo
 npx cap open android

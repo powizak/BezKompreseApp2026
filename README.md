@@ -32,6 +32,8 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Komunitní Srazy**: Možnost vytvořit vlastní sraz
 - **Mapa**: Zobrazení akcí na interaktivní mapě
 - **Detaily**: Informace o místě, čase a organizátorovi
+- **🆕 Účast na akcích**: Tlačítko "Zúčastním se" s ukládáním do databáze
+- **🆕 Diskuze pod akcí**: Komentáře a diskuze přímo u každé akce
 
 ### 👥 Komunita
 - **Profily Uživatelů**: Zobrazení garáže a aktivit ostatních členů
@@ -100,6 +102,7 @@ Aplikace používá následující kolekce:
 - `users` - Uživatelské profily
 - `cars` - Vozidla uživatelů
 - `events` - Komunitní akce a srazy
+- `event-comments` - Komentáře k akcím
 - `service-records` - Záznamy ze servisní knížky
 - `presence` - Real-time poloha uživatelů pro Live Tracker
 - `help-beacons` - S.O.S. signály pro nouzové situace

@@ -5,7 +5,7 @@ import {
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../config/firebase";
-import type { Car, AppEvent, SocialPost, UserProfile, ServiceRecord, FuelRecord, HelpBeacon, EventType } from "../types";
+import type { Car, AppEvent, SocialPost, UserProfile, ServiceRecord, FuelRecord, HelpBeacon, EventType, EventComment } from "../types";
 import type { PresenceInfo, Message, ChatRoom } from "../types/chat";
 
 export class DataError {
@@ -73,6 +73,15 @@ export interface DataService {
     readonly addFuelRecord: (record: Omit<FuelRecord, "id">) => Effect.Effect<string, DataError>;
     readonly updateFuelRecord: (recordId: string, data: Partial<FuelRecord>) => Effect.Effect<void, DataError>;
     readonly deleteFuelRecord: (recordId: string) => Effect.Effect<void, DataError>;
+
+    // Event Participation
+    readonly joinEvent: (eventId: string, userId: string) => Effect.Effect<void, DataError>;
+    readonly leaveEvent: (eventId: string, userId: string) => Effect.Effect<void, DataError>;
+
+    // Event Comments
+    readonly getEventComments: (eventId: string) => Effect.Effect<EventComment[], DataError>;
+    readonly addEventComment: (comment: Omit<EventComment, "id" | "createdAt">) => Effect.Effect<string, DataError>;
+    readonly deleteEventComment: (commentId: string) => Effect.Effect<void, DataError>;
 }
 
 export const DataService = Context.GenericTag<DataService>("DataService");
@@ -681,6 +690,62 @@ export const DataServiceLive = Layer.succeed(
                 });
             },
             catch: (e) => new DataError("Failed to respond to beacon", e)
+        }),
+
+        // Event Participation
+        joinEvent: (eventId, userId) => Effect.tryPromise({
+            try: async () => {
+                const { arrayUnion } = await import("firebase/firestore");
+                const eventRef = doc(db, "events", eventId);
+                await updateDoc(eventRef, {
+                    participants: arrayUnion(userId)
+                });
+            },
+            catch: (e) => new DataError("Failed to join event", e)
+        }),
+
+        leaveEvent: (eventId, userId) => Effect.tryPromise({
+            try: async () => {
+                const { arrayRemove } = await import("firebase/firestore");
+                const eventRef = doc(db, "events", eventId);
+                await updateDoc(eventRef, {
+                    participants: arrayRemove(userId)
+                });
+            },
+            catch: (e) => new DataError("Failed to leave event", e)
+        }),
+
+        // Event Comments
+        getEventComments: (eventId) => Effect.tryPromise({
+            try: async () => {
+                const q = query(
+                    collection(db, "event-comments"),
+                    where("eventId", "==", eventId),
+                    orderBy("createdAt", "desc")
+                );
+                const snapshot = await getDocs(q);
+                return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as EventComment));
+            },
+            catch: (e) => new DataError("Failed to fetch event comments", e)
+        }),
+
+        addEventComment: (comment) => Effect.tryPromise({
+            try: async () => {
+                const docRef = await addDoc(collection(db, "event-comments"), {
+                    ...comment,
+                    createdAt: serverTimestamp()
+                });
+                return docRef.id;
+            },
+            catch: (e) => new DataError("Failed to add comment", e)
+        }),
+
+        deleteEventComment: (commentId) => Effect.tryPromise({
+            try: async () => {
+                const commentRef = doc(db, "event-comments", commentId);
+                await deleteDoc(commentRef);
+            },
+            catch: (e) => new DataError("Failed to delete comment", e)
         })
     })
 );

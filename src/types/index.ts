@@ -77,6 +77,17 @@ export interface AppEvent {
   capacity?: number;
   rules?: string;
   contactInfo?: string;
+  participants?: string[]; // Array of user UIDs who are attending
+}
+
+export interface EventComment {
+  id: string;
+  eventId: string;
+  userId: string;
+  userName: string;
+  userPhotoURL?: string;
+  text: string;
+  createdAt: any; // Firebase Timestamp
 }
 
 export type SocialPlatform = 'youtube' | 'instagram' | 'facebook';
