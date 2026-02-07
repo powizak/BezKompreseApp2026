@@ -3,12 +3,14 @@ import { useParams, Link } from 'react-router-dom';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
-import type { UserProfile, Car, AppEvent } from '../types';
+import type { UserProfile, Car, AppEvent, NotificationSettings } from '../types';
+import { DEFAULT_NOTIFICATION_SETTINGS } from '../types';
 import { Car as CarIcon, UserPlus, UserMinus, Users, Calendar, MapPin, User, ChevronRight, Settings, Shield, Save, CarFront, Gauge, Fuel } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import LoginRequired from '../components/LoginRequired';
+import NotificationSettingsSection from '../components/NotificationSettings';
 
 // Fix Leaflet icon issue
 // @ts-ignore
@@ -38,6 +40,7 @@ export default function UserProfilePage() {
         privacyRadius: 500
     });
     const [shareFuelConsumption, setShareFuelConsumption] = useState(false);
+    const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>(DEFAULT_NOTIFICATION_SETTINGS);
 
     useEffect(() => {
         if (!id || !currentUser) return;
@@ -59,6 +62,9 @@ export default function UserProfilePage() {
                     setTrackerSettings(result.profile.trackerSettings);
                 }
                 setShareFuelConsumption(!!result.profile.shareFuelConsumption);
+                if (result.profile.notificationSettings) {
+                    setNotificationSettings(result.profile.notificationSettings);
+                }
 
                 // 2. Events
                 const eventResult = await Effect.runPromise(dataService.getUserEvents(id));
@@ -122,7 +128,8 @@ export default function UserProfilePage() {
             // Firestore doesn't accept 'undefined'. Strip it or use null.
             const updateData: any = {
                 trackerSettings,
-                shareFuelConsumption
+                shareFuelConsumption,
+                notificationSettings
             };
             if (homeLocation !== undefined) {
                 updateData.homeLocation = homeLocation;
@@ -464,6 +471,13 @@ export default function UserProfilePage() {
                                 </button>
                             </div>
                         </section>
+
+                        {/* Notification Settings */}
+                        <NotificationSettingsSection
+                            settings={notificationSettings}
+                            onChange={setNotificationSettings}
+                            userId={currentUser.uid}
+                        />
                     </div>
                 )}
             </div>

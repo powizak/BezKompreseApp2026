@@ -17,6 +17,8 @@ export interface UserProfile {
   trackerSettings?: TrackerSettings;
   shareFuelConsumption?: boolean;
   isOrganizer?: boolean; // Can create trackday events
+  notificationSettings?: NotificationSettings;
+  fcmToken?: string; // FCM device token
 }
 
 export interface CarModification {
@@ -174,3 +176,44 @@ export interface HelpBeacon {
   helperId?: string; // UID of user who is coming to help
   helperName?: string; // Display name of helper
 }
+
+// Notification Settings
+export interface QuietHours {
+  enabled: boolean;
+  startHour: number; // 0-23
+  endHour: number;   // 0-23
+}
+
+export interface NotificationSettings {
+  // Master switch
+  enabled: boolean;
+
+  // Quiet hours
+  quietHours: QuietHours;
+
+  // Notification categories
+  newEvents: {
+    enabled: boolean;
+    types: EventType[]; // Which event types to notify about
+  };
+  sosAlerts: boolean;          // SOS from others
+  friendRequests: boolean;     // Added as friend
+  eventComments: boolean;      // Comments on events I'm attending
+  eventChanges: boolean;       // Changes to events I'm attending
+  appUpdates: boolean;         // General info, new versions
+
+  // Digest mode (group notifications)
+  digestMode: boolean;
+}
+
+export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
+  enabled: true,
+  quietHours: { enabled: false, startHour: 22, endHour: 7 },
+  newEvents: { enabled: true, types: ['trackday', 'velky_sraz'] },
+  sosAlerts: true,
+  friendRequests: true,
+  eventComments: true,
+  eventChanges: true,
+  appUpdates: true,
+  digestMode: false
+};

@@ -1,7 +1,7 @@
 {
   "name": "bez-komprese-app",
   "private": true,
-  "version": "0.0.4",
+  "version": "0.0.5",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@capacitor-firebase/authentication": "^8.0.1",
+    "@capacitor-firebase/messaging": "^8.0.1",
     "@capacitor/android": "^8.0.2",
     "@capacitor/cli": "^8.0.2",
     "@capacitor/core": "^8.0.2",

@@ -14,6 +14,10 @@ npm run build
 // turbo
 npx firebase deploy --only hosting
 
+2.5. Build and deploy Cloud Functions (if changed)
+// turbo
+npm run build --prefix functions && npx firebase deploy --only functions
+
 3. Update information about app
 // turbo 
 Update @readme.md and @ideas.md by the changes that was made in current run (ideas only if there were some changes to it)

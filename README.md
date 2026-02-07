@@ -52,6 +52,13 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
   - Možnost přidat popis situace
   - Sledování stavu (aktivní, pomoc na cestě, vyřešeno)
 
+### 🔔 Push Notifikace (NOVÉ!)
+- **SOS Upozornění**: Okamžitá notifikace při volání o pomoc
+- **Komentáře k akcím**: Notifikace o nových komentářích u akcí, kterých se účastníte
+- **Změny v akcích**: Upozornění při změně data nebo místa akce
+- **Přátelé**: Notifikace při přidání do přátel
+- **Tiché hodiny**: Nastavitelný čas, kdy notifikace nepřijdou
+
 ### 💡 Myšlenky pro budoucí verze
 - V [ideas.md](./ideas.md) najdete některé myšlenky pro budoucí verze aplikace, které můžete sami navrhovat.
 
@@ -62,7 +69,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 *   **Jazyk:** TypeScript
 *   **Logika & Efekty:** [Effect](https://effect.website)
 *   **Stylování:** Tailwind CSS
-*   **Backend:** Firebase (Auth, Firestore, Storage)
+*   **Backend:** Firebase (Auth, Firestore, Storage, Cloud Functions)
 *   **Mapy:** Leaflet + OpenStreetMap
 
 ## Jak spustit projekt
