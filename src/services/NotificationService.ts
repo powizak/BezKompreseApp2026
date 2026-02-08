@@ -1,6 +1,7 @@
 import { Context, Effect, Layer } from "effect";
 import { Capacitor } from "@capacitor/core";
 import { FirebaseMessaging } from "@capacitor-firebase/messaging";
+import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 import type { NotificationSettings } from "../types";
@@ -114,11 +115,20 @@ export const NotificationServiceLive = Layer.succeed(
         openSystemSettings: Effect.tryPromise({
             try: async () => {
                 if (Capacitor.isNativePlatform()) {
-                    // On Android/iOS, opening system settings requires native code
-                    // For now, we log the instruction - a full implementation would use a native plugin
-                    console.log("To change notification settings, open your device's Settings > Apps > Bez Komprese > Notifications");
-                    // Alternative: Use window.open with intent URI on Android (may not work on all devices)
-                    // window.open('intent://settings/app_notification_settings?package=cz.bezkomprese.app#Intent;scheme=android-app;end');
+                    const platform = Capacitor.getPlatform();
+                    if (platform === 'android') {
+                        // Open Android app notification settings
+                        await NativeSettings.open({
+                            optionAndroid: AndroidSettings.AppNotification,
+                            optionIOS: IOSSettings.App
+                        });
+                    } else if (platform === 'ios') {
+                        // Open iOS app settings (notification settings are part of app settings)
+                        await NativeSettings.open({
+                            optionAndroid: AndroidSettings.AppNotification,
+                            optionIOS: IOSSettings.App
+                        });
+                    }
                 } else {
                     // Web: Can't open system settings, show instructions instead
                     console.log("To change notification settings, use your browser's site settings.");

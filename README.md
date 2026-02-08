@@ -69,6 +69,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **🆕 Chat s uživateli**: Reálný chat mezi členy komunity s náhledy konverzací a historií
 - **🆕 Bazar a Marketplace**: Prodej aut přímo z garáže a inzerce poptávek po dílech či servisu
 - **Tiché hodiny**: Nastavitelný čas, kdy notifikace nepřijdou
+- **Nativní nastavení**: Přímý odkaz do systémového nastavení notifikací (v Android aplikaci)
 
 ### 💡 Myšlenky pro budoucí verze
 - V [ideas.md](./ideas.md) najdete některé myšlenky pro budoucí verze aplikace, které můžete sami navrhovat.
