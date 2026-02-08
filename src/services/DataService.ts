@@ -725,6 +725,9 @@ export const DataServiceLive = Layer.succeed(
         }),
 
         getActiveBeaconsStream: () => Effect.sync(() => {
+            let unsubscribe: (() => void) | null = null;
+            let closed = false;
+
             return new ReadableStream({
                 start(controller) {
                     const q = query(
@@ -732,14 +735,20 @@ export const DataServiceLive = Layer.succeed(
                         where("status", "in", ["active", "help_coming"])
                     );
 
-                    const unsubscribe = onSnapshot(q, (snapshot) => {
+                    unsubscribe = onSnapshot(q, (snapshot) => {
+                        if (closed) return;
                         const beacons = snapshot.docs.map(doc => ({
                             id: doc.id,
                             ...doc.data()
                         } as HelpBeacon));
                         controller.enqueue(beacons);
-                    }, (error) => controller.error(error));
-                    return () => unsubscribe();
+                    }, (error) => {
+                        if (!closed) controller.error(error);
+                    });
+                },
+                cancel() {
+                    closed = true;
+                    if (unsubscribe) unsubscribe();
                 }
             });
         }),
