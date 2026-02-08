@@ -3,9 +3,10 @@ import { useParams, Link } from 'react-router-dom';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
+import { useChat } from '../contexts/ChatContext';
 import type { UserProfile, Car, AppEvent, NotificationSettings } from '../types';
 import { DEFAULT_NOTIFICATION_SETTINGS } from '../types';
-import { Car as CarIcon, UserPlus, UserMinus, Users, Calendar, MapPin, User, ChevronRight, Settings, Shield, Save, CarFront, Gauge, Fuel } from 'lucide-react';
+import { Car as CarIcon, UserPlus, UserMinus, Users, Calendar, MapPin, User, ChevronRight, Settings, Shield, Save, CarFront, Gauge, Fuel, MessageCircle } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -24,6 +25,7 @@ L.Icon.Default.mergeOptions({
 export default function UserProfilePage() {
     const { id } = useParams<{ id: string }>();
     const { user: currentUser } = useAuth();
+    const { openChat } = useChat();
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [cars, setCars] = useState<Car[]>([]);
     const [events, setEvents] = useState<AppEvent[]>([]);
@@ -41,16 +43,18 @@ export default function UserProfilePage() {
     });
     const [shareFuelConsumption, setShareFuelConsumption] = useState(false);
     const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>(DEFAULT_NOTIFICATION_SETTINGS);
+    const [chatLoading, setChatLoading] = useState(false);
+
+    const dataService = Effect.runSync(
+        Effect.gen(function* (_) {
+            return yield* _(DataService);
+        }).pipe(Effect.provide(DataServiceLive))
+    );
 
     useEffect(() => {
         if (!id || !currentUser) return;
 
         const fetchData = async () => {
-            const dataService = Effect.runSync(
-                Effect.gen(function* (_) {
-                    return yield* _(DataService);
-                }).pipe(Effect.provide(DataServiceLive))
-            );
 
             // 1. Profile & Cars
             const result = await Effect.runPromise(dataService.getUserProfile(id));
@@ -111,6 +115,22 @@ export default function UserProfilePage() {
         } else {
             await Effect.runPromise(dataService.addFriend(currentUser.uid, id));
             setIsFriend(true);
+        }
+    };
+
+    const handleChat = async () => {
+        if (!currentUser || !id || !profile) return;
+        setChatLoading(true);
+        try {
+            const roomId = await Effect.runPromise(
+                dataService.getOrCreateChatRoom(
+                    currentUser.uid, currentUser.displayName || 'Anonymous', currentUser.photoURL,
+                    id, profile.displayName || 'Uživatel', profile.photoURL || null
+                )
+            );
+            openChat(roomId, id, profile.displayName || 'Uživatel');
+        } finally {
+            setChatLoading(false);
         }
     };
 
@@ -193,17 +213,27 @@ export default function UserProfilePage() {
                     </p>
                 </div>
 
-                <div className="relative z-10 pt-4 md:pt-24">
+                <div className="relative z-10 pt-4 md:pt-24 flex gap-2">
                     {currentUser && !isMe && (
-                        <button
-                            onClick={handleFriendAction}
-                            className={`px-6 py-2 rounded-full font-bold uppercase text-sm tracking-wide flex items-center gap-2 transition-all ${isFriend
-                                ? 'bg-slate-100 text-slate-500 hover:bg-red-50 hover:text-red-500'
-                                : 'bg-brand text-brand-contrast hover:bg-brand-dark shadow-lg shadow-brand/20'
-                                }`}
-                        >
-                            {isFriend ? <><UserMinus size={18} /> Odebrat z přátel</> : <><UserPlus size={18} /> Pridat do přátel</>}
-                        </button>
+                        <>
+                            <button
+                                onClick={handleChat}
+                                disabled={chatLoading}
+                                className="px-4 py-2 rounded-full font-bold uppercase text-sm tracking-wide flex items-center gap-2 transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 disabled:opacity-50"
+                            >
+                                <MessageCircle size={18} />
+                                {chatLoading ? '...' : 'Zpráva'}
+                            </button>
+                            <button
+                                onClick={handleFriendAction}
+                                className={`px-6 py-2 rounded-full font-bold uppercase text-sm tracking-wide flex items-center gap-2 transition-all ${isFriend
+                                    ? 'bg-slate-100 text-slate-500 hover:bg-red-50 hover:text-red-500'
+                                    : 'bg-brand text-brand-contrast hover:bg-brand-dark shadow-lg shadow-brand/20'
+                                    }`}
+                            >
+                                {isFriend ? <><UserMinus size={18} /> Odebrat</> : <><UserPlus size={18} /> Přidat</>}
+                            </button>
+                        </>
                     )}
                 </div>
             </div>

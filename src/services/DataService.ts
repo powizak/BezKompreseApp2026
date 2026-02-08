@@ -1,7 +1,7 @@
 import { Context, Effect, Layer } from "effect";
 import {
     collection, addDoc, getDocs, query, where, updateDoc, doc, limit, deleteDoc,
-    getDoc, onSnapshot, setDoc, serverTimestamp, Timestamp, orderBy
+    getDoc, onSnapshot, setDoc, serverTimestamp, Timestamp, orderBy, writeBatch
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../config/firebase";
@@ -49,11 +49,15 @@ export interface DataService {
     readonly removePresence: (userId: string) => Effect.Effect<void, DataError>;
     readonly getPresenceStream: () => Effect.Effect<ReadableStream<PresenceInfo[]>, DataError>;
 
-    // Chat
-    readonly getOrCreateChatRoom: (userA: string, userB: string) => Effect.Effect<string, DataError>;
+    readonly getOrCreateChatRoom: (
+        userA: string, userAName: string, userAPhoto: string | null,
+        userB: string, userBName: string, userBPhoto: string | null
+    ) => Effect.Effect<string, DataError>;
     readonly sendMessage: (roomId: string, message: Omit<Message, "id" | "createdAt">) => Effect.Effect<void, DataError>;
     readonly getMessagesStream: (roomId: string) => Effect.Effect<ReadableStream<Message[]>, DataError>;
     readonly getUserChatsStream: (userId: string) => Effect.Effect<ReadableStream<ChatRoom[]>, DataError>;
+    readonly cleanupOldMessages: (roomId: string) => Effect.Effect<number, DataError>;
+    readonly deleteChat: (roomId: string) => Effect.Effect<void, DataError>;
 
     // Help Beacon (S.O.S.)
     readonly createHelpBeacon: (beacon: Omit<HelpBeacon, "id" | "createdAt" | "updatedAt">) => Effect.Effect<string, DataError>;
@@ -536,21 +540,30 @@ export const DataServiceLive = Layer.succeed(
         }),
 
         getPresenceStream: () => Effect.sync(() => {
+            let unsubscribe: (() => void) | null = null;
+            let closed = false;
+
             return new ReadableStream({
                 start(controller) {
                     const tenMinAgo = new Timestamp(Math.floor(Date.now() / 1000) - 600, 0);
                     const q = query(collection(db, "presence"), where("lastActive", ">=", tenMinAgo));
 
-                    const unsubscribe = onSnapshot(q, (snapshot) => {
+                    unsubscribe = onSnapshot(q, (snapshot) => {
+                        if (closed) return;
                         const presence = snapshot.docs.map(doc => doc.data() as PresenceInfo);
                         controller.enqueue(presence);
-                    }, (error) => controller.error(error));
-                    return () => unsubscribe();
+                    }, (error) => {
+                        if (!closed) controller.error(error);
+                    });
+                },
+                cancel() {
+                    closed = true;
+                    if (unsubscribe) unsubscribe();
                 }
             });
         }),
 
-        getOrCreateChatRoom: (userA, userB) => Effect.tryPromise({
+        getOrCreateChatRoom: (userA, userAName, userAPhoto, userB, userBName, userBPhoto) => Effect.tryPromise({
             try: async () => {
                 const participants = [userA, userB].sort();
                 const q = query(collection(db, "chats"), where("participants", "==", participants));
@@ -562,6 +575,8 @@ export const DataServiceLive = Layer.succeed(
 
                 const docRef = await addDoc(collection(db, "chats"), {
                     participants,
+                    participantNames: { [userA]: userAName, [userB]: userBName },
+                    participantPhotos: { [userA]: userAPhoto, [userB]: userBPhoto },
                     updatedAt: serverTimestamp()
                 });
                 return docRef.id;
@@ -577,6 +592,7 @@ export const DataServiceLive = Layer.succeed(
                 });
                 await updateDoc(doc(db, "chats", roomId), {
                     lastMessage: message.text,
+                    lastMessageSenderId: message.senderId,
                     updatedAt: serverTimestamp()
                 });
             },
@@ -584,6 +600,9 @@ export const DataServiceLive = Layer.succeed(
         }),
 
         getMessagesStream: (roomId) => Effect.sync(() => {
+            let unsubscribe: (() => void) | null = null;
+            let closed = false;
+
             return new ReadableStream({
                 start(controller) {
                     const q = query(
@@ -592,19 +611,28 @@ export const DataServiceLive = Layer.succeed(
                         limit(50)
                     );
 
-                    const unsubscribe = onSnapshot(q, (snapshot) => {
+                    unsubscribe = onSnapshot(q, (snapshot) => {
+                        if (closed) return;
                         const messages = snapshot.docs.map(doc => ({
                             id: doc.id,
                             ...doc.data()
                         } as Message));
                         controller.enqueue(messages);
-                    }, (error) => controller.error(error));
-                    return () => unsubscribe();
+                    }, (error) => {
+                        if (!closed) controller.error(error);
+                    });
+                },
+                cancel() {
+                    closed = true;
+                    if (unsubscribe) unsubscribe();
                 }
             });
         }),
 
         getUserChatsStream: (userId) => Effect.sync(() => {
+            let unsubscribe: (() => void) | null = null;
+            let closed = false;
+
             return new ReadableStream({
                 start(controller) {
                     const q = query(
@@ -613,17 +641,54 @@ export const DataServiceLive = Layer.succeed(
                         orderBy("updatedAt", "desc")
                     );
 
-                    const unsubscribe = onSnapshot(q, (snapshot) => {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    unsubscribe = onSnapshot(q, (snapshot) => {
+                        if (closed) return;
                         const chats = snapshot.docs.map(doc => ({
                             id: doc.id,
                             ...doc.data()
-                        } as any)); // Using any to avoid strict typecheck on ChatRoom vs DocData for now
+                        } as ChatRoom));
                         controller.enqueue(chats);
-                    }, (error) => controller.error(error));
-                    return () => unsubscribe();
+                    }, (error) => {
+                        if (!closed) controller.error(error);
+                    });
+                },
+                cancel() {
+                    closed = true;
+                    if (unsubscribe) unsubscribe();
                 }
             });
+        }),
+
+        cleanupOldMessages: (roomId) => Effect.tryPromise({
+            try: async () => {
+                const thirtyDaysAgo = Timestamp.fromDate(
+                    new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+                );
+                const q = query(
+                    collection(db, "chats", roomId, "messages"),
+                    where("createdAt", "<", thirtyDaysAgo)
+                );
+                const snapshot = await getDocs(q);
+                if (snapshot.empty) return 0;
+                const batch = writeBatch(db);
+                snapshot.docs.forEach(d => batch.delete(d.ref));
+                await batch.commit();
+                return snapshot.size;
+            },
+            catch: (e) => new DataError("Failed to cleanup old messages", e)
+        }),
+
+        deleteChat: (roomId) => Effect.tryPromise({
+            try: async () => {
+                // First delete all messages in the subcollection
+                const messagesSnapshot = await getDocs(collection(db, "chats", roomId, "messages"));
+                const batch = writeBatch(db);
+                messagesSnapshot.docs.forEach(d => batch.delete(d.ref));
+                await batch.commit();
+                // Then delete the chat room document
+                await deleteDoc(doc(db, "chats", roomId));
+            },
+            catch: (e) => new DataError("Failed to delete chat", e)
         }),
 
         // Help Beacon (S.O.S.) implementations

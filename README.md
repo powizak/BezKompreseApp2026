@@ -59,6 +59,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Změny v akcích**: Upozornění při změně data nebo místa akce
 - **Přátelé**: Notifikace při přidání do přátel
 - **🆕 Digitální Kaslík**: Upozornění na vypršení STK, lékárničky, pojištění nebo dálniční známky
+- **🆕 Chat s uživateli**: Reálný chat mezi členy komunity s náhledy konverzací a historií
 - **Tiché hodiny**: Nastavitelný čas, kdy notifikace nepřijdou
 
 ### 💡 Myšlenky pro budoucí verze

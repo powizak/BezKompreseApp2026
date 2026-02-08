@@ -8,7 +8,10 @@ export interface Message {
 export interface ChatRoom {
     id: string;
     participants: string[];
+    participantNames: Record<string, string>; // uid -> displayName
+    participantPhotos: Record<string, string | null>; // uid -> photoURL
     lastMessage?: string;
+    lastMessageSenderId?: string;
     updatedAt: any;
 }
 
@@ -21,3 +24,4 @@ export interface PresenceInfo {
     lastActive: any;
     allowContact: boolean;
 }
+

@@ -195,6 +195,15 @@ export default function NotificationSettingsSection({ settings, onChange, userId
                 />
 
                 <SettingRow
+                    icon={MessageCircle}
+                    title="Nové zprávy"
+                    description="Zprávy od ostatních uživatelů"
+                    enabled={settings.chatMessages}
+                    onToggle={() => onChange({ ...settings, chatMessages: !settings.chatMessages })}
+                    disabled={!settings.enabled}
+                />
+
+                <SettingRow
                     icon={Info}
                     title="Obecné informace"
                     description="Nové verze aplikace a důležité novinky"

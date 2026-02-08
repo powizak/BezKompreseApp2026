@@ -16,6 +16,7 @@ import TermsOfService from './pages/TermsOfService';
 import ServiceBook from './pages/ServiceBook';
 import FuelTracker from './pages/FuelTracker';
 import Tracker from './pages/Tracker';
+import Chats from './pages/Chats';
 import { CookieConsentProvider } from './contexts/CookieConsentContext';
 import { ChatProvider } from './contexts/ChatContext';
 
@@ -37,6 +38,7 @@ function App() {
                 <Route path="/users" element={<UsersPage />} />
                 <Route path="/profile/:id" element={<UserProfile />} />
                 <Route path="/car/:id" element={<CarDetail />} />
+                <Route path="/chats" element={<Chats />} />
                 <Route path="/info" element={<Info />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />

@@ -20,6 +20,7 @@ export default function Layout() {
     { icon: CarFront, label: 'Auta', path: '/cars' },
     { icon: Car, label: 'Garáž', path: '/garage' },
     { icon: Navigation, label: 'Mapa', path: '/tracker' },
+    { icon: MessageSquare, label: 'Zprávy', path: '/chats', badge: unreadCount > 0 ? unreadCount : undefined },
     { icon: Users, label: 'Lidé', path: '/users' },
     { icon: Calendar, label: 'Akce', path: '/events' },
     { icon: Info, label: 'Info', path: '/info' },
@@ -43,11 +44,18 @@ export default function Layout() {
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold tracking-wide uppercase text-sm",
+                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold tracking-wide uppercase text-sm relative",
                   isActive ? "bg-brand text-brand-contrast shadow-[0_0_15px_rgba(255,214,0,0.3)]" : "text-slate-400 hover:text-white hover:bg-white/5"
                 )}
               >
-                <Icon size={20} />
+                <div className="relative">
+                  <Icon size={20} />
+                  {item.badge && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] min-w-[14px] h-[14px] flex items-center justify-center rounded-full">
+                      {item.badge > 9 ? '9+' : item.badge}
+                    </span>
+                  )}
+                </div>
                 {item.label}
               </Link>
             )
@@ -115,7 +123,14 @@ export default function Layout() {
                 )}
               >
                 {isActive && <div className="absolute top-0 w-12 h-1 bg-brand rounded-b-full shadow-[0_0_10px_rgba(255,214,0,0.5)]" />}
-                <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+                <div className="relative">
+                  <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+                  {item.badge && (
+                    <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[8px] min-w-[14px] h-[14px] flex items-center justify-center rounded-full">
+                      {item.badge > 9 ? '9+' : item.badge}
+                    </span>
+                  )}
+                </div>
                 <span className="text-[10px] mt-1 font-bold uppercase tracking-wide">{item.label}</span>
               </Link>
             );

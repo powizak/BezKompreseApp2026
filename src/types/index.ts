@@ -223,6 +223,7 @@ export interface NotificationSettings {
   eventChanges: boolean;       // Changes to events I'm attending
   appUpdates: boolean;         // General info, new versions
   vehicleReminders: boolean;   // Digitální kaslík (STK, lékárnička, pojištění...)
+  chatMessages: boolean;       // New chat messages
 
   // Digest mode (group notifications)
   digestMode: boolean;
@@ -238,5 +239,6 @@ export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
   eventChanges: true,
   appUpdates: true,
   vehicleReminders: true,
+  chatMessages: true,
   digestMode: false
 };

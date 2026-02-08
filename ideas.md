@@ -28,15 +28,25 @@ Uživatel v nouzi (porucha, prázdná nádrž) může vyslat signál.
 - Konvoj Mód: Vylepšení Trackeru pro konkrétní akci – vidíte pořadí aut v koloně, upozornění "ztratili jsme se" pokud se někdo odpojí.
 Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" nebo "samá díra".
 
-### Databáze trackdays
+### ✅ Databáze trackdays - IMPLEMENTOVÁNO (typ akce)
 - v ČR není aktuálně žádná funkční
 - Další typ akce, které jsou již momentálně definované
 - Možno filtrovat přímo na mapě či v seznamu
 - Rozšířené informace o akci (cena, kapacita, odkaz na registraci)
 
+### ✅ Chat s uživateli - IMPLEMENTOVÁNO
+- Uživatel může vyvolat stránku chatu, a tedy vidět své předchozí konverzace a vytvořit novou s ostatními uživateli
+- Propojit rychlý chat s historií chatů (uchovávaných maximálně měsíc)
+- Přidat notifikace na nové zprávy v chatu
+
 ### 🛠️ Bazar a Marketplace
-- Prodej dílů: V sekci "Garáž" možnost označit díly (z historie servisu) nebo celé auto na prodej.
-- Poptávka: "Sháním X pro Y".
+- Udělat vlastní stránku "Market" s dvěma záložkami - Prodej, Poptávka
+- Poptávka: "Sháním X", ilustrační foto, dodatečné informace, požadovaná cena.
+- Prodej aut: V sekci "Garáž" možnost označit celé auto na prodej. 
+- Označení štítkem v seznamu aut (jako máme vlastněno)
+- Možno kontaktovat vlastníka auta / poptávajícího přímo z marketu - otevře chat s daným uživatelem / založí nový, pokud ještě spolu nekomunikovali
+- Přímo z inzeratu může vlastník označit auto jako "Prodané" - tedy vymaže inzerát a zároveň v garáži mu odznačí "Vlastněno"  
+
 
 ### 🏆 Gamifikace a "Build Threads"
 - Odznaky (Badges): "High Miler" (nájezd 300k+), "Wrench Wizard" (více než 10 DIY záznamů), "Event Junkie" (účast na srazech) atd.

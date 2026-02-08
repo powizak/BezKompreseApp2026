@@ -470,7 +470,12 @@ export default function Tracker() {
                                                     if (!user) return;
                                                     setChatLoading(true);
                                                     try {
-                                                        const roomId = await Effect.runPromise(dataService.getOrCreateChatRoom(user.uid, p.uid));
+                                                        const roomId = await Effect.runPromise(
+                                                            dataService.getOrCreateChatRoom(
+                                                                user.uid, user.displayName || 'Anonymous', user.photoURL,
+                                                                p.uid, p.displayName, p.photoURL || null
+                                                            )
+                                                        );
                                                         openChat(roomId, p.uid, p.displayName);
                                                     } finally {
                                                         setChatLoading(false);

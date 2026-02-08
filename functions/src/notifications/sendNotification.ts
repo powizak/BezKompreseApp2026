@@ -27,6 +27,7 @@ export interface NotificationSettings {
     eventChanges: boolean;
     appUpdates: boolean;
     vehicleReminders: boolean;
+    chatMessages: boolean;
     newEvents: {
         enabled: boolean;
         types: string[];
