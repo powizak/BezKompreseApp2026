@@ -3,10 +3,20 @@
 ## 1. Správa Vozidla a Utility (Drivvo/Fuelio style)
 #### ⛽ Rozšířené sledování Spotřeby (Fuel Tracking)
 Současný stav: Servisní knížka řeší opravy, seznam tankování pak spotřebu
-#### Novinky: 
-- Statistiky servisů / spotřeby
-- Grafy spotřeby (l/100km), cena za km, měsíční (roční) náklady na palivo vs. servis.
-- Automatický odečet: Pokud uživatel zadá tankování, automaticky se aktualizuje stav tachometru v autě.
+
+#### ✅ IMPLEMENTOVÁNO: 
+- Statistiky: průměrná spotřeba, trend spotřeby (nahoru/dolů/stabilní), cena za km
+- Graf: Vývoj spotřeby (line chart) za posledních 12 měsíců
+- Graf: Náklady palivo vs servis (stacked bar chart) za posledních 12 měsíců
+- Automatický odečet: Při zadání tankování se automaticky aktualizuje stav tachometru v autě
+- Zobrazení tachometru na kartě auta v garáži
+
+#### 🚀 Budoucí vylepšení:
+- Kalkulačka dojezdu: Odhad, kolik km ujede s plnou nádrží
+- Export dat do CSV/Excel
+- Srovnání s průměrnou spotřebou modelu (API?)
+- Mapa tankování: Vizualizace kde uživatel tankuje (frequence/levnost)
+- Podpora více typů paliva (LPG, CNG, elektrická, hybrid)
 
 ## 2. Komunitní a Sociální Funkce (Roadstr style)
 Současný stav: Tracker ukazuje polohu, ale neumožňuje koordinaci. Návrh:

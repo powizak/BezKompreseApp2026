@@ -1,16 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
-import type { Car, FuelRecord } from '../types';
+import type { Car, FuelRecord, ServiceRecord } from '../types';
 import {
-    ArrowLeft, Droplets, DollarSign,
-    Trash2, Pencil, X, AlertCircle, TrendingUp,
-    Fuel
+    ArrowLeft, Droplets,
+    Trash2, Pencil, X, AlertCircle, TrendingUp, TrendingDown, Minus,
+    Fuel, Wallet, Wrench
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cs } from 'date-fns/locale';
+import {
+    LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip,
+    ResponsiveContainer, CartesianGrid, Legend
+} from 'recharts';
+import { calculateVehicleStats } from '../lib/vehicleStats';
 
 export default function FuelTracker() {
     const { carId } = useParams<{ carId: string }>();
@@ -18,6 +23,7 @@ export default function FuelTracker() {
     const navigate = useNavigate();
     const [car, setCar] = useState<Car | null>(null);
     const [records, setRecords] = useState<FuelRecord[]>([]);
+    const [serviceRecords, setServiceRecords] = useState<ServiceRecord[]>([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [editingRecord, setEditingRecord] = useState<FuelRecord | null>(null);
@@ -55,9 +61,10 @@ export default function FuelTracker() {
         if (!carId) return;
 
         try {
-            const [carData, recordsData] = await Promise.all([
+            const [carData, recordsData, serviceData] = await Promise.all([
                 Effect.runPromise(dataService.getCarById(carId)),
-                Effect.runPromise(dataService.getFuelRecords(carId))
+                Effect.runPromise(dataService.getFuelRecords(carId)),
+                Effect.runPromise(dataService.getServiceRecords(carId))
             ]);
 
             if (!carData || carData.ownerId !== user?.uid) {
@@ -67,6 +74,7 @@ export default function FuelTracker() {
 
             setCar(carData);
             setRecords(recordsData);
+            setServiceRecords(serviceData);
         } catch (err) {
             console.error('Failed to fetch data', err);
             setError('Nepodařilo se načíst data');
@@ -158,6 +166,12 @@ export default function FuelTracker() {
                 await Effect.runPromise(dataService.addFuelRecord(recordData));
             }
 
+            // Auto-sync odometer to car
+            await Effect.runPromise(dataService.updateCar(carId, {
+                currentMileage: mileageNum,
+                lastMileageUpdate: new Date().toISOString()
+            }));
+
             resetForm();
             fetchData();
         } catch (err) {
@@ -168,15 +182,23 @@ export default function FuelTracker() {
         }
     };
 
-    // Calculate stats
-    const totalSpent = records.reduce((sum, r) => sum + r.totalPrice, 0);
-    const totalLiters = records.reduce((sum, r) => sum + r.liters, 0);
+    // Calculate stats using utility
+    const stats = useMemo(
+        () => calculateVehicleStats(records, serviceRecords),
+        [records, serviceRecords]
+    );
 
-    // Avg consumption from records that have it
-    const validConsumptions = records.filter(r => r.consumption !== undefined && r.consumption !== null);
-    const avgConsumption = validConsumptions.length > 0
-        ? validConsumptions.reduce((sum, r) => sum + (r.consumption || 0), 0) / validConsumptions.length
-        : 0;
+    // Trend icon component
+    const TrendIcon = stats.consumptionTrend === 'up'
+        ? TrendingUp
+        : stats.consumptionTrend === 'down'
+            ? TrendingDown
+            : Minus;
+    const trendColor = stats.consumptionTrend === 'up'
+        ? 'text-red-500'
+        : stats.consumptionTrend === 'down'
+            ? 'text-green-500'
+            : 'text-slate-400';
 
     if (loading) {
         return (
@@ -214,7 +236,7 @@ export default function FuelTracker() {
             </div>
 
             {/* Stats Dashboard */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
                     <div className="flex items-center gap-3 mb-2">
                         <div className="bg-brand/10 p-2 rounded-lg">
@@ -222,31 +244,128 @@ export default function FuelTracker() {
                         </div>
                         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Průměrná spotřeba</span>
                     </div>
-                    <p className="text-3xl font-black text-slate-900">
-                        {avgConsumption > 0 ? avgConsumption.toFixed(2).replace('.', ',') : '--'} <span className="text-sm">l/100km</span>
+                    <div className="flex items-center gap-2">
+                        <p className="text-2xl font-black text-slate-900">
+                            {stats.avgConsumption > 0 ? stats.avgConsumption.toFixed(2).replace('.', ',') : '--'}
+                        </p>
+                        <span className="text-sm text-slate-500">l/100km</span>
+                        <TrendIcon className={`ml-auto ${trendColor}`} size={20} />
+                    </div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="bg-purple-50 p-2 rounded-lg">
+                            <Wallet className="text-purple-500" size={20} />
+                        </div>
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Cena za km</span>
+                    </div>
+                    <p className="text-2xl font-black text-slate-900">
+                        {stats.costPerKm > 0 ? stats.costPerKm.toFixed(2).replace('.', ',') : '--'} <span className="text-sm text-slate-500">Kč/km</span>
                     </p>
                 </div>
 
                 <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
                     <div className="flex items-center gap-3 mb-2">
                         <div className="bg-green-50 p-2 rounded-lg">
-                            <DollarSign className="text-green-500" size={20} />
+                            <Fuel className="text-green-500" size={20} />
                         </div>
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Celkem utraceno</span>
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Palivo celkem</span>
                     </div>
-                    <p className="text-3xl font-black text-slate-900">{totalSpent.toLocaleString()} Kč</p>
+                    <p className="text-2xl font-black text-slate-900">{stats.totalFuelCost.toLocaleString()} <span className="text-sm text-slate-500">Kč</span></p>
                 </div>
 
                 <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
                     <div className="flex items-center gap-3 mb-2">
                         <div className="bg-blue-50 p-2 rounded-lg">
-                            <TrendingUp className="text-blue-500" size={20} />
+                            <Wrench className="text-blue-500" size={20} />
                         </div>
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Celkem litrů</span>
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Servis celkem</span>
                     </div>
-                    <p className="text-3xl font-black text-slate-900">{totalLiters.toLocaleString()} l</p>
+                    <p className="text-2xl font-black text-slate-900">{stats.totalServiceCost.toLocaleString()} <span className="text-sm text-slate-500">Kč</span></p>
                 </div>
             </div>
+
+            {/* Charts Section */}
+            {stats.monthlyData.some(m => m.fuel > 0 || m.service > 0 || m.consumption !== null) && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    {/* Consumption Chart */}
+                    <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+                        <h3 className="text-lg font-black italic uppercase tracking-tighter text-slate-900 mb-4">
+                            Vývoj spotřeby
+                        </h3>
+                        <ResponsiveContainer width="100%" height={220}>
+                            <LineChart data={stats.monthlyData.filter(m => m.consumption !== null)}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                                <XAxis
+                                    dataKey="month"
+                                    tick={{ fontSize: 11, fill: '#94a3b8' }}
+                                    axisLine={{ stroke: '#e2e8f0' }}
+                                />
+                                <YAxis
+                                    tick={{ fontSize: 11, fill: '#94a3b8' }}
+                                    axisLine={{ stroke: '#e2e8f0' }}
+                                    unit=" l"
+                                />
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: '#1e293b',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        color: '#fff'
+                                    }}
+                                    formatter={(value) => [`${(value as number).toFixed(2)} l/100km`, 'Spotřeba']}
+                                />
+                                <Line
+                                    type="monotone"
+                                    dataKey="consumption"
+                                    stroke="#FFD700"
+                                    strokeWidth={3}
+                                    dot={{ fill: '#FFD700', strokeWidth: 2, r: 4 }}
+                                    activeDot={{ r: 6, fill: '#FFD700' }}
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+
+                    {/* Cost Breakdown Chart */}
+                    <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+                        <h3 className="text-lg font-black italic uppercase tracking-tighter text-slate-900 mb-4">
+                            Náklady: Palivo vs Servis
+                        </h3>
+                        <ResponsiveContainer width="100%" height={220}>
+                            <BarChart data={stats.monthlyData}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                                <XAxis
+                                    dataKey="month"
+                                    tick={{ fontSize: 11, fill: '#94a3b8' }}
+                                    axisLine={{ stroke: '#e2e8f0' }}
+                                />
+                                <YAxis
+                                    tick={{ fontSize: 11, fill: '#94a3b8' }}
+                                    axisLine={{ stroke: '#e2e8f0' }}
+                                    tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
+                                />
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: '#1e293b',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        color: '#fff'
+                                    }}
+                                    formatter={(value) => [`${(value as number).toLocaleString()} Kč`]}
+                                />
+                                <Legend
+                                    wrapperStyle={{ paddingTop: '10px' }}
+                                    formatter={(value) => <span className="text-xs font-bold">{value}</span>}
+                                />
+                                <Bar dataKey="fuel" stackId="a" fill="#22C55E" name="Palivo" radius={[0, 0, 0, 0]} />
+                                <Bar dataKey="service" stackId="a" fill="#3B82F6" name="Servis" radius={[4, 4, 0, 0]} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+            )}
 
             {/* Form Modal */}
             {showForm && (

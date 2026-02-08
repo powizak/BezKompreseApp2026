@@ -19,6 +19,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Historie Vlastnictví**: Označení aut, která již nevlastníte
 - **🆕 Servisní Knížka**: Kompletní digitální evidence servisu
 - **🆕 Digitální Kaslík**: Sledování platnosti STK, lékárničky, dálniční známky a pojištění (upozornění předem)
+- **🆕 Tankování a Statistiky**: Grafy spotřeby, náklady palivo vs servis, cena za km, automatická synchronizace tachometru
 
 ### 🔧 Servisní Knížka (NOVÉ!)
 - **Digitální Evidence**: Sledování všech servisních zásahů a oprav

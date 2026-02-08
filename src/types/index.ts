@@ -44,6 +44,9 @@ export interface Car {
   photos: string[];
   isOwned?: boolean;
   reminders?: VehicleReminder[];
+  // Odometer tracking
+  currentMileage?: number;        // Aktuální stav tachometru
+  lastMileageUpdate?: string;     // Datum poslední aktualizace (ISO)
   // Marketplace - selling
   forSale?: boolean;
   salePrice?: number;

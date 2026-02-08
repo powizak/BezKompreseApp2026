@@ -694,6 +694,15 @@ export default function Garage() {
                       </div>
                     </div>
                   )}
+                  {car.currentMileage && (
+                    <div className="flex items-center gap-2 text-slate-600 bg-slate-50 p-2 rounded-lg">
+                      <Gauge className="text-brand" size={18} />
+                      <div>
+                        <p className="text-xs text-slate-400 font-bold uppercase">Tachometr</p>
+                        <p className="text-sm font-bold leading-tight">{car.currentMileage.toLocaleString()} km</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Mods Preview */}
