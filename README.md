@@ -53,6 +53,13 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
   - Možnost přidat popis situace
   - Sledování stavu (aktivní, pomoc na cestě, vyřešeno)
 
+### 🏪 Bazar a Marketplace (NOVÉ!)
+- **Prodej aut**: Možnost označit auto v garáži jako "Na prodej" s cenou a popisem
+- **Poptávky a Inzerce**: Vytváření inzerátů typu "Sháním auto/díly", "Nabízím díly/servis"
+- **Filtrování a Hledání**: Fulltextové vyhledávání v inzerátech a autech na prodej
+- **Přímý Kontakt**: Tlačítko pro okamžité zahájení chatu s prodejcem
+- **Notifikace**: Upozornění na nové příspěvky v bazaru (volitelné)
+
 ### 🔔 Push Notifikace (NOVÉ!)
 - **SOS Upozornění**: Okamžitá notifikace při volání o pomoc
 - **Komentáře k akcím**: Notifikace o nových komentářích u akcí, kterých se účastníte
@@ -60,6 +67,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Přátelé**: Notifikace při přidání do přátel
 - **🆕 Digitální Kaslík**: Upozornění na vypršení STK, lékárničky, pojištění nebo dálniční známky
 - **🆕 Chat s uživateli**: Reálný chat mezi členy komunity s náhledy konverzací a historií
+- **🆕 Bazar a Marketplace**: Prodej aut přímo z garáže a inzerce poptávek po dílech či servisu
 - **Tiché hodiny**: Nastavitelný čas, kdy notifikace nepřijdou
 
 ### 💡 Myšlenky pro budoucí verze
@@ -116,6 +124,8 @@ Aplikace používá následující kolekce:
 - `service-records` - Záznamy ze servisní knížky
 - `presence` - Real-time poloha uživatelů pro Live Tracker
 - `help-beacons` - S.O.S. signály pro nouzové situace
+- `marketplace-listings` - Inzeráty v bazaru (poptávky, díly)
+- `chats` - Konverzace mezi uživateli
 
 ## Struktura projektu
 

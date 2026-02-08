@@ -5,7 +5,7 @@ import {
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../config/firebase";
-import type { Car, AppEvent, SocialPost, UserProfile, ServiceRecord, FuelRecord, HelpBeacon, EventType, EventComment } from "../types";
+import type { Car, AppEvent, SocialPost, UserProfile, ServiceRecord, FuelRecord, HelpBeacon, EventType, EventComment, MarketplaceListing } from "../types";
 import type { PresenceInfo, Message, ChatRoom } from "../types/chat";
 
 export class DataError {
@@ -86,6 +86,16 @@ export interface DataService {
     readonly getEventComments: (eventId: string) => Effect.Effect<EventComment[], DataError>;
     readonly addEventComment: (comment: Omit<EventComment, "id" | "createdAt">) => Effect.Effect<string, DataError>;
     readonly deleteEventComment: (commentId: string) => Effect.Effect<void, DataError>;
+
+    // Marketplace
+    readonly getMarketplaceListings: (limitCount?: number) => Effect.Effect<MarketplaceListing[], DataError>;
+    readonly getMyMarketplaceListings: (userId: string) => Effect.Effect<MarketplaceListing[], DataError>;
+    readonly addMarketplaceListing: (listing: Omit<MarketplaceListing, "id" | "createdAt">) => Effect.Effect<string, DataError>;
+    readonly updateMarketplaceListing: (listingId: string, data: Partial<MarketplaceListing>) => Effect.Effect<void, DataError>;
+    readonly deleteMarketplaceListing: (listingId: string) => Effect.Effect<void, DataError>;
+    readonly getCarsForSale: (limitCount?: number) => Effect.Effect<Car[], DataError>;
+    readonly markCarAsSold: (carId: string) => Effect.Effect<void, DataError>;
+    readonly uploadListingImage: (file: File, listingId: string) => Effect.Effect<string, DataError>;
 }
 
 export const DataService = Context.GenericTag<DataService>("DataService");
@@ -826,6 +836,137 @@ export const DataServiceLive = Layer.succeed(
                 await deleteDoc(commentRef);
             },
             catch: (e) => new DataError("Failed to delete comment", e)
+        }),
+
+        // Marketplace
+        getMarketplaceListings: (limitCount = 50) => Effect.tryPromise({
+            try: async () => {
+                // Note: No orderBy to avoid requiring composite index
+                const q = query(
+                    collection(db, "marketplace-listings"),
+                    where("isActive", "==", true),
+                    limit(limitCount)
+                );
+                const snapshot = await getDocs(q);
+                const listings = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as MarketplaceListing));
+                // Sort in memory by createdAt descending
+                return listings.sort((a, b) => {
+                    const aTime = a.createdAt?.toMillis?.() || 0;
+                    const bTime = b.createdAt?.toMillis?.() || 0;
+                    return bTime - aTime;
+                });
+            },
+            catch: (e) => new DataError("Failed to fetch marketplace listings", e)
+        }),
+
+        getMyMarketplaceListings: (userId) => Effect.tryPromise({
+            try: async () => {
+                const q = query(
+                    collection(db, "marketplace-listings"),
+                    where("userId", "==", userId)
+                );
+                const snapshot = await getDocs(q);
+                const listings = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as MarketplaceListing));
+                return listings.sort((a, b) => {
+                    const aTime = a.createdAt?.toMillis?.() || 0;
+                    const bTime = b.createdAt?.toMillis?.() || 0;
+                    return bTime - aTime;
+                });
+            },
+            catch: (e) => new DataError("Failed to fetch my listings", e)
+        }),
+
+        addMarketplaceListing: (listing) => Effect.tryPromise({
+            try: async () => {
+                const docRef = await addDoc(collection(db, "marketplace-listings"), {
+                    ...listing,
+                    createdAt: serverTimestamp()
+                });
+                return docRef.id;
+            },
+            catch: (e) => new DataError("Failed to add marketplace listing", e)
+        }),
+
+        updateMarketplaceListing: (listingId, data) => Effect.tryPromise({
+            try: async () => {
+                const listingRef = doc(db, "marketplace-listings", listingId);
+                await updateDoc(listingRef, data);
+            },
+            catch: (e) => new DataError("Failed to update marketplace listing", e)
+        }),
+
+        deleteMarketplaceListing: (listingId) => Effect.tryPromise({
+            try: async () => {
+                const listingRef = doc(db, "marketplace-listings", listingId);
+                await deleteDoc(listingRef);
+            },
+            catch: (e) => new DataError("Failed to delete marketplace listing", e)
+        }),
+
+        getCarsForSale: (limitCount = 50) => Effect.tryPromise({
+            try: async () => {
+                const q = query(
+                    collection(db, "cars"),
+                    where("forSale", "==", true),
+                    limit(limitCount)
+                );
+                const snapshot = await getDocs(q);
+                return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Car));
+            },
+            catch: (e) => new DataError("Failed to fetch cars for sale", e)
+        }),
+
+        markCarAsSold: (carId) => Effect.tryPromise({
+            try: async () => {
+                const carRef = doc(db, "cars", carId);
+                await updateDoc(carRef, {
+                    forSale: false,
+                    isOwned: false,
+                    salePrice: null,
+                    saleDescription: null
+                });
+            },
+            catch: (e) => new DataError("Failed to mark car as sold", e)
+        }),
+
+        uploadListingImage: (file, listingId) => Effect.tryPromise({
+            try: async () => {
+                // Resize image before upload
+                const resizedBlob = await new Promise<Blob>((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_SIZE = 1200;
+                        let { width, height } = img;
+
+                        if (width > height && width > MAX_SIZE) {
+                            height = (height * MAX_SIZE) / width;
+                            width = MAX_SIZE;
+                        } else if (height > MAX_SIZE) {
+                            width = (width * MAX_SIZE) / height;
+                            height = MAX_SIZE;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx?.drawImage(img, 0, 0, width, height);
+                        canvas.toBlob(
+                            (blob) => blob ? resolve(blob) : reject(new Error('Failed to create blob')),
+                            'image/webp',
+                            0.85
+                        );
+                    };
+                    img.onerror = reject;
+                    img.src = URL.createObjectURL(file);
+                });
+
+                const storageRef = ref(storage, `marketplace/${listingId}/${Date.now()}.webp`);
+                const snapshot = await uploadBytes(storageRef, resizedBlob);
+                const downloadURL = await getDownloadURL(snapshot.ref);
+                return downloadURL;
+            },
+            catch: (e) => new DataError("Failed to upload listing image", e)
         })
     })
 );

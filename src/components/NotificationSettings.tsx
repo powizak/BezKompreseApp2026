@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Effect } from 'effect';
-import { Bell, BellOff, AlertTriangle, Calendar, Users, MessageCircle, RefreshCw, Info, Moon, Layers, ExternalLink, Check, Car } from 'lucide-react';
+import { Bell, BellOff, AlertTriangle, Calendar, Users, MessageCircle, RefreshCw, Info, Moon, Layers, ExternalLink, Check, Car, Store } from 'lucide-react';
 import { NotificationService, NotificationServiceLive, type NotificationPermissionStatus } from '../services/NotificationService';
 import type { NotificationSettings, EventType } from '../types';
 import { EVENT_TYPE_LABELS } from '../types';
@@ -218,6 +218,15 @@ export default function NotificationSettingsSection({ settings, onChange, userId
                     description="STK, lékárnička, pojištění, dálniční známka"
                     enabled={settings.vehicleReminders}
                     onToggle={() => onChange({ ...settings, vehicleReminders: !settings.vehicleReminders })}
+                    disabled={!settings.enabled}
+                />
+
+                <SettingRow
+                    icon={Store}
+                    title="Bazar a Marketplace"
+                    description="Nové poptávky a nabídky v bazaru"
+                    enabled={settings.marketplaceNotifications}
+                    onToggle={() => onChange({ ...settings, marketplaceNotifications: !settings.marketplaceNotifications })}
                     disabled={!settings.enabled}
                 />
 

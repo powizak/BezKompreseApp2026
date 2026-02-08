@@ -17,6 +17,7 @@ import ServiceBook from './pages/ServiceBook';
 import FuelTracker from './pages/FuelTracker';
 import Tracker from './pages/Tracker';
 import Chats from './pages/Chats';
+import Market from './pages/Market';
 import { CookieConsentProvider } from './contexts/CookieConsentContext';
 import { ChatProvider } from './contexts/ChatContext';
 
@@ -39,6 +40,7 @@ function App() {
                 <Route path="/profile/:id" element={<UserProfile />} />
                 <Route path="/car/:id" element={<CarDetail />} />
                 <Route path="/chats" element={<Chats />} />
+                <Route path="/market" element={<Market />} />
                 <Route path="/info" element={<Info />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />

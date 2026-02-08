@@ -44,6 +44,10 @@ export interface Car {
   photos: string[];
   isOwned?: boolean;
   reminders?: VehicleReminder[];
+  // Marketplace - selling
+  forSale?: boolean;
+  salePrice?: number;
+  saleDescription?: string;
 }
 
 // Vehicle Reminder Types ("Digitální Kaslík")
@@ -198,6 +202,37 @@ export interface HelpBeacon {
   helperName?: string; // Display name of helper
 }
 
+// Marketplace Listing Types ("Bazar")
+export type ListingType = 'wanted_car' | 'wanted_parts' | 'selling_parts' | 'service';
+
+export const LISTING_TYPE_LABELS: Record<ListingType, string> = {
+  wanted_car: 'Sháním auto',
+  wanted_parts: 'Sháním díly',
+  selling_parts: 'Prodám díly',
+  service: 'Nabízím službu'
+};
+
+export const LISTING_TYPE_COLORS: Record<ListingType, { bg: string; text: string }> = {
+  wanted_car: { bg: 'bg-blue-100', text: 'text-blue-700' },
+  wanted_parts: { bg: 'bg-purple-100', text: 'text-purple-700' },
+  selling_parts: { bg: 'bg-green-100', text: 'text-green-700' },
+  service: { bg: 'bg-orange-100', text: 'text-orange-700' }
+};
+
+export interface MarketplaceListing {
+  id: string;
+  userId: string;
+  userName: string;
+  userPhotoURL?: string;
+  type: ListingType;
+  title: string;
+  description: string;
+  imageUrl?: string;
+  price?: number;       // Orientační/nabízená cena v Kč
+  createdAt: any;       // Firebase Timestamp
+  isActive: boolean;
+}
+
 // Notification Settings
 export interface QuietHours {
   enabled: boolean;
@@ -224,6 +259,7 @@ export interface NotificationSettings {
   appUpdates: boolean;         // General info, new versions
   vehicleReminders: boolean;   // Digitální kaslík (STK, lékárnička, pojištění...)
   chatMessages: boolean;       // New chat messages
+  marketplaceNotifications: boolean; // New marketplace listings
 
   // Digest mode (group notifications)
   digestMode: boolean;
@@ -240,5 +276,6 @@ export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
   appUpdates: true,
   vehicleReminders: true,
   chatMessages: true,
+  marketplaceNotifications: true,
   digestMode: false
 };

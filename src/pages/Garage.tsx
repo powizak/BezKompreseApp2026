@@ -3,7 +3,7 @@ import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
 import type { Car, CarModification, VehicleReminder } from '../types';
-import { Plus, Pencil, Trash2, Camera, CarFront, Gauge, Wrench, X, Save, AlertCircle, Fuel, FileCheck } from 'lucide-react';
+import { Plus, Pencil, Trash2, Camera, CarFront, Gauge, Wrench, X, Save, AlertCircle, Fuel, FileCheck, Tag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -47,7 +47,8 @@ export default function Garage() {
   const initialFormState = {
     name: '', make: '', model: '', year: new Date().getFullYear().toString(),
     engine: '', power: 0, stockPower: 0, fuelConsumption: '', mods: [] as CarModification[], photos: [] as string[], isOwned: true,
-    reminders: [] as VehicleReminder[]
+    reminders: [] as VehicleReminder[],
+    forSale: false, salePrice: '', saleDescription: ''
   };
   const [formData, setFormData] = useState(initialFormState);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -89,7 +90,10 @@ export default function Garage() {
       mods: car.mods || [],
       photos: car.photos || [],
       isOwned: car.isOwned ?? true,
-      reminders: car.reminders || []
+      reminders: car.reminders || [],
+      forSale: car.forSale ?? false,
+      salePrice: car.salePrice?.toString() || '',
+      saleDescription: car.saleDescription || ''
     });
     setShowForm(true);
     setSelectedFiles([]); // Reset new files
@@ -234,7 +238,10 @@ export default function Garage() {
         mods: formData.mods,
         photos: finalPhotos,
         isOwned: formData.isOwned,
-        reminders: formData.reminders
+        reminders: formData.reminders,
+        forSale: formData.forSale,
+        salePrice: formData.salePrice ? parseInt(formData.salePrice) : undefined,
+        saleDescription: formData.saleDescription || undefined
       };
 
       if (editingCar) {
@@ -502,6 +509,53 @@ export default function Garage() {
                 </label>
               </div>
 
+              {/* For Sale Section */}
+              {formData.isOwned && (
+                <div className="mb-8 p-4 bg-green-50 rounded-xl border border-green-200">
+                  <label className="flex items-center gap-3 cursor-pointer mb-4">
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        className="peer sr-only"
+                        checked={formData.forSale}
+                        onChange={e => setFormData({ ...formData, forSale: e.target.checked })}
+                      />
+                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Tag size={16} className="text-green-600" />
+                      <span className="font-medium text-green-800">
+                        {formData.forSale ? "Auto je na prodej" : "Nabídnout k prodeji"}
+                      </span>
+                    </div>
+                  </label>
+
+                  {formData.forSale && (
+                    <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
+                      <div>
+                        <label className="block text-sm font-medium text-green-800 mb-1">Cena (Kč)</label>
+                        <input
+                          type="number"
+                          placeholder="např. 250000"
+                          className="w-full bg-white border border-green-200 p-3 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
+                          value={formData.salePrice}
+                          onChange={e => setFormData({ ...formData, salePrice: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-green-800 mb-1">Popis inzerátu</label>
+                        <textarea
+                          placeholder="Stav, výbava, důvod prodeje..."
+                          className="w-full bg-white border border-green-200 p-3 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all resize-none h-20"
+                          value={formData.saleDescription}
+                          onChange={e => setFormData({ ...formData, saleDescription: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="pt-4 border-t border-slate-100">
                 <button
                   type="submit"
@@ -546,6 +600,17 @@ export default function Garage() {
                   </div>
                 )}
                 <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
+
+                {/* For Sale Badge */}
+                {car.forSale && (
+                  <div className="absolute top-11 left-3 z-20">
+                    <span className="bg-green-500 text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg flex items-center gap-1">
+                      <Tag size={12} />
+                      Na prodej
+                    </span>
+                  </div>
+                )}
+
                 <div className="absolute bottom-0 left-0 p-4 text-white">
                   <h3 className="font-black text-2xl tracking-tight leading-none mb-1">{car.name}</h3>
                   <p className="text-sm font-medium opacity-90">{car.make} {car.model} {car.year}</p>

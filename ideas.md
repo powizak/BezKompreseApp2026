@@ -39,7 +39,7 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - Propojit rychlý chat s historií chatů (uchovávaných maximálně měsíc)
 - Přidat notifikace na nové zprávy v chatu
 
-### 🛠️ Bazar a Marketplace
+### ✅ Bazar a Marketplace - IMPLEMENTOVÁNO
 - Udělat vlastní stránku "Market" s dvěma záložkami - Prodej, Poptávka
 - Poptávka: "Sháním X", ilustrační foto, dodatečné informace, požadovaná cena.
 - Prodej aut: V sekci "Garáž" možnost označit celé auto na prodej. 

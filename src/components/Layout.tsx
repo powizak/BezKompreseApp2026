@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Home, Car, Calendar, Info, LogIn, Users, CarFront, Navigation, MessageSquare } from 'lucide-react';
+import { Home, Car, Calendar, Info, LogIn, Users, CarFront, Navigation, MessageSquare, Store } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 import { useChat } from '../contexts/ChatContext';
@@ -21,6 +21,7 @@ export default function Layout() {
     { icon: Car, label: 'Garáž', path: '/garage' },
     { icon: Navigation, label: 'Mapa', path: '/tracker' },
     { icon: MessageSquare, label: 'Zprávy', path: '/chats', badge: unreadCount > 0 ? unreadCount : undefined },
+    { icon: Store, label: 'Bazar', path: '/market' },
     { icon: Users, label: 'Lidé', path: '/users' },
     { icon: Calendar, label: 'Akce', path: '/events' },
     { icon: Info, label: 'Info', path: '/info' },

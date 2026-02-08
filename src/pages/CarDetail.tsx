@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import type { Car, UserProfile } from '../types';
-import { Car as CarIcon, Calendar, Gauge, Wrench, User, ChevronLeft, ChevronRight, X, Zap, ArrowUpRight, CarFront, Fuel } from 'lucide-react';
+import { Car as CarIcon, Calendar, Gauge, Wrench, User, ChevronLeft, ChevronRight, X, Zap, ArrowUpRight, CarFront, Fuel, Tag } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import LoginRequired from '../components/LoginRequired';
 
@@ -153,6 +153,16 @@ export default function CarDetail() {
                         </div>
                     </div>
 
+                    {/* For Sale Badge */}
+                    {car.forSale && (
+                        <div className="absolute top-6 left-6 z-10 pointer-events-none">
+                            <span className="bg-green-500 text-white font-black uppercase tracking-wider px-4 py-2 rounded-xl shadow-2xl flex items-center gap-2 transform -rotate-2">
+                                <Tag size={16} />
+                                Na prodej
+                                {car.salePrice && <span className="ml-1">· {car.salePrice.toLocaleString()} Kč</span>}
+                            </span>
+                        </div>
+                    )}
 
                     {/* Ownership Badge */}
                     {(car.isOwned ?? true) && (

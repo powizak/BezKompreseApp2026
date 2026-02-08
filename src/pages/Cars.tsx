@@ -5,7 +5,7 @@ import type { Car } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import LoginRequired from '../components/LoginRequired';
 import { Link } from 'react-router-dom';
-import { CarFront, Filter, X, Search, Calendar, Gauge } from 'lucide-react';
+import { CarFront, Filter, X, Search, Calendar, Gauge, Tag } from 'lucide-react';
 
 export default function CarsPage() {
     const { user } = useAuth();
@@ -171,6 +171,16 @@ export default function CarsPage() {
                                     <h3 className="font-black text-xl tracking-tight leading-none mb-1">{car.name}</h3>
                                     <p className="text-sm font-medium opacity-90">{car.make} {car.model}</p>
                                 </div>
+
+                                {/* For Sale Badge */}
+                                {car.forSale && (
+                                    <div className="absolute top-3 left-3 z-20">
+                                        <span className="bg-green-500 text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg flex items-center gap-1">
+                                            <Tag size={12} />
+                                            Na prodej
+                                        </span>
+                                    </div>
+                                )}
 
                                 {/* Ownership Badge */}
                                 {(car.isOwned ?? true) && (
