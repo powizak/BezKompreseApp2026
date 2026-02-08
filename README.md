@@ -73,7 +73,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Nativní nastavení**: Přímý odkaz do systémového nastavení notifikací (v Android aplikaci)
 
 ### 💡 Myšlenky pro budoucí verze
-- V [ideas.md](./ideas.md) najdete některé myšlenky pro budoucí verze aplikace, které můžete sami navrhovat.
+- V [ideas.md](docs/ideas.md) najdete některé myšlenky pro budoucí verze aplikace, které můžete sami navrhovat.
 
 ## Technologie
 
@@ -156,4 +156,4 @@ Zdrojový kód je zveřejněn za účelem transparentnosti a umožnění komunit
 - **✅ Povoleno:** Prohlížení kódu, učení se z něj, navrhování změn a oprav (Fork + Pull Request) do tohoto repozitáře.
 - **❌ Zakázáno:** Redistribuce, prodej, nebo provozování upravených kopií aplikace pod vlastním jménem bez výslovného souhlasu autora.
 
-Tento projekt je vytvořen pro fanoušky kanálu Bez Komprese.
+Tento projekt je vytvořen pro primárně pro fanoušky kanálu Bez Komprese, avšak budeme rádi za použití kýmkoliv dalším.
