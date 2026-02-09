@@ -1,4 +1,4 @@
-import { ShoppingBag, Wrench, Camera, Youtube, Instagram, Facebook, Truck, Shield, FileText } from 'lucide-react';
+import { ShoppingBag, Wrench, Camera, Youtube, Instagram, Facebook, Truck, Shield, FileText, Mail } from 'lucide-react';
 
 export default function Info() {
   const sections = [
@@ -79,6 +79,15 @@ export default function Info() {
           <div>
             <h3 className="font-bold text-lg mb-1 text-slate-800">Smluvní podmínky</h3>
             <p className="text-sm text-slate-500">Pravidla používání aplikace a vaše povinnosti jako uživatele.</p>
+          </div>
+        </a>
+        <a href="mailto:hello@jakubprosek.cz" className="flex items-center gap-4 bg-slate-50 p-5 rounded-2xl border border-slate-200 hover:bg-slate-100 transition-all group">
+          <div className="bg-slate-200 text-slate-600 p-3 rounded-xl group-hover:bg-slate-300 transition-colors">
+            <Mail size={24} />
+          </div>
+          <div>
+            <h3 className="font-bold text-lg mb-1 text-slate-800">Zpětná vazba</h3>
+            <p className="text-sm text-slate-500 leading-relaxed">Máte nějakou zpětnou vazbu k aplikaci? Něco Vám nejde nebo máte návrh na zlepšení? Popište to, co nejlépe přímo vývojáři</p>
           </div>
         </a>
       </div>

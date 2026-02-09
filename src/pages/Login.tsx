@@ -10,7 +10,7 @@ export default function Login() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-8 px-4 text-center">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm">
-        <h2 className="text-2xl font-bold mb-2">Vítejte v garáži</h2>
+        <h2 className="text-2xl font-bold mb-2">Vítejte v aplikaci Bez Komprese</h2>
         <p className="text-slate-500 mb-8">Přihlaste se pro správu svých aut a účast na srazech.</p>
 
         <button
