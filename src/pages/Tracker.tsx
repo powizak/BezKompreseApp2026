@@ -13,6 +13,7 @@ import type { HelpBeacon, BeaconType } from '../types';
 import LoginRequired from '../components/LoginRequired';
 import HelpBeaconModal from '../components/HelpBeaconModal';
 import 'leaflet/dist/leaflet.css';
+import { Capacitor } from '@capacitor/core';
 
 // Fix Leaflet icon issue
 // @ts-ignore
@@ -22,6 +23,93 @@ L.Icon.Default.mergeOptions({
     iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
+
+// Geolocation wrapper that works in both native and web environments
+const isNativePlatform = Capacitor.isNativePlatform();
+
+async function checkLocationPermission(): Promise<boolean> {
+    if (isNativePlatform) {
+        try {
+            const result = await Geolocation.checkPermissions();
+            return result.location === 'granted';
+        } catch (e) {
+            console.error('Error checking permissions:', e);
+            return false;
+        }
+    } else {
+        // In web browser, we can't pre-check permissions reliably
+        // Just check if geolocation API is available
+        return 'geolocation' in navigator;
+    }
+}
+
+async function requestLocationPermission(): Promise<boolean> {
+    if (isNativePlatform) {
+        try {
+            const result = await Geolocation.requestPermissions();
+            return result.location === 'granted';
+        } catch (e) {
+            console.error('Error requesting permissions:', e);
+            return false;
+        }
+    } else {
+        // In web, permissions are requested when getCurrentPosition/watchPosition is called
+        // We'll do a test call to trigger the browser's permission prompt
+        return new Promise((resolve) => {
+            if (!('geolocation' in navigator)) {
+                resolve(false);
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                () => resolve(true),
+                (error) => {
+                    console.error('Geolocation error:', error);
+                    // PERMISSION_DENIED = 1
+                    resolve(error.code !== 1);
+                },
+                { timeout: 5000 }
+            );
+        });
+    }
+}
+
+async function watchPosition(
+    callback: (position: { coords: { latitude: number; longitude: number } }) => void,
+    errorCallback: (error: any) => void
+): Promise<string | number> {
+    if (isNativePlatform) {
+        // Use Capacitor's watchPosition for native
+        const watchId = await Geolocation.watchPosition(
+            { enableHighAccuracy: true },
+            (pos, err) => {
+                if (err) {
+                    errorCallback(err);
+                    return;
+                }
+                if (pos) {
+                    callback(pos);
+                }
+            }
+        );
+        return watchId;
+    } else {
+        // Use browser's geolocation API for web
+        return navigator.geolocation.watchPosition(
+            (position) => callback(position),
+            (error) => errorCallback(error),
+            { enableHighAccuracy: true, maximumAge: 0 }
+        );
+    }
+}
+
+function clearWatch(watchId: string | number) {
+    if (isNativePlatform && typeof watchId === 'string') {
+        Geolocation.clearWatch({ id: watchId });
+    } else if (!isNativePlatform && typeof watchId === 'number') {
+        navigator.geolocation.clearWatch(watchId);
+    }
+}
 
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
     const R = 6371e3; // meters
@@ -98,7 +186,7 @@ export default function Tracker() {
     const [sosLoading, setSOSLoading] = useState(false);
     const [myBeacon, setMyBeacon] = useState<HelpBeacon | null>(null);
 
-    const watchId = useRef<string | null>(null);
+    const watchId = useRef<string | number | null>(null);
 
     const dataService = Effect.runSync(
         Effect.gen(function* (_) {
@@ -195,18 +283,11 @@ export default function Tracker() {
 
             // Clear existing watch if any to avoid duplicates
             if (watchId.current !== null) {
-                Geolocation.clearWatch({ id: watchId.current });
+                clearWatch(watchId.current);
             }
 
-            watchId.current = await Geolocation.watchPosition(
-                { enableHighAccuracy: true },
-                (pos, err) => {
-                    if (err) {
-                        console.error(err);
-                        return;
-                    }
-                    if (!pos) return;
-
+            const id = await watchPosition(
+                (pos) => {
                     const { latitude, longitude } = pos.coords;
                     setMyLoc([latitude, longitude]);
 
@@ -239,8 +320,14 @@ export default function Tracker() {
                         // If invisible or near home, ensure we are removed from map
                         Effect.runPromise(dataService.removePresence(user.uid));
                     }
+                },
+                (err) => {
+                    console.error("Tracking error:", err);
+                    setTrackingEnabled(false);
                 }
             );
+
+            watchId.current = id;
         } catch (e) {
             console.error("Error starting tracking", e);
             // If tracking fails, disable it
@@ -250,7 +337,7 @@ export default function Tracker() {
 
     const stopTracking = () => {
         if (watchId.current !== null) {
-            Geolocation.clearWatch({ id: watchId.current });
+            clearWatch(watchId.current);
             watchId.current = null;
         }
         if (user?.uid) {
@@ -356,11 +443,11 @@ export default function Tracker() {
                             if (newStatus) {
                                 // Request permission DIRECTLY in user action for iOS Safari compatibility
                                 try {
-                                    const hasPermission = await Geolocation.checkPermissions();
+                                    const hasPermission = await checkLocationPermission();
 
-                                    if (hasPermission.location !== 'granted') {
-                                        const request = await Geolocation.requestPermissions();
-                                        if (request.location !== 'granted') {
+                                    if (!hasPermission) {
+                                        const granted = await requestLocationPermission();
+                                        if (!granted) {
                                             alert('Pro zapnutí trackeru je nutné povolit přístup k poloze.');
                                             return;
                                         }
@@ -636,11 +723,11 @@ export default function Tracker() {
                                 onClick={async () => {
                                     // Request permission DIRECTLY in user action for iOS Safari compatibility
                                     try {
-                                        const hasPermission = await Geolocation.checkPermissions();
+                                        const hasPermission = await checkLocationPermission();
 
-                                        if (hasPermission.location !== 'granted') {
-                                            const request = await Geolocation.requestPermissions();
-                                            if (request.location !== 'granted') {
+                                        if (!hasPermission) {
+                                            const granted = await requestLocationPermission();
+                                            if (!granted) {
                                                 alert('Pro zapnutí trackeru je nutné povolit přístup k poloze.');
                                                 return;
                                             }
