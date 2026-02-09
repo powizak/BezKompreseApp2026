@@ -30,6 +30,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+schuzka.md
 
 # Android & iOS Secrets
 android/app/google-services.json

@@ -60,6 +60,11 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 
 ### 🏆 Gamifikace a "Build Threads"
 - Odznaky (Badges): "High Miler" (nájezd 300k+), "Wrench Wizard" (více než 10 DIY záznamů), "Event Junkie" (účast na srazech) atd.
+- Levely podle najetých km a podle počtu záznamů, účasti na srazech atd.
+- Sbírání BezKomprese známeček -> možnost si vybrat za známky "dárek" -> sleva na eshop nebo samolepka atd. 
+- Fight kartiček ve stylu "Kdo má lepší auto" - na základě statistik aut
+- Soutěže - nejlepší tuning, nejlepší fotka, nejlepší video, nejlepší úprava, nejvíce najetých kilometrů atd. 
+
 
 ## 3. Technická Vylepšení (Technical)
 ### 🩺 OBD-II Integrace (Budoucí rozvoj)
