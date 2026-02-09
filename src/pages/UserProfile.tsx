@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useChat } from '../contexts/ChatContext';
 import type { UserProfile, Car, AppEvent, NotificationSettings } from '../types';
 import { DEFAULT_NOTIFICATION_SETTINGS } from '../types';
-import { Car as CarIcon, UserPlus, UserMinus, Users, Calendar, MapPin, User, ChevronRight, Settings, Shield, Save, CarFront, Gauge, Fuel, MessageCircle } from 'lucide-react';
+import { Car as CarIcon, UserPlus, UserMinus, Users, Calendar, MapPin, User, ChevronRight, Settings, Shield, Save, CarFront, Gauge, Fuel, MessageCircle, LogOut } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -24,7 +24,7 @@ L.Icon.Default.mergeOptions({
 
 export default function UserProfilePage() {
     const { id } = useParams<{ id: string }>();
-    const { user: currentUser } = useAuth();
+    const { user: currentUser, logout } = useAuth();
     const { openChat } = useChat();
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [cars, setCars] = useState<Car[]>([]);
@@ -162,6 +162,13 @@ export default function UserProfilePage() {
             // alert('Chyba při ukládání nastavení. Zkontrolujte konzoli.');
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleLogout = async () => {
+        if (window.confirm('Opravdu se chcete odhlásit?')) {
+            await logout();
+            window.location.href = '/';
         }
     };
 
@@ -508,6 +515,30 @@ export default function UserProfilePage() {
                             onChange={setNotificationSettings}
                             userId={currentUser.uid}
                         />
+
+                        {/* Logout Section */}
+                        <section className="bg-white p-6 rounded-3xl border border-red-100 shadow-sm">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2 bg-red-50 text-red-600 rounded-xl">
+                                    <LogOut size={24} />
+                                </div>
+                                <div>
+                                    <h2 className="text-xl font-black italic uppercase tracking-tighter">Odhlášení</h2>
+                                    <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Ukončit relaci</p>
+                                </div>
+                            </div>
+
+                            <p className="text-sm text-slate-600 mb-6">
+                                Po odhlášení budete přesměrováni na úvodní stránku a budete se muset znovu přihlásit pro přístup k aplikaci.
+                            </p>
+
+                            <button
+                                onClick={handleLogout}
+                                className="w-full bg-red-600 text-white px-8 py-3 rounded-2xl font-black uppercase italic tracking-tighter shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all flex items-center justify-center gap-2"
+                            >
+                                <LogOut size={18} /> Odhlásit se
+                            </button>
+                        </section>
                     </div>
                 )}
             </div>

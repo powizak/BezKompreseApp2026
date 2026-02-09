@@ -190,15 +190,8 @@ export default function Tracker() {
 
     const startTracking = async () => {
         try {
-            const hasPermission = await Geolocation.checkPermissions();
-
-            if (hasPermission.location !== 'granted') {
-                const request = await Geolocation.requestPermissions();
-                if (request.location !== 'granted') {
-                    console.error("Location permission denied");
-                    return;
-                }
-            }
+            // Permission is already checked and granted by the button handlers
+            // This just starts the actual tracking
 
             // Clear existing watch if any to avoid duplicates
             if (watchId.current !== null) {
@@ -250,6 +243,8 @@ export default function Tracker() {
             );
         } catch (e) {
             console.error("Error starting tracking", e);
+            // If tracking fails, disable it
+            setTrackingEnabled(false);
         }
     };
 
@@ -355,10 +350,31 @@ export default function Tracker() {
                         </div>
                     )}
                     <button
-                        onClick={() => {
+                        onClick={async () => {
                             const newStatus = !trackingEnabled;
-                            setTrackingEnabled(newStatus);
-                            if (newStatus) setIsAutoFollow(true);
+
+                            if (newStatus) {
+                                // Request permission DIRECTLY in user action for iOS Safari compatibility
+                                try {
+                                    const hasPermission = await Geolocation.checkPermissions();
+
+                                    if (hasPermission.location !== 'granted') {
+                                        const request = await Geolocation.requestPermissions();
+                                        if (request.location !== 'granted') {
+                                            alert('Pro zapnutí trackeru je nutné povolit přístup k poloze.');
+                                            return;
+                                        }
+                                    }
+
+                                    setTrackingEnabled(true);
+                                    setIsAutoFollow(true);
+                                } catch (e) {
+                                    console.error('Failed to request permissions:', e);
+                                    alert('Nepodařilo se požádat o oprávnění k poloze.');
+                                }
+                            } else {
+                                setTrackingEnabled(false);
+                            }
                         }}
                         className={`px-6 py-2 rounded-full font-black uppercase text-xs tracking-wider transition-all shadow-md ${trackingEnabled
                             ? 'bg-red-50 text-red-500 border border-red-100 hover:bg-red-100'
@@ -617,7 +633,26 @@ export default function Tracker() {
                                 Pro zobrazení mapy a ostatních uživatelů musíš povolit sledování své polohy. Platí tvoje nastavení soukromí.
                             </p>
                             <button
-                                onClick={() => setTrackingEnabled(true)}
+                                onClick={async () => {
+                                    // Request permission DIRECTLY in user action for iOS Safari compatibility
+                                    try {
+                                        const hasPermission = await Geolocation.checkPermissions();
+
+                                        if (hasPermission.location !== 'granted') {
+                                            const request = await Geolocation.requestPermissions();
+                                            if (request.location !== 'granted') {
+                                                alert('Pro zapnutí trackeru je nutné povolit přístup k poloze.');
+                                                return;
+                                            }
+                                        }
+
+                                        setTrackingEnabled(true);
+                                        setIsAutoFollow(true);
+                                    } catch (e) {
+                                        console.error('Failed to request permissions:', e);
+                                        alert('Nepodařilo se požádat o oprávnění k poloze.');
+                                    }
+                                }}
                                 className="bg-brand text-brand-contrast w-full py-3 rounded-2xl font-black uppercase italic tracking-tighter shadow-lg hover:shadow-brand/20 transition-all"
                             >
                                 Zapnout a vidět ostatní

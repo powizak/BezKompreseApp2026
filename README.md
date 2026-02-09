@@ -39,8 +39,8 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **🆕 Diskuze pod akcí**: Komentáře a diskuze přímo u každé akce
 
 ### 👥 Komunita
-- **Profily Uživatelů**: Zobrazení garáže a aktivit ostatních členů
-- **Seznam Uživatelů**: Procházení celé komunity
+- **Profily Uživatelů**: Zobrazení garáže a aktivit ostatních členů (včetně možnosti **odhlášení** v nastavení)
+- **Seznam Uživatelů**: Procházení komunity s přehledem TOP 5 nejoblíbenějších členů a dalších petrolheadů
 - **Veřejné Garáže**: Inspirace od ostatních autíčkářů
 
 ### 📍 Live Tracker (NOVÉ!)
