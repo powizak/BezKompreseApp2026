@@ -124,15 +124,23 @@ export const DataServiceLive = Layer.succeed(
         }),
         addCar: (car) => Effect.tryPromise({
             try: async () => {
-                const docRef = await addDoc(collection(db, "cars"), car);
+                // Filter out undefined values and empty strings as Firestore doesn't accept them
+                const cleanCar = Object.fromEntries(
+                    Object.entries(car).filter(([_, v]) => v !== undefined && v !== "")
+                );
+                const docRef = await addDoc(collection(db, "cars"), cleanCar);
                 return docRef.id;
             },
             catch: (e) => new DataError("Failed to add car", e)
         }),
         updateCar: (carId, data) => Effect.tryPromise({
             try: async () => {
+                // Filter out undefined values and empty strings as Firestore doesn't accept them
+                const cleanData = Object.fromEntries(
+                    Object.entries(data).filter(([_, v]) => v !== undefined && v !== "")
+                );
                 const carRef = doc(db, "cars", carId);
-                await updateDoc(carRef, data);
+                await updateDoc(carRef, cleanData);
             },
             catch: (e) => new DataError("Failed to update car", e)
         }),

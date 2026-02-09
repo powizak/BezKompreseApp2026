@@ -17,6 +17,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Fotogalerie**: Až 4 fotky na auto s automatickou kompresí
 - **Tuning & Úpravy**: Sledování všech modifikací a vylepšení
 - **Historie Vlastnictví**: Označení aut, která již nevlastníte
+- **🆕 Statusy Aut**: Barevné odznaky pro auta (daily, sezónní, v renovaci, atd.)
 - **🆕 Servisní Knížka**: Kompletní digitální evidence servisu
 - **🆕 Digitální Kaslík**: Sledování platnosti STK, lékárničky, dálniční známky a pojištění (upozornění předem)
 - **🆕 Tankování a Statistiky**: Grafy spotřeby, náklady palivo vs servis, cena za km, automatická synchronizace tachometru

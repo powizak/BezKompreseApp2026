@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import type { Car } from '../types';
+import { VEHICLE_STATUS_CONFIG } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import LoginRequired from '../components/LoginRequired';
 import { Link } from 'react-router-dom';
@@ -194,6 +195,15 @@ export default function CarsPage() {
                                     <div className="absolute top-3 right-3 z-20">
                                         <span className="bg-slate-800 text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg flex items-center gap-1 opacity-90">
                                             Historie
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* Vehicle Status Badge */}
+                                {car.status && (
+                                    <div className="absolute top-3 left-3 z-20">
+                                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded shadow border flex items-center gap-1 ${VEHICLE_STATUS_CONFIG[car.status].color.bg} ${VEHICLE_STATUS_CONFIG[car.status].color.text} ${VEHICLE_STATUS_CONFIG[car.status].color.border}`}>
+                                            {VEHICLE_STATUS_CONFIG[car.status].label}
                                         </span>
                                     </div>
                                 )}

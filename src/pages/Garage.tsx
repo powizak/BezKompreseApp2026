@@ -2,7 +2,8 @@ import { useEffect, useState, useRef } from 'react';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
-import type { Car, CarModification, VehicleReminder } from '../types';
+import type { Car, CarModification, VehicleReminder, VehicleStatus } from '../types';
+import { VEHICLE_STATUS_CONFIG } from '../types';
 import { Plus, Pencil, Trash2, Camera, CarFront, Gauge, Wrench, X, Save, AlertCircle, Fuel, FileCheck, Tag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { clsx } from "clsx";
@@ -48,6 +49,7 @@ export default function Garage() {
     name: '', make: '', model: '', year: new Date().getFullYear().toString(),
     engine: '', power: 0, stockPower: 0, fuelConsumption: '', mods: [] as CarModification[], photos: [] as string[], isOwned: true,
     reminders: [] as VehicleReminder[],
+    status: undefined as VehicleStatus | undefined,
     forSale: false, salePrice: '', saleDescription: ''
   };
   const [formData, setFormData] = useState(initialFormState);
@@ -91,6 +93,7 @@ export default function Garage() {
       photos: car.photos || [],
       isOwned: car.isOwned ?? true,
       reminders: car.reminders || [],
+      status: car.status,
       forSale: car.forSale ?? false,
       salePrice: car.salePrice?.toString() || '',
       saleDescription: car.saleDescription || ''
@@ -234,11 +237,12 @@ export default function Garage() {
         engine: formData.engine,
         power: formData.power,
         stockPower: formData.stockPower,
-        fuelConsumption: formData.fuelConsumption,
+        fuelConsumption: formData.fuelConsumption || undefined,
         mods: formData.mods,
         photos: finalPhotos,
         isOwned: formData.isOwned,
         reminders: formData.reminders,
+        status: formData.status || undefined,
         forSale: formData.forSale,
         salePrice: formData.salePrice ? parseInt(formData.salePrice) : undefined,
         saleDescription: formData.saleDescription || undefined
@@ -491,6 +495,25 @@ export default function Garage() {
                 />
               </div>
 
+              {/* Vehicle Status */}
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <Tag size={16} className="text-slate-400" />
+                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Status Vozidla</h4>
+                </div>
+                <select
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-2 focus:ring-brand focus:border-transparent outline-none p-3 font-medium"
+                  value={formData.status || ''}
+                  onChange={e => setFormData({ ...formData, status: (e.target.value as VehicleStatus) || undefined })}
+                >
+                  <option value="">Bez statusu</option>
+                  {Object.entries(VEHICLE_STATUS_CONFIG).map(([key, config]) => (
+                    <option key={key} value={key}>{config.label}</option>
+                  ))}
+                </select>
+                <p className="text-xs text-slate-400 mt-2">Určete aktuální stav vozidla</p>
+              </div>
+
               {/* Ownership Status */}
               <div className="mb-8 p-4 bg-slate-50 rounded-xl border border-slate-200">
                 <label className="flex items-center gap-3 cursor-pointer">
@@ -644,6 +667,15 @@ export default function Garage() {
                   <div className="absolute top-3 left-3 z-20">
                     <span className="bg-slate-800 text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg flex items-center gap-1 opacity-90">
                       Historie
+                    </span>
+                  </div>
+                )}
+
+                {/* Vehicle Status Badge */}
+                {car.status && (
+                  <div className="absolute top-11 left-3 z-20">
+                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded shadow border flex items-center gap-1 ${VEHICLE_STATUS_CONFIG[car.status].color.bg} ${VEHICLE_STATUS_CONFIG[car.status].color.text} ${VEHICLE_STATUS_CONFIG[car.status].color.border}`}>
+                      {VEHICLE_STATUS_CONFIG[car.status].label}
                     </span>
                   </div>
                 )}

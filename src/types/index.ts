@@ -44,6 +44,7 @@ export interface Car {
   photos: string[];
   isOwned?: boolean;
   reminders?: VehicleReminder[];
+  status?: VehicleStatus;         // Status vozidla
   // Odometer tracking
   currentMileage?: number;        // Aktuální stav tachometru
   lastMileageUpdate?: string;     // Datum poslední aktualizace (ISO)
@@ -52,6 +53,60 @@ export interface Car {
   salePrice?: number;
   saleDescription?: string;
 }
+
+// Vehicle Status Types
+export type VehicleStatus =
+  | 'seasonal'           // Sezónní
+  | 'storage'            // Depozit
+  | 'restoration'        // V renovaci
+  | 'scrap'              // Do šrotu
+  | 'breakdown'          // Porucha
+  | 'racing'             // Závodní speciál
+  | 'daily'              // Daily
+  | 'work'               // Pracovní
+  | 'company';           // Služební
+
+export const VEHICLE_STATUS_CONFIG: Record<VehicleStatus, {
+  label: string;
+  color: { bg: string; text: string; border: string };
+}> = {
+  seasonal: {
+    label: 'Sezónní',
+    color: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' }
+  },
+  storage: {
+    label: 'Depozit',
+    color: { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' }
+  },
+  restoration: {
+    label: 'V renovaci',
+    color: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' }
+  },
+  scrap: {
+    label: 'Do šrotu',
+    color: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' }
+  },
+  breakdown: {
+    label: 'Porucha',
+    color: { bg: 'bg-red-50', text: 'text-red-600', border: 'border-red-200' }
+  },
+  racing: {
+    label: 'Závodní speciál',
+    color: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200' }
+  },
+  daily: {
+    label: 'Daily',
+    color: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200' }
+  },
+  work: {
+    label: 'Pracovní',
+    color: { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-200' }
+  },
+  company: {
+    label: 'Služební',
+    color: { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200' }
+  }
+};
 
 // Vehicle Reminder Types ("Digitální Kaslík")
 export type ReminderType = 'stk' | 'first_aid_kit' | 'highway_vignette' | 'liability_insurance';

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import type { Car, UserProfile } from '../types';
+import { VEHICLE_STATUS_CONFIG } from '../types';
 import { Car as CarIcon, Calendar, Gauge, Wrench, User, ChevronLeft, ChevronRight, X, Zap, ArrowUpRight, CarFront, Fuel, Tag } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import LoginRequired from '../components/LoginRequired';
@@ -176,6 +177,15 @@ export default function CarDetail() {
                         <div className="absolute top-6 right-6 z-10 pointer-events-none">
                             <span className="bg-slate-800 text-white font-black uppercase tracking-wider px-4 py-2 rounded-xl shadow-2xl flex items-center gap-2 opacity-90 transform -rotate-2 border border-slate-700">
                                 Historie / Prodáno
+                            </span>
+                        </div>
+                    )}
+
+                    {/* Vehicle Status Badge */}
+                    {car.status && (
+                        <div className="absolute top-20 right-6 z-10 pointer-events-none">
+                            <span className={`font-bold uppercase tracking-wider px-4 py-2 rounded-xl shadow-xl border flex items-center gap-2 transform rotate-2 ${VEHICLE_STATUS_CONFIG[car.status].color.bg} ${VEHICLE_STATUS_CONFIG[car.status].color.text} ${VEHICLE_STATUS_CONFIG[car.status].color.border}`}>
+                                {VEHICLE_STATUS_CONFIG[car.status].label}
                             </span>
                         </div>
                     )}
