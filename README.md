@@ -76,6 +76,10 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 ### 💡 Myšlenky pro budoucí verze
 - V [ideas.md](docs/ideas.md) najdete některé myšlenky pro budoucí verze aplikace, které můžete sami navrhovat.
 
+### 🐛 Známé Chyby
+- V [knowBugs.md](knowBugs.md) najdete seznam známých chyb a technických problémů, na kterých pracujeme.
+
+
 ## Technologie
 
 *   **Runtime:** Node.js (nebo Bun)
