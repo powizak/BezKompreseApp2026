@@ -8,12 +8,12 @@ export default function Login() {
   if (user) return <Navigate to="/garage" replace />;
 
   return (
-    <div className="flex flex-col items-center justify-center h-[70vh] text-center">
+    <div className="flex flex-col items-center justify-center min-h-screen py-8 px-4 text-center">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm">
         <h2 className="text-2xl font-bold mb-2">Vítejte v garáži</h2>
         <p className="text-slate-500 mb-8">Přihlaste se pro správu svých aut a účast na srazech.</p>
-        
-        <button 
+
+        <button
           onClick={login}
           className="w-full bg-slate-900 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors"
         >

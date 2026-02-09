@@ -28,18 +28,17 @@ export default function UsersPage() {
                 const results = await Effect.runPromise(dataService.searchUsers(queryStr));
                 setUsers(results);
             } else {
-                // Initial load: Get many users and sort client side for "Top" and "Random"
-                const allUsers = await Effect.runPromise(dataService.getAllUsers(50));
+                // Initial load: Get users and sort client side for "Top" and "Random"
+                const allUsers = await Effect.runPromise(dataService.getAllUsers(20));
                 setUsers(allUsers);
 
                 // Top Users Logic (Most friends)
                 const sortedByFriends = [...allUsers].sort((a, b) => (b.friends?.length || 0) - (a.friends?.length || 0));
                 setTopUsers(sortedByFriends.slice(0, 5));
 
-                // Random Users Logic (Simple shuffle)
+                // Random Users Logic - 10 users
                 const shuffled = [...allUsers].sort(() => 0.5 - Math.random());
-                // Ensure no duplicates from top users if possible, or just take first 5
-                setRandomUsers(shuffled.slice(0, 5));
+                setRandomUsers(shuffled.slice(0, 10));
             }
         } catch (e) {
             console.error(e);
@@ -152,6 +151,14 @@ export default function UsersPage() {
                                         <UserCard key={u.uid} user={u} currentUser={currentUser} onFriendAction={handleFriendAction} />
                                     ))}
                                 </div>
+                                {users.length > 15 && (
+                                    <div className="mt-6 text-center bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                                        <p className="text-slate-600 font-medium">
+                                            <Search className="inline-block mr-2" size={20} />
+                                            Hledáš někoho konkrétního? Použij vyhledávání výše.
+                                        </p>
+                                    </div>
+                                )}
                             </section>
                         </div>
                     )}
