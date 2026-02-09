@@ -53,24 +53,9 @@ async function requestLocationPermission(): Promise<boolean> {
             return false;
         }
     } else {
-        // In web, permissions are requested when getCurrentPosition/watchPosition is called
-        // We'll do a test call to trigger the browser's permission prompt
-        return new Promise((resolve) => {
-            if (!('geolocation' in navigator)) {
-                resolve(false);
-                return;
-            }
-
-            navigator.geolocation.getCurrentPosition(
-                () => resolve(true),
-                (error) => {
-                    console.error('Geolocation error:', error);
-                    // PERMISSION_DENIED = 1
-                    resolve(error.code !== 1);
-                },
-                { timeout: 5000 }
-            );
-        });
+        // In web browsers, permission is requested when watchPosition is called
+        // Just check if the API is available
+        return 'geolocation' in navigator;
     }
 }
 
@@ -323,7 +308,12 @@ export default function Tracker() {
                 },
                 (err) => {
                     console.error("Tracking error:", err);
-                    setTrackingEnabled(false);
+                    // Only disable tracking if permission was denied (code 1)
+                    // Other errors (timeout, position unavailable) should not stop tracking
+                    if (err.code === 1) {
+                        alert('Přístup k poloze byl zamítnut. Tracker byl vypnut.');
+                        setTrackingEnabled(false);
+                    }
                 }
             );
 

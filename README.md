@@ -44,7 +44,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Veřejné Garáže**: Inspirace od ostatních autíčkářů
 
 ### 📍 Live Tracker (NOVÉ!)
-- **Real-time Mapa**: Zobrazení polohy ostatních uživatelů v reálném čase
+- **Real-time Mapa**: Zobrazení polohy ostatních uživatelů v reálném čase (**hybridní podpora pro Safari/Chrome na iOS**)
 - **Privacy Zóny**: Automatické skrytí polohy v blízkosti domova
 - **Statusy**: Nastavení statusu (Dáme pokec?, Závod?, Projížďka?, atd.)
 - **🆘 Help Beacon**: S.O.S. systém pro nouzové situace
