@@ -5,6 +5,7 @@ import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
 import { useChat } from '../contexts/ChatContext';
 import type { UserProfile, Car, AppEvent, NotificationSettings } from '../types';
+import { getImageUrl } from '../lib/imageService';
 import { DEFAULT_NOTIFICATION_SETTINGS } from '../types';
 import { Car as CarIcon, UserPlus, UserMinus, Users, Calendar, MapPin, User, ChevronRight, Settings, Shield, Save, CarFront, Gauge, Fuel, MessageCircle, LogOut } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
@@ -275,7 +276,7 @@ export default function UserProfilePage() {
                                         {/* Image */}
                                         <div className="aspect-video bg-slate-100 relative overflow-hidden">
                                             {car.photos && car.photos.length > 0 ? (
-                                                <img src={car.photos[0]} alt={car.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                                <img src={getImageUrl(car.photos[0], 'thumb')} alt={car.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                             ) : (
                                                 <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
                                                     <CarFront size={48} strokeWidth={1.5} />

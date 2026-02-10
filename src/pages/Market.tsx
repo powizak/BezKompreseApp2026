@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo, useRef } from 'react';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
+import { getImageUrl } from '../lib/imageService';
 import { useChat } from '../contexts/ChatContext';
 import type { Car, MarketplaceListing, ListingType } from '../types';
 import { LISTING_TYPE_LABELS, LISTING_TYPE_COLORS } from '../types';
@@ -281,7 +282,7 @@ export default function Market() {
                             {/* Image */}
                             <div className="aspect-video bg-slate-100 relative overflow-hidden">
                                 {car.photos && car.photos.length > 0 ? (
-                                    <img src={car.photos[0]} alt={car.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                    <img src={getImageUrl(car.photos[0], 'thumb')} alt={car.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                 ) : (
                                     <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
                                         <CarFront size={48} strokeWidth={1.5} />
@@ -376,7 +377,7 @@ export default function Market() {
                                 {/* Image */}
                                 <div className="aspect-video bg-slate-100 relative overflow-hidden">
                                     {listing.imageUrl ? (
-                                        <img src={listing.imageUrl} alt={listing.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                        <img src={getImageUrl(listing.imageUrl, 'thumb')} alt={listing.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                     ) : (
                                         <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
                                             <ShoppingBag size={48} strokeWidth={1.5} />

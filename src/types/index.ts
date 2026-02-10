@@ -1,5 +1,17 @@
 export type TrackerStatus = 'Dáme pokec?' | 'Závod?' | 'Projížďka?' | 'Jen tak' | 'Na kafi' | 'V garáži';
 
+/**
+ * Image variants for different display contexts
+ * - thumb: 400x400px - for list/grid views
+ * - medium: 1000x1000px - for detail views
+ * - large: 1920x1920px - for full-screen/modals
+ */
+export interface ImageVariants {
+  thumb: string;
+  medium: string;
+  large: string;
+}
+
 export interface TrackerSettings {
   isEnabled: boolean;
   allowContact: boolean;
@@ -41,7 +53,7 @@ export interface Car {
   stockPower?: number;
   fuelConsumption?: string; // L/100km
   mods: CarModification[];
-  photos: string[];
+  photos: (string | ImageVariants)[]; // Backward compatible: supports legacy string URLs and new variants
   isOwned?: boolean;
   reminders?: VehicleReminder[];
   status?: VehicleStatus;         // Status vozidla
@@ -155,7 +167,7 @@ export interface AppEvent {
   location: string;
   coordinates?: { lat: number; lng: number };
   eventType: EventType;
-  imageUrl?: string;
+  imageUrl?: string | ImageVariants; // Backward compatible: supports legacy string URLs and new variants
   // Trackday specific fields
   registrationUrl?: string;
   price?: string;
@@ -285,7 +297,7 @@ export interface MarketplaceListing {
   type: ListingType;
   title: string;
   description: string;
-  imageUrl?: string;
+  imageUrl?: string | ImageVariants; // Backward compatible: supports legacy string URLs and new variants
   price?: number;       // Orientační/nabízená cena v Kč
   createdAt: any;       // Firebase Timestamp
   isActive: boolean;

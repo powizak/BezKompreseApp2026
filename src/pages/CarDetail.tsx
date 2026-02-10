@@ -6,6 +6,7 @@ import type { Car, UserProfile } from '../types';
 import { VEHICLE_STATUS_CONFIG } from '../types';
 import { Car as CarIcon, Calendar, Gauge, Wrench, User, ChevronLeft, ChevronRight, X, Zap, ArrowUpRight, CarFront, Fuel, Tag } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { getImageUrl } from '../lib/imageService';
 import LoginRequired from '../components/LoginRequired';
 
 export default function CarDetail() {
@@ -104,7 +105,7 @@ export default function CarDetail() {
                     {car.photos && car.photos.length > 0 ? (
                         <>
                             <img
-                                src={car.photos[activeImageIndex]}
+                                src={getImageUrl(car.photos[activeImageIndex], 'large')}
                                 alt={car.name}
                                 className="w-full h-full object-cover cursor-zoom-in transition-all duration-500"
                                 onClick={() => setIsImageModalOpen(true)}
@@ -332,7 +333,7 @@ export default function CarDetail() {
 
                         <div className="relative w-full h-full flex items-center justify-center group/modal" onClick={(e) => e.stopPropagation()}>
                             <img
-                                src={car.photos[activeImageIndex]}
+                                src={getImageUrl(car.photos[activeImageIndex], 'large')}
                                 alt={car.name}
                                 className="max-w-full max-h-full object-contain shadow-2xl rounded-lg animate-in zoom-in-95 duration-500"
                             />

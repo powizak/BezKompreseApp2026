@@ -2,17 +2,18 @@ import { useEffect, useState, useRef } from 'react';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
-import type { Car, CarModification, VehicleReminder, VehicleStatus } from '../types';
+import type { Car, CarModification, VehicleReminder, VehicleStatus, ImageVariants } from '../types';
 import { VEHICLE_STATUS_CONFIG } from '../types';
 import { Plus, Pencil, Trash2, Camera, CarFront, Gauge, Wrench, X, Save, AlertCircle, Fuel, FileCheck, Tag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { compressImage } from '../lib/imageOptimizer';
+import { getImageUrl } from '../lib/imageService';
 
 function cn(...inputs: (string | undefined | null | false)[]) {
   return twMerge(clsx(inputs));
 }
+
 
 import LoginRequired from '../components/LoginRequired';
 import VehicleRemindersEditor from '../components/VehicleRemindersEditor';
@@ -47,7 +48,7 @@ export default function Garage() {
   // Form State
   const initialFormState = {
     name: '', make: '', model: '', year: new Date().getFullYear().toString(),
-    engine: '', power: 0, stockPower: 0, fuelConsumption: '', mods: [] as CarModification[], photos: [] as string[], isOwned: true,
+    engine: '', power: 0, stockPower: 0, fuelConsumption: '', mods: [] as CarModification[], photos: [] as (string | ImageVariants)[], isOwned: true,
     reminders: [] as VehicleReminder[],
     status: undefined as VehicleStatus | undefined,
     forSale: false, salePrice: '', saleDescription: ''
@@ -159,7 +160,7 @@ export default function Garage() {
       const files = Array.from(e.target.files);
       const validFiles = files.filter(file => {
         if (file.size > 5 * 1024 * 1024) {
-          alert(`Fotka ${file.name} je příliš velká (max 5MB).`);
+          alert(`Fotka ${file.name} je příliš velká(max 5MB).`);
           return false;
         }
         return true;
@@ -178,8 +179,8 @@ export default function Garage() {
     setSelectedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const removeExistingPhoto = (url: string) => {
-    setFormData(prev => ({ ...prev, photos: prev.photos.filter(p => p !== url) }));
+  const removeExistingPhoto = (photo: string | ImageVariants) => {
+    setFormData(prev => ({ ...prev, photos: prev.photos.filter(p => p !== photo) }));
   };
 
   const addMod = () => {
@@ -208,25 +209,35 @@ export default function Garage() {
     setUploading(true);
     setError(null);
 
+
+
     try {
-      // 1. Upload new photos
-      const newPhotoUrls: string[] = [];
+      // 1. Upload new photos (imageService now handles compression and variant generation)
+      const newPhotoVariants: (string | ImageVariants)[] = [];
       // We need a temporary ID for new cars to folder structure, or just use timestamp
       const tempId = editingCar ? editingCar.id : `new_${Date.now()}`;
 
+
+
       for (const file of selectedFiles) {
         try {
-          const compressedFile = await compressImage(file);
-          const url = await Effect.runPromise(dataService.uploadCarPhoto(compressedFile, tempId));
-          newPhotoUrls.push(url);
+
+          // No need to compress - imageService handles everything
+          const variants = await Effect.runPromise(dataService.uploadCarPhoto(file, tempId));
+
+          newPhotoVariants.push(variants);
         } catch (err) {
-          console.error("Upload failed", err);
+          console.error("[Garage] Upload failed", err);
           // We continue with other files or fail? Let's continue but warn
           setError("Některé fotky se nepodařilo nahrát. Zkontrolujte připojení nebo Storage.");
         }
       }
 
-      const finalPhotos = [...formData.photos, ...newPhotoUrls];
+
+
+      const finalPhotos = [...formData.photos, ...newPhotoVariants];
+
+
 
       const carData = {
         ownerId: user.uid,
@@ -248,16 +259,20 @@ export default function Garage() {
         saleDescription: formData.saleDescription || undefined
       };
 
+
+
       if (editingCar) {
         await Effect.runPromise(dataService.updateCar(editingCar.id, carData));
       } else {
         await Effect.runPromise(dataService.addCar(carData as any));
       }
 
+
+
       resetForm();
       fetchCars();
     } catch (err) {
-      console.error("Save failed", err);
+      console.error("[Garage] Save failed", err);
       setError("Uložení selhalo. Zkuste to prosím znovu.");
     } finally {
       setUploading(false);
@@ -386,10 +401,10 @@ export default function Garage() {
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {/* Existing Photos */}
-                  {formData.photos.map((url) => (
-                    <div key={url} className="relative aspect-square rounded-xl overflow-hidden group border border-slate-200">
-                      <img src={url} className="w-full h-full object-cover" alt="Car" />
-                      <button type="button" onClick={() => removeExistingPhoto(url)} className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+                  {formData.photos.map((photo, index) => (
+                    <div key={index} className="relative aspect-square rounded-xl overflow-hidden group border border-slate-200">
+                      <img src={getImageUrl(photo, 'thumb')} className="w-full h-full object-cover" alt="Car" />
+                      <button type="button" onClick={() => removeExistingPhoto(photo)} className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
                         <X size={14} />
                       </button>
                     </div>
@@ -615,7 +630,7 @@ export default function Garage() {
               {/* Car Image Header */}
               <div className="aspect-video bg-slate-100 relative overflow-hidden">
                 {car.photos && car.photos.length > 0 ? (
-                  <img src={car.photos[0]} alt={car.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src={getImageUrl(car.photos[0], 'thumb')} alt={car.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
                     <CarFront size={48} strokeWidth={1.5} />
@@ -674,7 +689,7 @@ export default function Garage() {
                 {/* Vehicle Status Badge */}
                 {car.status && (
                   <div className="absolute top-11 left-3 z-20">
-                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded shadow border flex items-center gap-1 ${VEHICLE_STATUS_CONFIG[car.status].color.bg} ${VEHICLE_STATUS_CONFIG[car.status].color.text} ${VEHICLE_STATUS_CONFIG[car.status].color.border}`}>
+                    <span className={`text - [10px] font - bold uppercase tracking - wider px - 2 py - 1 rounded shadow border flex items - center gap - 1 ${VEHICLE_STATUS_CONFIG[car.status].color.bg} ${VEHICLE_STATUS_CONFIG[car.status].color.text} ${VEHICLE_STATUS_CONFIG[car.status].color.border} `}>
                       {VEHICLE_STATUS_CONFIG[car.status].label}
                     </span>
                   </div>
@@ -692,7 +707,7 @@ export default function Garage() {
                   return (
                     <div className="absolute bottom-3 right-3 z-20">
                       <span
-                        className={`w-3 h-3 rounded-full ${colors[status]} shadow-lg block`}
+                        className={`w - 3 h - 3 rounded - full ${colors[status]} shadow - lg block`}
                         title={status === 'green' ? 'Vše v pořádku' : status === 'yellow' ? 'Blíží se expirace' : 'Prošlá platnost!'}
                       />
                     </div>
@@ -760,12 +775,12 @@ export default function Garage() {
                 {/* Action Buttons */}
                 <div className="grid grid-cols-2 gap-2 border-t border-slate-100 pt-3 mt-3">
                   <Link
-                    to={`/garage/${car.id}/service`}
+                    to={`/ garage / ${car.id}/service`}
                     className="bg-slate-900 text-white font-bold py-2.5 rounded-xl hover:bg-black transition-all flex items-center justify-center gap-2 text-sm shadow-sm"
                   >
                     <Wrench size={16} />
                     Servis
-                  </Link>
+                  </Link >
                   <Link
                     to={`/garage/${car.id}/fuel`}
                     className="bg-brand text-slate-900 font-bold py-2.5 rounded-xl hover:bg-brand-dark transition-all flex items-center justify-center gap-2 text-sm shadow-sm"
@@ -773,25 +788,27 @@ export default function Garage() {
                     <Fuel size={16} />
                     Tankování
                   </Link>
-                </div>
-              </div>
-            </div>
+                </div >
+              </div >
+            </div >
           ))}
 
-          {cars.length === 0 && !showForm && (
-            <div className="col-span-full py-20 px-4 text-center border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
-              <div className="bg-white p-4 rounded-full inline-block shadow-sm mb-4">
-                <CarFront size={32} className="text-slate-300" />
+          {
+            cars.length === 0 && !showForm && (
+              <div className="col-span-full py-20 px-4 text-center border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
+                <div className="bg-white p-4 rounded-full inline-block shadow-sm mb-4">
+                  <CarFront size={32} className="text-slate-300" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-1">Zatím prázdná garáž</h3>
+                <p className="text-slate-500 mb-6 max-w-xs mx-auto">Přidejte své první auto, sepisujte úpravy a sdílejte progres.</p>
+                <button onClick={() => setShowForm(true)} className="text-brand font-bold hover:underline">
+                  + Přidat první kousek
+                </button>
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-1">Zatím prázdná garáž</h3>
-              <p className="text-slate-500 mb-6 max-w-xs mx-auto">Přidejte své první auto, sepisujte úpravy a sdílejte progres.</p>
-              <button onClick={() => setShowForm(true)} className="text-brand font-bold hover:underline">
-                + Přidat první kousek
-              </button>
-            </div>
-          )}
-        </div>
+            )
+          }
+        </div >
       )}
-    </div>
+    </div >
   );
 }

@@ -3,10 +3,10 @@ import {
     collection, addDoc, getDocs, query, where, updateDoc, doc, limit, deleteDoc,
     getDoc, onSnapshot, setDoc, serverTimestamp, Timestamp, orderBy, writeBatch
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../config/firebase";
-import type { Car, AppEvent, SocialPost, UserProfile, ServiceRecord, FuelRecord, HelpBeacon, EventType, EventComment, MarketplaceListing } from "../types";
+import { db } from "../config/firebase";
+import type { Car, AppEvent, SocialPost, UserProfile, ServiceRecord, FuelRecord, HelpBeacon, EventType, EventComment, MarketplaceListing, ImageVariants } from "../types";
 import type { PresenceInfo, Message, ChatRoom } from "../types/chat";
+import { processAndUploadImage } from "../lib/imageService";
 
 export class DataError {
     readonly _tag = "DataError";
@@ -23,14 +23,14 @@ export interface DataService {
     readonly addCar: (car: Omit<Car, "id">) => Effect.Effect<string, DataError>;
     readonly updateCar: (carId: string, data: Partial<Car>) => Effect.Effect<void, DataError>;
     readonly deleteCar: (carId: string) => Effect.Effect<void, DataError>;
-    readonly uploadCarPhoto: (file: File, carId: string) => Effect.Effect<string, DataError>;
+    readonly uploadCarPhoto: (file: File, carId: string) => Effect.Effect<ImageVariants, DataError>;
     readonly getEvents: Effect.Effect<AppEvent[], DataError>;
     readonly getEventsFiltered: (filters: { eventType?: EventType; upcoming?: boolean }) => Effect.Effect<AppEvent[], DataError>;
     readonly getEventById: (id: string) => Effect.Effect<AppEvent | undefined, DataError>;
     readonly addEvent: (event: Omit<AppEvent, "id">) => Effect.Effect<string, DataError>;
     readonly updateEvent: (eventId: string, data: Partial<AppEvent>) => Effect.Effect<void, DataError>;
     readonly deleteEvent: (eventId: string) => Effect.Effect<void, DataError>;
-    readonly uploadEventImage: (file: File, eventId: string) => Effect.Effect<string, DataError>;
+    readonly uploadEventImage: (file: File, eventId: string) => Effect.Effect<ImageVariants, DataError>;
     readonly getSocialFeed: Effect.Effect<SocialPost[], DataError>;
     readonly getUserProfile: (userId: string) => Effect.Effect<{ profile: UserProfile, cars: Car[] } | null, DataError>;
     readonly searchUsers: (query: string) => Effect.Effect<UserProfile[], DataError>;
@@ -95,7 +95,7 @@ export interface DataService {
     readonly deleteMarketplaceListing: (listingId: string) => Effect.Effect<void, DataError>;
     readonly getCarsForSale: (limitCount?: number) => Effect.Effect<Car[], DataError>;
     readonly markCarAsSold: (carId: string) => Effect.Effect<void, DataError>;
-    readonly uploadListingImage: (file: File, listingId: string) => Effect.Effect<string, DataError>;
+    readonly uploadListingImage: (file: File, listingId: string) => Effect.Effect<ImageVariants, DataError>;
 }
 
 export const DataService = Context.GenericTag<DataService>("DataService");
@@ -151,14 +151,12 @@ export const DataServiceLive = Layer.succeed(
             },
             catch: (e) => new DataError("Failed to delete car", e)
         }),
-        uploadCarPhoto: (file, carId) => Effect.tryPromise({
-            try: async () => {
-                const storageRef = ref(storage, `cars/${carId}/${Date.now()}_${file.name}`);
-                const snapshot = await uploadBytes(storageRef, file);
-                const downloadURL = await getDownloadURL(snapshot.ref);
-                return downloadURL;
-            },
-            catch: (e) => new DataError("Failed to upload photo", e)
+        uploadCarPhoto: (file, carId) => Effect.gen(function* (_) {
+            const basePath = `cars/${carId}/${Date.now()}`;
+            const result = yield* _(processAndUploadImage(file, basePath).pipe(
+                Effect.mapError((e) => new DataError("Failed to upload car photo", e))
+            ));
+            return result;
         }),
         getEvents: Effect.tryPromise({
             try: async () => {
@@ -229,44 +227,12 @@ export const DataServiceLive = Layer.succeed(
             },
             catch: (e) => new DataError("Failed to delete event", e)
         }),
-        uploadEventImage: (file, eventId) => Effect.tryPromise({
-            try: async () => {
-                // Resize image before upload (similar to car photos)
-                const resizedBlob = await new Promise<Blob>((resolve, reject) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const MAX_SIZE = 1200;
-                        let { width, height } = img;
-
-                        if (width > height && width > MAX_SIZE) {
-                            height = (height * MAX_SIZE) / width;
-                            width = MAX_SIZE;
-                        } else if (height > MAX_SIZE) {
-                            width = (width * MAX_SIZE) / height;
-                            height = MAX_SIZE;
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx?.drawImage(img, 0, 0, width, height);
-                        canvas.toBlob(
-                            (blob) => blob ? resolve(blob) : reject(new Error('Failed to create blob')),
-                            'image/webp',
-                            0.85
-                        );
-                    };
-                    img.onerror = reject;
-                    img.src = URL.createObjectURL(file);
-                });
-
-                const storageRef = ref(storage, `events/${eventId}/${Date.now()}.webp`);
-                const snapshot = await uploadBytes(storageRef, resizedBlob);
-                const downloadURL = await getDownloadURL(snapshot.ref);
-                return downloadURL;
-            },
-            catch: (e) => new DataError("Failed to upload event image", e)
+        uploadEventImage: (file, eventId) => Effect.gen(function* (_) {
+            const basePath = `events/${eventId}/${Date.now()}`;
+            const result = yield* _(processAndUploadImage(file, basePath).pipe(
+                Effect.mapError((e) => new DataError("Failed to upload event image", e))
+            ));
+            return result;
         }),
         getSocialFeed: Effect.tryPromise({
             try: async () => {
@@ -937,44 +903,12 @@ export const DataServiceLive = Layer.succeed(
             catch: (e) => new DataError("Failed to mark car as sold", e)
         }),
 
-        uploadListingImage: (file, listingId) => Effect.tryPromise({
-            try: async () => {
-                // Resize image before upload
-                const resizedBlob = await new Promise<Blob>((resolve, reject) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const MAX_SIZE = 1200;
-                        let { width, height } = img;
-
-                        if (width > height && width > MAX_SIZE) {
-                            height = (height * MAX_SIZE) / width;
-                            width = MAX_SIZE;
-                        } else if (height > MAX_SIZE) {
-                            width = (width * MAX_SIZE) / height;
-                            height = MAX_SIZE;
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx?.drawImage(img, 0, 0, width, height);
-                        canvas.toBlob(
-                            (blob) => blob ? resolve(blob) : reject(new Error('Failed to create blob')),
-                            'image/webp',
-                            0.85
-                        );
-                    };
-                    img.onerror = reject;
-                    img.src = URL.createObjectURL(file);
-                });
-
-                const storageRef = ref(storage, `marketplace/${listingId}/${Date.now()}.webp`);
-                const snapshot = await uploadBytes(storageRef, resizedBlob);
-                const downloadURL = await getDownloadURL(snapshot.ref);
-                return downloadURL;
-            },
-            catch: (e) => new DataError("Failed to upload listing image", e)
+        uploadListingImage: (file, listingId) => Effect.gen(function* (_) {
+            const basePath = `marketplace/${listingId}/${Date.now()}`;
+            const result = yield* _(processAndUploadImage(file, basePath).pipe(
+                Effect.mapError((e) => new DataError("Failed to upload listing image", e))
+            ));
+            return result;
         })
     })
 );

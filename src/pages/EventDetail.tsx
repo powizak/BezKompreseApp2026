@@ -7,6 +7,7 @@ import { EVENT_TYPE_LABELS, EVENT_TYPE_COLORS } from '../types';
 import { MapPin, Calendar, ArrowLeft, Share2, Check, User, Navigation, ExternalLink, Users, FileText, Phone, Send, Trash2 } from 'lucide-react';
 import EventMap from '../components/EventMap';
 import { useAuth } from '../contexts/AuthContext';
+import { getImageUrl } from '../lib/imageService';
 import LoginRequired from '../components/LoginRequired';
 
 export default function EventDetail() {
@@ -155,7 +156,7 @@ export default function EventDetail() {
                 {/* Hero Image */}
                 {event.imageUrl ? (
                     <div className="relative h-56 md:h-72">
-                        <img src={event.imageUrl} alt={event.title} className="w-full h-full object-cover" />
+                        <img src={getImageUrl(event.imageUrl, 'large')} alt={event.title} className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                         <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                             <div className="flex flex-wrap items-center gap-2 mb-3">
