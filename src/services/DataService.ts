@@ -39,6 +39,12 @@ export interface DataService {
     readonly getAllUsers: (limitCount?: number) => Effect.Effect<UserProfile[], DataError>;
     readonly getUserEvents: (userId: string) => Effect.Effect<{ created: AppEvent[], joined: AppEvent[] }, DataError>;
     readonly getAllCars: (limitCount?: number) => Effect.Effect<Car[], DataError>;
+    readonly getCarsPaginated: (
+        limitCount?: number,
+        lastVisible?: any,
+        filters?: { make?: string; model?: string; engine?: string }
+    ) => Effect.Effect<{ cars: Car[], lastVisible: any }, DataError>;
+    readonly getFilterOptions: () => Effect.Effect<{ makes: string[], models: string[], engines: string[] }, DataError>;
     readonly getCarById: (carId: string) => Effect.Effect<Car | undefined, DataError>;
 
     // Profile & Tracker Settings
@@ -107,12 +113,66 @@ export const DataServiceLive = Layer.succeed(
             try: async () => {
                 const q = query(
                     collection(db, "cars"),
+                    orderBy("createdAt", "desc"),
                     limit(limitCount)
                 );
                 const snapshot = await getDocs(q);
                 return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Car));
             },
             catch: (e) => new DataError("Failed to fetch all cars", e)
+        }),
+        getCarsPaginated: (limitCount = 18, lastVisible = null, filters: { make?: string; model?: string; engine?: string } = {}) => Effect.tryPromise({
+            try: async () => {
+                const constraints: any[] = [];
+
+                // Add filters
+                if (filters.make) constraints.push(where("make", "==", filters.make));
+                if (filters.model) constraints.push(where("model", "==", filters.model));
+                if (filters.engine) constraints.push(where("engine", "==", filters.engine));
+
+                // Add sorting (must be consistent)
+                // Use year as primary sort, name as secondary for stability
+                constraints.push(orderBy("year", "desc"));
+                constraints.push(orderBy("name", "asc"));
+
+                // Add pagination cursor
+                if (lastVisible) {
+                    const { startAfter } = await import("firebase/firestore");
+                    constraints.push(startAfter(lastVisible));
+                }
+
+                // Add limit
+                constraints.push(limit(limitCount));
+
+                const q = query(collection(db, "cars"), ...constraints);
+                const snapshot = await getDocs(q);
+
+                const cars = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Car));
+                const lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+
+                return { cars, lastVisible: lastVisibleDoc };
+            },
+            catch: (e) => new DataError("Failed to fetch paginated cars", e)
+        }),
+        getFilterOptions: () => Effect.tryPromise({
+            try: async () => {
+                // Fetch a large batch to populate filters
+                const q = query(
+                    collection(db, "cars"),
+                    orderBy("year", "desc"),
+                    limit(1000)
+                );
+                const snapshot = await getDocs(q);
+                const cars = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Car));
+
+                // Extract unique values
+                const makes = Array.from(new Set(cars.map(c => c.make).filter(Boolean))).sort();
+                const models = Array.from(new Set(cars.map(c => c.model).filter(Boolean))).sort();
+                const engines = Array.from(new Set(cars.map(c => c.engine).filter(Boolean))).sort();
+
+                return { makes, models, engines };
+            },
+            catch: (e) => new DataError("Failed to fetch filter options", e)
         }),
         getMyCars: (userId) => Effect.tryPromise({
             try: async () => {

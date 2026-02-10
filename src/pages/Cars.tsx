@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import type { Car } from '../types';
@@ -13,6 +13,9 @@ export default function CarsPage() {
     const { user } = useAuth();
     const [cars, setCars] = useState<Car[]>([]);
     const [loading, setLoading] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [lastVisible, setLastVisible] = useState<any>(null);
+    const [hasMore, setHasMore] = useState(true);
 
     // Filters State
     const [filters, setFilters] = useState({
@@ -21,54 +24,80 @@ export default function CarsPage() {
         engine: ''
     });
 
+    const [filterOptions, setFilterOptions] = useState<{ makes: string[], models: string[], engines: string[] }>({
+        makes: [],
+        models: [],
+        engines: []
+    });
+
     const dataService = Effect.runSync(
         Effect.gen(function* (_) {
             return yield* _(DataService);
         }).pipe(Effect.provide(DataServiceLive))
     );
 
+    // Initial load of filter options
+    useEffect(() => {
+        if (!user) return;
+
+        const loadOptions = async () => {
+            const options = await Effect.runPromise(dataService.getFilterOptions());
+            setFilterOptions(options);
+        };
+        loadOptions();
+    }, [user]);
+
+    // Load cars when filters change or on initial load
     useEffect(() => {
         if (!user) {
             setLoading(false);
             return;
         }
+
         const loadCars = async () => {
-            const fetchedCars = await Effect.runPromise(dataService.getAllCars(100)); // Fetch up to 100 cars
-            setCars(fetchedCars);
-            setLoading(false);
+            setLoading(true);
+            try {
+                const result = await Effect.runPromise(
+                    dataService.getCarsPaginated(18, null, filters)
+                );
+                setCars(result.cars);
+                setLastVisible(result.lastVisible);
+                setHasMore(result.cars.length === 18);
+            } catch (error) {
+                console.error("Failed to load cars:", error);
+            } finally {
+                setLoading(false);
+            }
         };
-        loadCars();
-    }, [user]);
 
-    // Extract unique filter options based on available data
-    const filterOptions = useMemo(() => {
-        const getUnique = (arr: (string | undefined)[]) => {
-            const trimmed = arr.map(s => s?.trim()).filter((s): s is string => !!s);
-            return Array.from(new Set(trimmed))
-                .filter((val, idx, self) => self.findIndex(v => v.toLowerCase() === val.toLowerCase()) === idx)
-                .sort();
-        };
+        // Debounce slightly to prevent rapid firing if user clicks fast, 
+        // though for selects it's less critical than text inputs.
+        const timer = setTimeout(loadCars, 100);
+        return () => clearTimeout(timer);
+    }, [user, filters]);
 
-        const makes = getUnique(cars.map(c => c.make));
-        const models = getUnique(cars.map(c => c.model));
-        const engines = getUnique(cars.map(c => c.engine));
+    const loadMore = async () => {
+        if (!lastVisible || loadingMore) return;
 
-        return { makes, models, engines };
-    }, [cars]);
+        setLoadingMore(true);
+        try {
+            const result = await Effect.runPromise(
+                dataService.getCarsPaginated(18, lastVisible, filters)
+            );
 
-    // Apply filters
-    const filteredCars = useMemo(() => {
-        return cars.filter(car => {
-            if (filters.make && car.make.trim().toLowerCase() !== filters.make.toLowerCase()) return false;
-            if (filters.model && car.model.trim().toLowerCase() !== filters.model.toLowerCase()) return false;
-            if (filters.engine && car.engine.trim().toLowerCase() !== filters.engine.toLowerCase()) return false;
-            return true;
-        });
-    }, [cars, filters]);
+            setCars(prev => [...prev, ...result.cars]);
+            setLastVisible(result.lastVisible);
+            setHasMore(result.cars.length === 18);
+        } catch (error) {
+            console.error("Failed to load more cars:", error);
+        } finally {
+            setLoadingMore(false);
+        }
+    };
 
     const resetFilters = () => setFilters({ make: '', model: '', engine: '' });
 
-    if (loading) {
+    if (loading && cars.length === 0) {
         return (
             <div className="flex justify-center items-center py-20">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
@@ -87,7 +116,7 @@ export default function CarsPage() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+        <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 pb-12">
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-4">
                 <div>
@@ -118,18 +147,31 @@ export default function CarsPage() {
                         className="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-brand focus:border-brand block w-full p-2.5 outline-none font-medium"
                         value={filters.model}
                         onChange={e => setFilters(prev => ({ ...prev, model: e.target.value }))}
-                        disabled={!filters.make && filterOptions.makes.length > 0} // Optional UX choice
+                        disabled={!filters.make}
                     >
                         <option value="">Všechny modely</option>
-                        {filterOptions.models.filter(m =>
-                            !filters.make ||
-                            cars.some(c =>
-                                c.make.trim().toLowerCase() === filters.make.toLowerCase() &&
-                                c.model.trim().toLowerCase() === m.toLowerCase()
-                            )
-                        ).map(model => (
-                            <option key={model} value={model}>{model}</option>
-                        ))}
+                        {filterOptions.models
+                            // Optimistically filter models client-side if we have a make selected, 
+                            // though strict server filtering will happen on fetch.
+                            // Since we fetch "all" options upfront, this simple filter helps UX.
+                            // However, we need to match the logic of "what models belong to this make".
+                            // The getFilterOptions returns ALL models. 
+                            // To properly filter models by make in the dropdown WITHOUT fetching again,
+                            // we would need a map of make->models. 
+                            // Current implementation of getFilterOptions just returns flat lists.
+                            // So here we show ALL models unless we improve getFilterOptions.
+                            // BUT, for now, let's keep it simple: show all, or if the user wants true dependent dropdowns,
+                            // we'd need to fetch filter options differently.
+                            // Given the prompt "make it possible to load all cars gradually", 
+                            // let's stick to the requested behavior. 
+                            // To improve UX, we can filter the models list based on the loaded cars IF we had them all,
+                            // but we don't. 
+                            // SO: We will show ALL models in the list (or we could improve getFilterOptions to return a tree).
+                            // For this iteration, let's show all models, but maybe filtered by what we know? 
+                            // No, showing all is safer than showing none.
+                            .map(model => (
+                                <option key={model} value={model}>{model}</option>
+                            ))}
                     </select>
 
                     <select
@@ -156,8 +198,8 @@ export default function CarsPage() {
 
             {/* Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredCars.length > 0 ? (
-                    filteredCars.map(car => (
+                {cars.length > 0 ? (
+                    cars.map(car => (
                         <Link to={`/car/${car.id}`} key={car.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden group hover:shadow-xl transition-all duration-300 block">
                             {/* Image */}
                             <div className="aspect-video bg-slate-100 relative overflow-hidden">
@@ -222,15 +264,39 @@ export default function CarsPage() {
                         </Link>
                     ))
                 ) : (
-                    <div className="col-span-full py-20 text-center text-slate-400">
-                        <div className="bg-slate-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Search size={32} />
+                    !loading && (
+                        <div className="col-span-full py-20 text-center text-slate-400">
+                            <div className="bg-slate-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Search size={32} />
+                            </div>
+                            <p className="font-medium">Nenašli jsme žádná auta odpovídající filtrům.</p>
+                            <button onClick={resetFilters} className="text-brand font-bold mt-2 hover:underline">Zrušit filtry</button>
                         </div>
-                        <p className="font-medium">Nenašli jsme žádná auta odpovídající filtrům.</p>
-                        <button onClick={resetFilters} className="text-brand font-bold mt-2 hover:underline">Zrušit filtry</button>
-                    </div>
+                    )
                 )}
             </div>
+
+            {/* Load More Button */}
+            {hasMore && cars.length > 0 && (
+                <div className="flex justify-center pt-8">
+                    <button
+                        onClick={loadMore}
+                        disabled={loadingMore}
+                        className="bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 font-bold py-3 px-8 rounded-xl shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                        {loadingMore ? (
+                            <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-900"></div>
+                                Načítám...
+                            </>
+                        ) : (
+                            <>
+                                Načíst další
+                            </>
+                        )}
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

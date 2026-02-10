@@ -42,6 +42,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Profily Uživatelů**: Zobrazení garáže a aktivit ostatních členů (včetně možnosti **odhlášení** v nastavení)
 - **Seznam Uživatelů**: Procházení komunity s přehledem TOP 5 nejoblíbenějších členů a dalších petrolheadů
 - **Veřejné Garáže**: Inspirace od ostatních autíčkářů
+- **🚀 Výkonné Procházení**: Serverové stránkování a filtrování všech aut pro bleskové načítání i při tisících vozidlech
 
 ### 📍 Live Tracker (NOVÉ!)
 - **Real-time Mapa**: Zobrazení polohy ostatních uživatelů v reálném čase (**hybridní podpora pro Safari/Chrome na iOS**)

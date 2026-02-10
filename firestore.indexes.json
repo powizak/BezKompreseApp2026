@@ -1,0 +1,165 @@
+{
+    "indexes": [
+        {
+            "collectionGroup": "cars",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "year",
+                    "order": "DESCENDING"
+                },
+                {
+                    "fieldPath": "name",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "cars",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "make",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "year",
+                    "order": "DESCENDING"
+                },
+                {
+                    "fieldPath": "name",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "cars",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "model",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "year",
+                    "order": "DESCENDING"
+                },
+                {
+                    "fieldPath": "name",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "cars",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "engine",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "year",
+                    "order": "DESCENDING"
+                },
+                {
+                    "fieldPath": "name",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "cars",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "make",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "model",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "year",
+                    "order": "DESCENDING"
+                },
+                {
+                    "fieldPath": "name",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "cars",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "make",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "engine",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "year",
+                    "order": "DESCENDING"
+                },
+                {
+                    "fieldPath": "name",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "cars",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "model",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "engine",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "year",
+                    "order": "DESCENDING"
+                },
+                {
+                    "fieldPath": "name",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "cars",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "make",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "model",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "engine",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "year",
+                    "order": "DESCENDING"
+                },
+                {
+                    "fieldPath": "name",
+                    "order": "ASCENDING"
+                }
+            ]
+        }
+    ],
+    "fieldOverrides": []
+}
