@@ -775,7 +775,7 @@ export default function Garage() {
                 {/* Action Buttons */}
                 <div className="grid grid-cols-2 gap-2 border-t border-slate-100 pt-3 mt-3">
                   <Link
-                    to={`/ garage / ${car.id}/service`}
+                    to={`/garage/${car.id}/service`}
                     className="bg-slate-900 text-white font-bold py-2.5 rounded-xl hover:bg-black transition-all flex items-center justify-center gap-2 text-sm shadow-sm"
                   >
                     <Wrench size={16} />
