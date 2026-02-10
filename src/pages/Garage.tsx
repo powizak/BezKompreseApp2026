@@ -17,6 +17,7 @@ function cn(...inputs: (string | undefined | null | false)[]) {
 
 import LoginRequired from '../components/LoginRequired';
 import VehicleRemindersEditor from '../components/VehicleRemindersEditor';
+import CachedImage from '../components/CachedImage';
 
 // Helper to determine worst reminder status for a car
 function getReminderStatus(reminders?: VehicleReminder[]): 'green' | 'yellow' | 'red' | null {
@@ -403,7 +404,7 @@ export default function Garage() {
                   {/* Existing Photos */}
                   {formData.photos.map((photo, index) => (
                     <div key={index} className="relative aspect-square rounded-xl overflow-hidden group border border-slate-200">
-                      <img src={getImageUrl(photo, 'thumb')} className="w-full h-full object-cover" alt="Car" />
+                      <CachedImage src={getImageUrl(photo, 'thumb')} className="w-full h-full object-cover" alt="Car" />
                       <button type="button" onClick={() => removeExistingPhoto(photo)} className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
                         <X size={14} />
                       </button>
@@ -630,7 +631,7 @@ export default function Garage() {
               {/* Car Image Header */}
               <div className="aspect-video bg-slate-100 relative overflow-hidden">
                 {car.photos && car.photos.length > 0 ? (
-                  <img src={getImageUrl(car.photos[0], 'thumb')} alt={car.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <CachedImage src={getImageUrl(car.photos[0], 'thumb')} alt={car.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
                     <CarFront size={48} strokeWidth={1.5} />

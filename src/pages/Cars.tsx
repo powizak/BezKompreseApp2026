@@ -8,6 +8,7 @@ import { getImageUrl } from '../lib/imageService';
 import LoginRequired from '../components/LoginRequired';
 import { Link } from 'react-router-dom';
 import { CarFront, Filter, X, Search, Calendar, Gauge, Tag } from 'lucide-react';
+import CachedImage from '../components/CachedImage';
 
 export default function CarsPage() {
     const { user } = useAuth();
@@ -204,7 +205,7 @@ export default function CarsPage() {
                             {/* Image */}
                             <div className="aspect-video bg-slate-100 relative overflow-hidden">
                                 {car.photos && car.photos.length > 0 ? (
-                                    <img src={getImageUrl(car.photos[0], 'thumb')} alt={car.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                    <CachedImage src={getImageUrl(car.photos[0], 'thumb')} alt={car.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                 ) : (
                                     <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
                                         <CarFront size={48} strokeWidth={1.5} />

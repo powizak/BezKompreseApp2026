@@ -8,6 +8,7 @@ import type { Car, MarketplaceListing, ListingType } from '../types';
 import { LISTING_TYPE_LABELS, LISTING_TYPE_COLORS } from '../types';
 import LoginRequired from '../components/LoginRequired';
 import ChatDrawer from '../components/ChatDrawer';
+import CachedImage from '../components/CachedImage';
 import { compressImage } from '../lib/imageOptimizer';
 import {
     Store, ShoppingBag, Search, Plus, X, MessageCircle, Tag, User,
@@ -282,7 +283,7 @@ export default function Market() {
                             {/* Image */}
                             <div className="aspect-video bg-slate-100 relative overflow-hidden">
                                 {car.photos && car.photos.length > 0 ? (
-                                    <img src={getImageUrl(car.photos[0], 'thumb')} alt={car.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                    <CachedImage src={getImageUrl(car.photos[0], 'thumb')} alt={car.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                 ) : (
                                     <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
                                         <CarFront size={48} strokeWidth={1.5} />
@@ -377,7 +378,7 @@ export default function Market() {
                                 {/* Image */}
                                 <div className="aspect-video bg-slate-100 relative overflow-hidden">
                                     {listing.imageUrl ? (
-                                        <img src={getImageUrl(listing.imageUrl, 'thumb')} alt={listing.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                        <CachedImage src={getImageUrl(listing.imageUrl, 'thumb')} alt={listing.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                     ) : (
                                         <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
                                             <ShoppingBag size={48} strokeWidth={1.5} />
@@ -410,7 +411,7 @@ export default function Market() {
                                     <div className="flex items-center gap-2 mb-4">
                                         <div className="w-6 h-6 rounded-full overflow-hidden bg-slate-100">
                                             {listing.userPhotoURL ? (
-                                                <img src={listing.userPhotoURL} alt="" className="w-full h-full object-cover" />
+                                                <CachedImage src={listing.userPhotoURL} alt="" className="w-full h-full object-cover" />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-slate-400">
                                                     <User size={14} />

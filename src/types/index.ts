@@ -3,12 +3,10 @@ export type TrackerStatus = 'Dáme pokec?' | 'Závod?' | 'Projížďka?' | 'Jen 
 /**
  * Image variants for different display contexts
  * - thumb: 400x400px - for list/grid views
- * - medium: 1000x1000px - for detail views
  * - large: 1920x1920px - for full-screen/modals
  */
 export interface ImageVariants {
   thumb: string;
-  medium: string;
   large: string;
 }
 

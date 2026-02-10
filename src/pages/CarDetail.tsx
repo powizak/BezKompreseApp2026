@@ -8,6 +8,7 @@ import { Car as CarIcon, Calendar, Gauge, Wrench, User, ChevronLeft, ChevronRigh
 import { useAuth } from '../contexts/AuthContext';
 import { getImageUrl } from '../lib/imageService';
 import LoginRequired from '../components/LoginRequired';
+import CachedImage from '../components/CachedImage';
 
 export default function CarDetail() {
     const { id } = useParams<{ id: string }>();
@@ -104,7 +105,7 @@ export default function CarDetail() {
                 >
                     {car.photos && car.photos.length > 0 ? (
                         <>
-                            <img
+                            <CachedImage
                                 src={getImageUrl(car.photos[activeImageIndex], 'large')}
                                 alt={car.name}
                                 className="w-full h-full object-cover cursor-zoom-in transition-all duration-500"
@@ -293,7 +294,7 @@ export default function CarDetail() {
                                     <div className="flex items-center gap-6 mb-8">
                                         <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-slate-800 shadow-xl group-hover:border-brand transition-all rotate-3 group-hover:rotate-0">
                                             {owner.photoURL ? (
-                                                <img src={owner.photoURL} alt={owner.displayName || 'User'} className="w-full h-full object-cover" />
+                                                <CachedImage src={owner.photoURL} alt={owner.displayName || 'User'} className="w-full h-full object-cover" />
                                             ) : (
                                                 <div className="w-full h-full bg-slate-800 flex items-center justify-center text-slate-600">
                                                     <User size={32} />
@@ -332,7 +333,7 @@ export default function CarDetail() {
                         </button>
 
                         <div className="relative w-full h-full flex items-center justify-center group/modal" onClick={(e) => e.stopPropagation()}>
-                            <img
+                            <CachedImage
                                 src={getImageUrl(car.photos[activeImageIndex], 'large')}
                                 alt={car.name}
                                 className="max-w-full max-h-full object-contain shadow-2xl rounded-lg animate-in zoom-in-95 duration-500"

@@ -12,6 +12,15 @@ if (Capacitor.isNativePlatform()) {
   StatusBar.setBackgroundColor({ color: '#111111' }); // Match header background
 }
 
+// Register Service Worker for image caching (web only)
+if ('serviceWorker' in navigator && !Capacitor.isNativePlatform()) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {
+      // SW registration failed — not critical, images still work via HTTP cache
+    });
+  });
+}
+
 ReactDOM.createRoot(document.getElementById('app')!).render(
   <React.StrictMode>
     <App />

@@ -19,6 +19,10 @@ dist-ssr
 
 # Firebase
 .firebase/
+firebase-service-account.json
+scripts/migrateImages.ts
+scripts/migrate-cache-headers.ts
+scripts/removeMediumVariants.ts
 
 # Editor directories and files
 .vscode/*

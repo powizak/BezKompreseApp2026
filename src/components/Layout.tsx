@@ -7,6 +7,7 @@ import Footer from './Footer';
 import CookieBanner from './CookieBanner';
 import ChatDrawer from './ChatDrawer';
 import SupportSection from './SupportSection';
+import CachedImage from './CachedImage';
 
 export default function Layout() {
   const { pathname } = useLocation();
@@ -68,7 +69,7 @@ export default function Layout() {
           {user ? (
             <div className="flex items-center gap-3 px-4 py-2">
               <Link to={`/profile/${user.uid}`} className="w-8 h-8 rounded-full bg-slate-700 overflow-hidden ring-2 ring-brand block hover:scale-105 transition-transform">
-                {user.photoURL ? <img src={user.photoURL} alt="User" className="w-full h-full object-cover" /> : <div className="p-1 text-slate-400 h-full w-full flex items-center justify-center"><Car size={16} /></div>}
+                {user.photoURL ? <CachedImage src={user.photoURL} alt="User" className="w-full h-full object-cover" /> : <div className="p-1 text-slate-400 h-full w-full flex items-center justify-center"><Car size={16} /></div>}
               </Link>
               <div className="flex-1 overflow-hidden">
                 <Link to={`/profile/${user.uid}`} className="text-sm font-bold truncate text-white hover:text-brand transition-colors block">{user.displayName || 'Uživatel'}</Link>
@@ -89,7 +90,7 @@ export default function Layout() {
           <img src="/logo.svg" alt="Bez Komprese" className="h-6" />
           {user ? (
             <Link to={`/profile/${user.uid}`} className="w-8 h-8 rounded-full bg-white/10 overflow-hidden ring-1 ring-brand block">
-              {user.photoURL ? <img src={user.photoURL} alt="User" className="w-full h-full object-cover" /> : <div className="p-1 h-full w-full flex items-center justify-center"><Car size={16} /></div>}
+              {user.photoURL ? <CachedImage src={user.photoURL} alt="User" className="w-full h-full object-cover" /> : <div className="p-1 h-full w-full flex items-center justify-center"><Car size={16} /></div>}
             </Link>
           ) : (
             <Link to="/login" className="text-sm font-bold text-brand hover:underline flex items-center gap-1 uppercase tracking-wider">

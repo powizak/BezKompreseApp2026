@@ -7,6 +7,7 @@ import { MessageCircle, User, ChevronRight, Trash2, X } from 'lucide-react';
 import type { ChatRoom } from '../types/chat';
 import LoginRequired from '../components/LoginRequired';
 import ChatDrawer from '../components/ChatDrawer';
+import CachedImage from '../components/CachedImage';
 import { formatDistanceToNow } from 'date-fns';
 import { cs } from 'date-fns/locale';
 
@@ -174,7 +175,7 @@ export default function Chats() {
                                             <div className="relative">
                                                 <div className="w-14 h-14 rounded-full overflow-hidden bg-slate-100 border-2 border-white shadow-md">
                                                     {other.photo ? (
-                                                        <img src={other.photo} alt={other.name} className="w-full h-full object-cover" />
+                                                        <CachedImage src={other.photo} alt={other.name} className="w-full h-full object-cover" />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center text-slate-400">
                                                             <User size={24} />

@@ -6,6 +6,7 @@ import type { UserProfile } from '../types';
 import { Search, Users as UsersIcon, UserPlus, UserMinus, User, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import LoginRequired from '../components/LoginRequired';
+import CachedImage from '../components/CachedImage';
 
 export default function UsersPage() {
     const { user: currentUser } = useAuth();
@@ -182,7 +183,7 @@ function UserCard({ user, currentUser, onFriendAction, highlight }: { user: User
             <Link to={`/profile/${user.uid}`} className="shrink-0">
                 <div className={`w-16 h-16 rounded-full overflow-hidden border-2 ${highlight ? 'border-brand' : 'border-slate-100'}`}>
                     {user.photoURL ? (
-                        <img src={user.photoURL} alt={user.displayName || 'User'} className="w-full h-full object-cover" />
+                        <CachedImage src={user.photoURL} alt={user.displayName || 'User'} className="w-full h-full object-cover" />
                     ) : (
                         <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-300">
                             <User size={24} />

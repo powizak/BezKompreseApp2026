@@ -7,7 +7,6 @@ import { storage } from "../config/firebase";
  */
 export interface ImageVariants {
     thumb: string;   // 400x400px - list/grid views
-    medium: string;  // 1000x1000px - detail views
     large: string;   // 1920x1920px - full-screen/high-res
 }
 
@@ -34,7 +33,6 @@ interface VariantConfig {
 
 const VARIANT_CONFIGS: VariantConfig[] = [
     { name: "thumb", maxSize: 400 },
-    { name: "medium", maxSize: 1000 },
     { name: "large", maxSize: 1920 },
 ];
 
@@ -155,7 +153,10 @@ const uploadBlob = (
     Effect.tryPromise({
         try: async () => {
             const storageRef = ref(storage, path);
-            const snapshot = await uploadBytes(storageRef, blob);
+            const snapshot = await uploadBytes(storageRef, blob, {
+                cacheControl: 'public, max-age=31536000, immutable',
+                contentType: 'image/webp',
+            });
             const downloadURL = await getDownloadURL(snapshot.ref);
             return downloadURL;
         },
@@ -220,7 +221,6 @@ export const processAndUploadImage = (
         // Convert array of results to ImageVariants object
         const variants: ImageVariants = {
             thumb: "",
-            medium: "",
             large: "",
         };
 
@@ -254,8 +254,6 @@ export const selectVariant = (
 
     if (effectiveWidth <= 400) {
         return variants.thumb;
-    } else if (effectiveWidth <= 1000) {
-        return variants.medium;
     } else {
         return variants.large;
     }
@@ -269,7 +267,6 @@ export const isImageVariants = (value: unknown): value is ImageVariants => {
         typeof value === "object" &&
         value !== null &&
         "thumb" in value &&
-        "medium" in value &&
         "large" in value
     );
 };

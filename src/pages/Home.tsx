@@ -5,6 +5,7 @@ import type { SocialPost, SocialPlatform } from '../types';
 import { Play, Instagram, Facebook, Youtube, Image, Film, ArrowRight } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { cs } from 'date-fns/locale';
+import CachedImage from '../components/CachedImage';
 
 type FilterType = 'all' | SocialPlatform;
 
@@ -114,7 +115,7 @@ export default function Home() {
 
               {/* Media */}
               <div className="relative aspect-video bg-slate-900 overflow-hidden">
-                <img src={post.thumbnail} alt={post.title} className="w-full h-full object-cover opacity-90 transition-transform group-hover:scale-105 duration-700" />
+                <CachedImage src={post.thumbnail} alt={post.title} className="w-full h-full object-cover opacity-90 transition-transform group-hover:scale-105 duration-700" />
                 {['video', 'reel'].includes(post.type) && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
                     <div className="bg-brand p-4 rounded-full shadow-lg shadow-black/20 group-hover:scale-110 transition-transform text-brand-contrast">

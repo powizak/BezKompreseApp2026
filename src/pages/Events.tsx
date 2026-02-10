@@ -10,6 +10,7 @@ import LocationPicker from '../components/LocationPicker';
 import { Link } from 'react-router-dom';
 import { getImageUrl } from '../lib/imageService';
 import LoginRequired from '../components/LoginRequired';
+import CachedImage from '../components/CachedImage';
 
 const ALL_EVENT_TYPES: EventType[] = ['minisraz', 'velky_sraz', 'trackday', 'vyjizdka'];
 
@@ -312,7 +313,7 @@ export default function Events() {
                             <div className="relative">
                                 {imagePreview ? (
                                     <div className="relative rounded-xl overflow-hidden">
-                                        <img src={imagePreview} alt="Preview" className="w-full h-48 object-cover" />
+                                        <CachedImage src={imagePreview} alt="Preview" className="w-full h-48 object-cover" noCache />
                                         <button
                                             type="button"
                                             onClick={() => { setImageFile(null); setImagePreview(null); }}
@@ -472,7 +473,7 @@ export default function Events() {
                                     {/* Image or Date Box */}
                                     {event.imageUrl ? (
                                         <div className="md:w-48 h-32 md:h-auto">
-                                            <img src={getImageUrl(event.imageUrl, 'thumb')} alt={event.title} className="w-full h-full object-cover" />
+                                            <CachedImage src={getImageUrl(event.imageUrl, 'thumb')} alt={event.title} className="w-full h-full object-cover" />
                                         </div>
                                     ) : (
                                         <div className="bg-slate-50 md:w-32 p-4 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-100">

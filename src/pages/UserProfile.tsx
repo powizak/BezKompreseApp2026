@@ -13,6 +13,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import LoginRequired from '../components/LoginRequired';
 import NotificationSettingsSection from '../components/NotificationSettings';
+import CachedImage from '../components/CachedImage';
 
 // Fix Leaflet icon issue
 // @ts-ignore
@@ -205,7 +206,7 @@ export default function UserProfilePage() {
 
                 <div className="relative z-10 w-32 h-32 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white">
                     {profile.photoURL ? (
-                        <img src={profile.photoURL} alt={profile.displayName || 'User'} className="w-full h-full object-cover" />
+                        <CachedImage src={profile.photoURL} alt={profile.displayName || 'User'} className="w-full h-full object-cover" />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-300">
                             <CarIcon size={48} />
@@ -276,7 +277,7 @@ export default function UserProfilePage() {
                                         {/* Image */}
                                         <div className="aspect-video bg-slate-100 relative overflow-hidden">
                                             {car.photos && car.photos.length > 0 ? (
-                                                <img src={getImageUrl(car.photos[0], 'thumb')} alt={car.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                                <CachedImage src={getImageUrl(car.photos[0], 'thumb')} alt={car.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                             ) : (
                                                 <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
                                                     <CarFront size={48} strokeWidth={1.5} />
@@ -358,7 +359,7 @@ export default function UserProfilePage() {
                             <Link key={friend.uid} to={`/profile/${friend.uid}`} className="flex items-center gap-4 bg-white p-4 rounded-xl border border-slate-100 hover:border-brand transition-all shadow-sm hover:shadow-md">
                                 <div className="w-12 h-12 rounded-full overflow-hidden border border-slate-100 flex-shrink-0">
                                     {friend.photoURL ? (
-                                        <img src={friend.photoURL} alt={friend.displayName || 'User'} className="w-full h-full object-cover" />
+                                        <CachedImage src={friend.photoURL} alt={friend.displayName || 'User'} className="w-full h-full object-cover" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-300">
                                             <User size={20} />

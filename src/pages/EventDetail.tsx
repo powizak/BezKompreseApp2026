@@ -9,6 +9,7 @@ import EventMap from '../components/EventMap';
 import { useAuth } from '../contexts/AuthContext';
 import { getImageUrl } from '../lib/imageService';
 import LoginRequired from '../components/LoginRequired';
+import CachedImage from '../components/CachedImage';
 
 export default function EventDetail() {
     const { id } = useParams();
@@ -156,7 +157,7 @@ export default function EventDetail() {
                 {/* Hero Image */}
                 {event.imageUrl ? (
                     <div className="relative h-56 md:h-72">
-                        <img src={getImageUrl(event.imageUrl, 'large')} alt={event.title} className="w-full h-full object-cover" />
+                        <CachedImage src={getImageUrl(event.imageUrl, 'large')} alt={event.title} className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                         <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                             <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -189,7 +190,7 @@ export default function EventDetail() {
                                 {creator && (
                                     <Link to={`/profile/${creator.uid}`} className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full hover:bg-white/20 transition-colors">
                                         <div className="w-5 h-5 rounded-full bg-slate-500 overflow-hidden">
-                                            {creator.photoURL ? <img src={creator.photoURL} alt={creator.displayName || 'User'} /> : <User size={12} className="m-1" />}
+                                            {creator.photoURL ? <CachedImage src={creator.photoURL} alt={creator.displayName || 'User'} /> : <User size={12} className="m-1" />}
                                         </div>
                                         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300">{creator.displayName || 'Organizátor'}</span>
                                     </Link>
