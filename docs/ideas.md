@@ -58,6 +58,13 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - Možno kontaktovat vlastníka auta / poptávajícího přímo z marketu - otevře chat s daným uživatelem / založí nový, pokud ještě spolu nekomunikovali
 - Přímo z inzeratu může vlastník označit auto jako "Prodané" - tedy vymaže inzerát a zároveň v garáži mu odznačí "Vlastněno"  
 
+### Rozšíření funkcí inzerce
+- Ověření Bez Komprese - možnost si zažádat o certifikát např. na základě VIN
+- Možnost si zažádat o certifikát na základě prohlídky v servisu Bez Komprese
+
+### 🚀 Vylepšení UX
+- Přidat značku, zda již někdo přečetl zprávu či nikoliv (pro toho, kdo si ji má přečíst - v seznamu zpráv)
+- Přidat do "info" - celkový počet uživatelů / aut v aplikaci? 
 
 ### 🏆 Gamifikace a "Build Threads"
 - Odznaky (Badges): "High Miler" (nájezd 300k+), "Wrench Wizard" (více než 10 DIY záznamů), "Event Junkie" (účast na srazech) atd.

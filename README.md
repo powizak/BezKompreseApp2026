@@ -90,7 +90,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 *   **Stylování:** Tailwind CSS
 *   **Backend:** Firebase (Auth, Firestore, Storage, Cloud Functions)
 *   **Mapy:** Leaflet + OpenStreetMap
-*   **Optimalizace:** 3-vrstvý image caching (Cache-Control headers, in-memory CachedImage, Service Worker)
+*   **Optimalizace:** Image caching (Cache-Control immutable headers, CachedImage smart fade-in, CORS configured)
 
 ## Jak spustit projekt
 

@@ -1,136 +1,46 @@
-import { useState, useEffect, useRef, type ImgHTMLAttributes } from 'react';
+import { useState, useCallback, type ImgHTMLAttributes } from 'react';
 
 /**
- * In-memory cache: original URL → Object URL (blob)
- * Persists for the lifetime of the browser tab.
- * Eliminates redundant network requests during SPA navigation.
+ * Track which URLs have been loaded in this session.
+ * Used to skip the fade-in animation for already-seen images.
  */
-const blobCache = new Map<string, string>();
-
-/**
- * Pending fetches: original URL → Promise
- * Prevents duplicate concurrent fetches for the same image.
- */
-const pendingFetches = new Map<string, Promise<string>>();
-
-/**
- * Check if a URL is a remote image URL that should be cached.
- * Skips local assets, data URIs, blob URLs, and SVGs.
- */
-function isCacheableUrl(url: string | undefined): boolean {
-    if (!url) return false;
-    if (url.startsWith('data:')) return false;
-    if (url.startsWith('blob:')) return false;
-    if (url.startsWith('/')) return false; // Local asset
-    if (url.endsWith('.svg')) return false;
-    return true;
-}
-
-/**
- * Fetch an image and create a blob URL for it.
- * Uses deduplication to prevent concurrent fetches of the same URL.
- */
-async function fetchAndCacheImage(url: string): Promise<string> {
-    // Already cached
-    const cached = blobCache.get(url);
-    if (cached) return cached;
-
-    // Already fetching — wait for the same promise
-    const pending = pendingFetches.get(url);
-    if (pending) return pending;
-
-    const fetchPromise = (async () => {
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-            const blob = await response.blob();
-            const objectUrl = URL.createObjectURL(blob);
-
-            blobCache.set(url, objectUrl);
-            return objectUrl;
-        } catch {
-            // On error, fall back to original URL
-            return url;
-        } finally {
-            pendingFetches.delete(url);
-        }
-    })();
-
-    pendingFetches.set(url, fetchPromise);
-    return fetchPromise;
-}
-
-// --- Component ---
+const seenUrls = new Set<string>();
 
 interface CachedImageProps extends ImgHTMLAttributes<HTMLImageElement> {
-    /** Set to true to skip caching (e.g. for local previews) */
+    /** Set to true to skip fade-in animation */
     noCache?: boolean;
 }
 
 /**
- * Drop-in replacement for <img> that caches remote images in-memory as blob URLs.
- * 
- * Features:
- * - In-memory blob cache eliminates re-fetches during SPA navigation
- * - Deduplicates concurrent requests for the same image
- * - Lazy loading by default for off-screen images
- * - Subtle fade-in animation on load
- * - Falls back to standard <img> for non-cacheable URLs
+ * Drop-in replacement for <img> that:
+ * - Uses the browser's native HTTP cache (via Cache-Control headers set during upload)
+ * - Shows a subtle fade-in on first load, instant on subsequent renders
+ * - Lazy-loads off-screen images by default
+ *
+ * The browser cache with `Cache-Control: public, max-age=31536000, immutable`
+ * already ensures images are never re-downloaded. No fetch() = no CORS issues.
  */
-export default function CachedImage({ src, alt, noCache, className, style, ...props }: CachedImageProps) {
-    const [displaySrc, setDisplaySrc] = useState<string | undefined>(() => {
-        // Synchronous check: if already in cache, use immediately (no flash)
-        if (src && isCacheableUrl(src)) {
-            const cached = blobCache.get(src);
-            if (cached) return cached;
-        }
-        return src;
-    });
-    const [loaded, setLoaded] = useState(false);
-    const prevSrcRef = useRef(src);
+export default function CachedImage({ src, alt, noCache, className, style, onLoad, ...props }: CachedImageProps) {
+    const alreadySeen = !!(src && seenUrls.has(src));
+    const [loaded, setLoaded] = useState(alreadySeen);
 
-    useEffect(() => {
-        // Reset loaded state when src changes
-        if (prevSrcRef.current !== src) {
-            setLoaded(false);
-            prevSrcRef.current = src;
-        }
-
-        if (!src || noCache || !isCacheableUrl(src)) {
-            setDisplaySrc(src);
-            return;
-        }
-
-        // Check synchronous cache first
-        const cached = blobCache.get(src);
-        if (cached) {
-            setDisplaySrc(cached);
-            return;
-        }
-
-        // Async fetch and cache
-        let cancelled = false;
-        fetchAndCacheImage(src).then((blobUrl) => {
-            if (!cancelled) {
-                setDisplaySrc(blobUrl);
-            }
-        });
-
-        return () => { cancelled = true; };
-    }, [src, noCache]);
+    const handleLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
+        if (src) seenUrls.add(src);
+        setLoaded(true);
+        onLoad?.(e);
+    }, [src, onLoad]);
 
     return (
         <img
-            src={displaySrc}
+            src={src}
             alt={alt || ''}
             loading="lazy"
-            onLoad={() => setLoaded(true)}
+            onLoad={handleLoad}
             className={className}
             style={{
                 ...style,
                 opacity: loaded ? 1 : 0,
-                transition: 'opacity 0.3s ease',
+                transition: alreadySeen ? 'none' : 'opacity 0.3s ease',
             }}
             {...props}
         />
