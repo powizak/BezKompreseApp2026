@@ -19,73 +19,80 @@ const PrivacyPolicy = () => {
                 <header className="space-y-4">
                     <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-8">Ochrana soukromí</h1>
                     <p className="text-xl text-zinc-400">
-                        Zásady zpracování osobních údajů a používání souborů cookie.
+                        Zásady zpracování osobních údajů (GDPR) a používání souborů cookie.
                     </p>
                 </header>
 
                 <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-white">1. Kdo jsme</h2>
+                    <h2 className="text-2xl font-semibold text-white">1. Správce údajů</h2>
                     <p className="text-zinc-400 leading-relaxed">
-                        Jsme provozovatelé aplikace <strong>Bez Komprese</strong>. Vaše soukromí je pro nás prioritou.
+                        Správcem vašich osobních údajů je <strong>Jakub Prošek</strong> (dále jen "Správce").
+                    </p>
+                    <p className="text-zinc-400 leading-relaxed">
+                        Máte-li jakékoli dotazy ohledně zpracování vašich údajů, můžete nás kontaktovat na e-mailu: <a href="mailto:hello@jakubprosek.cz" className="text-white hover:underline">hello@jakubprosek.cz</a>.
                     </p>
                 </section>
 
                 <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-white">2. Jaká data sbíráme</h2>
+                    <h2 className="text-2xl font-semibold text-white">2. Právní základ a účel zpracování</h2>
                     <p className="text-zinc-400 leading-relaxed">
-                        Při používání aplikace zpracováváme především údaje nezbytné pro vaše přihlášení a správu účtu:
+                        Vaše osobní údaje zpracováváme na základě:
                     </p>
                     <ul className="list-disc pl-5 space-y-2 text-zinc-400">
-                        <li>E-mailová adresa (z Google účtu/přihlášení)</li>
-                        <li>Uživatelské jméno</li>
-                        <li>Profilová fotografie</li>
-                        <li>Informace o vašich autech, která do aplikace vložíte</li>
-                        <li>Záznamy o tankování, spotřebě paliva a nájezdu vozidel</li>
-                        <li>Poloha (GPS souřadnice) – pouze pokud aktivujete funkci Tracker</li>
-                        <li>Chatové zprávy a historie komunikace</li>
-                        <li>Seznam přátel a sociální interakce</li>
-                        <li>Vámi vytvořené události a srazy</li>
+                        <li><strong>Plnění smlouvy:</strong> Poskytování služeb aplikace v souladu se Všeobecnými obchodními podmínkami (registrace, vedení účtu, používání funkcí).</li>
+                        <li><strong>Souhlasu:</strong> Registrací do aplikace a jejím aktivním používáním udělujete souhlas se zpracováním údajů pro účely sdílení s komunitou (např. v bazaru, chatu nebo při používání trackeru).</li>
+                        <li><strong>Oprávněného zájmu:</strong> Zajištění bezpečnosti aplikace a vylepšování našich služeb.</li>
                     </ul>
                 </section>
 
                 <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-white">3. Tankování a sdílení spotřeby paliva</h2>
+                    <h2 className="text-2xl font-semibold text-white">3. Jaká data sbíráme</h2>
                     <p className="text-zinc-400 leading-relaxed">
-                        Aplikace umožňuje evidovat tankování a vypočítat průměrnou spotřebu paliva vašich vozidel.
+                        Zpracováváme údaje, které nám sami poskytnete nebo které vznikají při používání aplikace:
                     </p>
                     <ul className="list-disc pl-5 space-y-2 text-zinc-400">
-                        <li><strong>Soukromé data:</strong> Všechny záznamy o tankování (datum, množství paliva, cena, nájezd) jsou ve výchozím stavu soukromé a vidíte je pouze vy.</li>
-                        <li><strong>Sdílení:</strong> V nastavení profilu můžete dobrovolně aktivovat funkci "Sdílet spotřebu paliva", která umožní ostatním uživatelům vidět průměrnou spotřebu vašich vozidel a celkovou vzdálenost, na které byla měřena. Podrobné záznamy (ceny, datum, stanice) zůstávají i při zapnutém sdílení soukromé.</li>
-                        <li><strong>Ovládání:</strong> Tuto funkci můžete kdykoliv zapnout nebo vypnout. Po vypnutí se vaše data ihned přestanou zobrazovat ostatním uživatelům.</li>
+                        <li><strong>Identifikační údaje:</strong> E-mailová adresa (z Google účtu), Uživatelské jméno, Profilová fotografie.</li>
+                        <li><strong>Údaje o vozidlech:</strong> Informace o autech (značka, model, motorizace, rok výroby), která vložíte do "Garáže".</li>
+                        <li><strong>Provozní údaje:</strong> Záznamy o tankování, nákladech, servisní knížka (opravy, údržba) a nájezd kilometrů.</li>
+                        <li><strong>Komunikační údaje:</strong> Příspěvky v chatu, soukromé zprávy, komentáře.</li>
+                        <li><strong>Bazar:</strong> Inzeráty, fotografie prodávaných předmětů a kontaktní údaje uvedené v inzerátu.</li>
+                        <li><strong>Polohové údaje:</strong> GPS souřadnice (pouze při aktivní funkci Tracker).</li>
                     </ul>
                 </section>
 
                 <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-white">4. Sledování polohy (Tracker)</h2>
+                    <h2 className="text-2xl font-semibold text-white">4. Sdílení dat a viditelnost</h2>
                     <p className="text-zinc-400 leading-relaxed">
-                        Aplikace obsahuje volitelnou funkci sdílení polohy ("Tracker"), která umožňuje zobrazit vaši aktuální polohu ostatním uživatelům na mapě.
+                        Aplikace je komunitního charakteru. Některá data jsou veřejná pro ostatní uživatele aplikace:
                     </p>
                     <ul className="list-disc pl-5 space-y-2 text-zinc-400">
-                        <li><strong>Aktivace:</strong> Sběr polohy probíhá POUZE tehdy, pokud funkci ručně zapnete tlačítkem "Spustit sledování" nebo v nastavení profilu.</li>
-                        <li><strong>Ukládání:</strong> Vaše aktuální GPS souřadnice a status jsou ukládány do naší databáze (Google Firestore, Cloud) do kolekce `presence`.</li>
-                        <li><strong>Doba uchování:</strong> Ukládá se pouze aktuální poloha, která se neustále přepisuje. Historii pohybu neukládáme. Při vypnutí sledování jsou data z databáze odstraněna.</li>
-                        <li><strong>Soukromí (Privacy Zone):</strong> Pokud si v profilu nastavíte "Bydliště", vaše přesná poloha se v okruhu 500m od tohoto bodu automaticky skryje/zmaskuje, aby nebylo možné identifikovat, kde bydlíte.</li>
+                        <li><strong>Veřejný profil:</strong> Uživatelské jméno, foto a seznam vozidel v garáži jsou viditelné ostatním.</li>
+                        <li><strong>Spotřeba:</strong> Pokud v nastavení povolíte "Sdílet spotřebu", ostatní uvidí průměrnou spotřebu vašich vozidel. Podrobné záznamy (mapa jízd, ceny) zůstávají soukromé.</li>
+                        <li><strong>Servis a náklady:</strong> Detailní záznamy v servisní knížce a náklady jsou soukromé, pokud je sami nezveřejníte (např. screenshotem v chatu).</li>
+                        <li><strong>Tracker:</strong> Vaše poloha je sdílena s ostatními uživateli POUZE pokud funkci aktivně zapnete. V nastavení lze definovat "Privacy Zone" (okruh bydliště), kde je poloha skryta.</li>
                     </ul>
                 </section>
 
                 <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-white">5. Cookies</h2>
+                    <h2 className="text-2xl font-semibold text-white">5. Cookies a technologie</h2>
                     <p className="text-zinc-400 leading-relaxed">
-                        Aplikace používá technologie cookies pro zajištění funkčnosti (přihlášení, sessions). Tyto technické cookies jsou nezbytné pro chod aplikace.
-                        Kromě toho můžeme využívat analytické nástroje (např. Google Analytics) pro zlepšování našich služeb, pokud nám k tomu dáte souhlas.
+                        Aplikace využívá nezbytné soubory cookie a lokální úložiště zařízení pro zajištění přihlášení a funkčnosti. Pro analýzu návštěvnosti a chyb můžeme využívat anonymizované nástroje třetích stran (Google Analytics, Firebase Crashlytics).
                     </p>
                 </section>
 
                 <section className="space-y-4">
                     <h2 className="text-2xl font-semibold text-white">6. Vaše práva</h2>
                     <p className="text-zinc-400 leading-relaxed">
-                        Máte právo na přístup ke svým údajům, jejich opravu, výmaz ("právo být zapomenut"), nebo omezení zpracování. Svá data můžete spravovat přímo v nastavení svého profilu.
-                        Pro žádost o výmaz dat se obrátěte na e-mail: <a href="mailto:powizak@gmail.com">powizak@gmail.com</a>
+                        Dle GDPR máte právo na:
+                    </p>
+                    <ul className="list-disc pl-5 space-y-2 text-zinc-400">
+                        <li>Přístup ke svým údajům a jejich kopii.</li>
+                        <li>Opravu nepřesných údajů (většinu lze upravit přímo v profilu).</li>
+                        <li>Výmaz osobních údajů ("právo být zapomenut"), pokud již nejsou potřebné pro účel, pro který byly shromážděny.</li>
+                        <li>Omezení zpracování a vznesení námitky.</li>
+                    </ul>
+                    <p className="text-zinc-400 leading-relaxed mt-4">
+                        Pro uplatnění těchto práv nebo smazání účtu nás kontaktujte na: <a href="mailto:hello@jakubprosek.cz" className="text-white hover:underline">hello@jakubprosek.cz</a>
                     </p>
                 </section>
 

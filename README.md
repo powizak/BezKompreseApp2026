@@ -82,6 +82,11 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - V [knowBugs.md](knowBugs.md) najdete seznam známých chyb a technických problémů, na kterých pracujeme.
 
 
+### ⚖️ Právní informace a Soukromí (AKTUALIZOVÁNO!)
+- **GDPR Kompatibilita**: Kompletní revize zásad zpracování osobních údajů.
+- **Transparentnost**: Jasně definovaná pravidla pro Bazar, Tracker a sdílení dat o spotřebě.
+- **Kontakt**: Přímý kontakt na správce údajů (Jakub Prošek) pro uplatnění práv uživatelů.
+
 ## Technologie
 
 *   **Runtime:** Node.js (nebo Bun)

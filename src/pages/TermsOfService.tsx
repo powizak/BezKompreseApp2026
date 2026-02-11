@@ -26,49 +26,63 @@ const TermsOfService = () => {
                 <section className="space-y-4">
                     <h2 className="text-2xl font-semibold text-white">1. Úvodní ustanovení</h2>
                     <p className="text-zinc-400 leading-relaxed">
-                        Vstupem do aplikace "Bez Komprese Fan App" souhlasíte s těmito podmínkami. Aplikace je určena pro fanoušky komunity Bez Komprese a slouží k evidenci vozidel, sdílení polohy (tracker) a sledování komunitních událostí.
+                        Provozovatelem aplikace "Bez Komprese Fan App" je <strong>Jakub Prošek</strong> (dále jen "Provozovatel").
+                        Vstupem do aplikace, registrací a jejím používáním vyjadřujete svůj výslovný souhlas s těmito podmínkami ("VOP") a se Zásadami ochrany soukromí.
                     </p>
                 </section>
 
                 <section className="space-y-4">
                     <h2 className="text-2xl font-semibold text-white">2. Uživatelský účet</h2>
                     <p className="text-zinc-400 leading-relaxed">
-                        Pro plné využití aplikace je nutné přihlášení. Uživatel je odpovědný za veškerou aktivitu prováděnou pod jeho účtem. Je zakázáno vkládat obsah, který je urážlivý, nezákonný nebo porušuje práva třetích osob.
+                        Pro plné využití aplikace je nutná registrace (přihlášení přes Google). Uživatel odpovídá za to, že údaje poskytnuté při registraci jsou pravdivé. Uživatel nese plnou odpovědnost za veškerou aktivitu na svém účtu.
+                        Provozovatel si vyhrazuje právo zablokovat nebo zrušit účet, který porušuje tyto podmínky, zákony ČR nebo dobré mravy.
                     </p>
                 </section>
 
                 <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-white">3. Obsah a duševní vlastnictví</h2>
+                    <h2 className="text-2xl font-semibold text-white">3. Bazar a inzerce</h2>
                     <p className="text-zinc-400 leading-relaxed">
-                        Veškerý obsah vložený uživateli (fotografie aut, texty) zůstává ve vlastnictví uživatele, který nám však uděluje bezplatnou licenci k jeho zobrazení v rámci aplikace. Vyhrazujeme si právo odstranit nevhodný obsah bez předchozího upozornění.
+                        Aplikace umožňuje uživatelům vkládat inzeráty (nabídka/poptávka).
+                    </p>
+                    <ul className="list-disc pl-5 space-y-2 text-zinc-400">
+                        <li><strong>Vztah stran:</strong> Provozovatel pouze poskytuje technický prostor. Kupní smlouva vzniká výhradně mezi prodávajícím a kupujícím. Provozovatel nenese odpovědnost za kvalitu, legálnost či dodání zboží.</li>
+                        <li><strong>Zakázaný obsah:</strong> Je přísně zakázáno nabízet nelegální zboží, zbraně, drogy, kradené věci nebo obsah porušující práva třetích osob.</li>
+                    </ul>
+                </section>
+
+                <section className="space-y-4">
+                    <h2 className="text-2xl font-semibold text-white">4. Obsah a duševní vlastnictví</h2>
+                    <p className="text-zinc-400 leading-relaxed">
+                        Veškerý obsah vložený uživateli (fotografie aut, texty, inzeráty) zůstává ve vlastnictví uživatele. Vložením obsahu však uživatel uděluje Provozovateli bezplatnou, nevýhradní licenci k jeho zobrazení v aplikaci.
+                        Uživatel potvrzuje, že má právo příslušný obsah (zejména fotografie) zveřejnit.
                     </p>
                 </section>
 
                 <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-white">4. Omezení odpovědnosti</h2>
+                    <h2 className="text-2xl font-semibold text-white">5. Funkce aplikace (Garáž, Serviska, Tracker)</h2>
                     <p className="text-zinc-400 leading-relaxed">
-                        Aplikace je poskytována "tak, jak je". Provozovatel nenese odpovědnost za přesnost dat vložených uživateli, funkčnost sledování polohy ani za případné škody vzniklé používáním aplikace. Tato aplikace není oficiální aplikací značky/kanálu Bez Komprese.
+                        Data evidovaná v aplikaci (servisní úkony, tankování, náklady) slouží pro osobní evidenci uživatele.
+                    </p>
+                    <ul className="list-disc pl-5 space-y-2 text-zinc-400">
+                        <li><strong>Přesnost:</strong> Provozovatel negarantuje přesnost výpočtů (např. spotřeby) ani správnost dat v servisní knížce.</li>
+                        <li><strong>Tracker:</strong> Sdílení polohy je dobrovolné. Uživatel bere na vědomí rizika spojená se sdílením polohy. Provozovatel neodpovídá za případné zneužití polohy třetími stranami, pokud uživatel tuto funkci aktivoval.</li>
+                    </ul>
+                </section>
+
+                <section className="space-y-4">
+                    <h2 className="text-2xl font-semibold text-white">6. Omezení odpovědnosti</h2>
+                    <p className="text-zinc-400 leading-relaxed">
+                        Aplikace je poskytována "tak, jak je". Provozovatel nenese odpovědnost za případné výpadky služby, ztrátu dat ani za škody vzniklé používáním aplikace. Toto není oficiální aplikace značky "Bez Komprese".
                     </p>
                 </section>
 
                 <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-white">5. Sledování polohy (Tracker)</h2>
+                    <h2 className="text-2xl font-semibold text-white">7. Změny podmínek a kontakt</h2>
                     <p className="text-zinc-400 leading-relaxed">
-                        Uživatel bere na vědomí, že zapnutím funkce Tracker sdílí svou polohu s ostatními uživateli. Doporučujeme nastavit si "Privacy Zone" v profilu pro ochranu soukromého bydliště. Používání této funkce je na vlastní nebezpečí.
+                        Tyto podmínky můžeme kdykoli aktualizovat. Pokračováním v používání aplikace po změně vyjadřujete souhlas s novým zněním.
                     </p>
-                </section>
-
-                <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-white">6. Tankování a spotřeba paliva</h2>
-                    <p className="text-zinc-400 leading-relaxed">
-                        Aplikace umožňuje evidovat tankování a sledovat spotřebu paliva vašich vozidel. Uživatel může dobrovolně sdílet průměrnou spotřebu s ostatními uživateli zapnutím funkce v nastavení profilu. Tato data slouží pouze pro informační účely. Provozovatel nezaručuje přesnost vypočítané spotřeby a nenese odpovědnost za případná rozhodnutí učiněná na základě těchto informací.
-                    </p>
-                </section>
-
-                <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-white">7. Změny podmínek</h2>
-                    <p className="text-zinc-400 leading-relaxed">
-                        Tyto podmínky můžeme kdykoli aktualizovat. O významných změnách budeme uživatele informovat v rámci aplikace.
+                    <p className="text-zinc-400 leading-relaxed mt-4">
+                        Kontakt na provozovatele: <a href="mailto:hello@jakubprosek.cz" className="text-white hover:underline">hello@jakubprosek.cz</a>
                     </p>
                 </section>
 
