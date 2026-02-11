@@ -37,6 +37,8 @@ export interface DataService {
     readonly addFriend: (currentUserId: string, friendId: string) => Effect.Effect<void, DataError>;
     readonly removeFriend: (currentUserId: string, friendId: string) => Effect.Effect<void, DataError>;
     readonly getAllUsers: (limitCount?: number) => Effect.Effect<UserProfile[], DataError>;
+    readonly getTopUsers: (limitCount?: number) => Effect.Effect<UserProfile[], DataError>;
+    readonly getRandomUsers: (limitCount?: number) => Effect.Effect<UserProfile[], DataError>;
     readonly getUserEvents: (userId: string) => Effect.Effect<{ created: AppEvent[], joined: AppEvent[] }, DataError>;
     readonly getAllCars: (limitCount?: number) => Effect.Effect<Car[], DataError>;
     readonly getCarsPaginated: (
@@ -417,11 +419,12 @@ export const DataServiceLive = Layer.succeed(
         }),
         searchUsers: (searchQuery) => Effect.tryPromise({
             try: async () => {
+                const normalizedQuery = searchQuery.toLowerCase();
                 const q = query(
                     collection(db, "users"),
-                    where("displayName", ">=", searchQuery),
-                    where("displayName", "<=", searchQuery + '\uf8ff'),
-                    limit(10)
+                    where("searchKey", ">=", normalizedQuery),
+                    where("searchKey", "<=", normalizedQuery + '\uf8ff'),
+                    limit(20)
                 );
                 const snapshot = await getDocs(q);
                 return snapshot.docs.map(doc => doc.data() as UserProfile);
@@ -433,7 +436,8 @@ export const DataServiceLive = Layer.succeed(
                 const { arrayUnion } = await import("firebase/firestore");
                 const userRef = doc(db, "users", currentUserId);
                 await updateDoc(userRef, {
-                    friends: arrayUnion(friendId)
+                    friends: arrayUnion(friendId),
+                    friendsCount: ((await getDoc(userRef)).data()?.friends?.length || 0) + 1
                 });
             },
             catch: (e) => new DataError("Failed to add friend", e)
@@ -443,7 +447,8 @@ export const DataServiceLive = Layer.succeed(
                 const { arrayRemove } = await import("firebase/firestore");
                 const userRef = doc(db, "users", currentUserId);
                 await updateDoc(userRef, {
-                    friends: arrayRemove(friendId)
+                    friends: arrayRemove(friendId),
+                    friendsCount: Math.max(0, ((await getDoc(userRef)).data()?.friends?.length || 1) - 1)
                 });
             },
             catch: (e) => new DataError("Failed to remove friend", e)
@@ -458,6 +463,43 @@ export const DataServiceLive = Layer.succeed(
                 return snapshot.docs.map(doc => doc.data() as UserProfile);
             },
             catch: (e) => new DataError("Failed to fetch users", e)
+        }),
+        getTopUsers: (limitCount = 5) => Effect.tryPromise({
+            try: async () => {
+                const q = query(
+                    collection(db, "users"),
+                    orderBy("friendsCount", "desc"),
+                    limit(limitCount)
+                );
+                const snapshot = await getDocs(q);
+                return snapshot.docs.map(doc => doc.data() as UserProfile);
+            },
+            catch: (e) => new DataError("Failed to fetch top users", e)
+        }),
+        getRandomUsers: (limitCount = 9) => Effect.tryPromise({
+            try: async () => {
+                const random = Math.floor(Math.random() * 1000000);
+                const q = query(
+                    collection(db, "users"),
+                    where("_random", ">=", random),
+                    limit(limitCount)
+                );
+                const snapshot = await getDocs(q);
+                let users = snapshot.docs.map(doc => doc.data() as UserProfile);
+
+                if (users.length < limitCount) {
+                    const remaining = limitCount - users.length;
+                    const q2 = query(
+                        collection(db, "users"),
+                        where("_random", "<", random),
+                        limit(remaining)
+                    );
+                    const snapshot2 = await getDocs(q2);
+                    users = [...users, ...snapshot2.docs.map(doc => doc.data() as UserProfile)];
+                }
+                return users;
+            },
+            catch: (e) => new DataError("Failed to fetch random users", e)
         }),
         getUserEvents: (userId) => Effect.tryPromise({
             try: async () => {

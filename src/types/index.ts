@@ -29,6 +29,10 @@ export interface UserProfile {
   isOrganizer?: boolean; // Can create trackday events
   notificationSettings?: NotificationSettings;
   fcmToken?: string; // FCM device token
+  // Optimization fields
+  friendsCount?: number;
+  searchKey?: string; // Lowercase display name for search
+  _random?: number; // Random integer for random sorting
 }
 
 export interface CarModification {
