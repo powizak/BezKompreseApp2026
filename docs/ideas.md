@@ -82,3 +82,8 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 ### 📱 PWA a Offline Mode
 - Vylepšit cachování map pro "Tracker" v místech bez signálu (časté na okreskách).
 - Synchronizace servisní knížky (offline-first), aby šlo zapisovat i v garáži bez Wi-Fi.  
+
+### ✅ Internalizace profilových fotek - IMPLEMENTOVÁNO
+- Automatické stažení Google profilovek na náš Firebase Storage.
+- Obnova jednou za 30 dní.
+- Eliminace 429 Rate Limitů od externích poskytovatelů.

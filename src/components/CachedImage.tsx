@@ -1,4 +1,5 @@
-import { useState, useCallback, type ImgHTMLAttributes } from 'react';
+import { useState, useEffect, type ImgHTMLAttributes } from 'react';
+import { ImageLoader } from '../utils/ImageLoader';
 
 /**
  * Track which URLs have been loaded in this session.
@@ -13,34 +14,77 @@ interface CachedImageProps extends ImgHTMLAttributes<HTMLImageElement> {
 
 /**
  * Drop-in replacement for <img> that:
- * - Uses the browser's native HTTP cache (via Cache-Control headers set during upload)
+ * - Uses a custom ImageLoader service to prevent 429 Too Many Requests
  * - Shows a subtle fade-in on first load, instant on subsequent renders
  * - Lazy-loads off-screen images by default
- *
- * The browser cache with `Cache-Control: public, max-age=31536000, immutable`
- * already ensures images are never re-downloaded. No fetch() = no CORS issues.
  */
-export default function CachedImage({ src, alt, noCache, className, style, onLoad, ...props }: CachedImageProps) {
-    const alreadySeen = !!(src && seenUrls.has(src));
-    const [loaded, setLoaded] = useState(alreadySeen);
+export default function CachedImage({ src, alt, noCache, className, style, onLoad, onError, ...props }: CachedImageProps) {
+    const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
+    const [loaded, setLoaded] = useState(false);
+    const [error, setError] = useState(false);
 
-    const handleLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
+    useEffect(() => {
+        if (!src) return;
+
+        let isMounted = true;
+        const load = async () => {
+            try {
+                // Use our loader which handles 429 backoff
+                // This ensures the image is in the browser cache
+                await ImageLoader.loadImage(src);
+
+                if (isMounted) {
+                    // Now set the src, the browser will pull it from cache instantly
+                    setImageSrc(src);
+                }
+            } catch (e) {
+                // ImageLoader keeps log in console
+                if (isMounted) {
+                    setError(true);
+                }
+            }
+        };
+
+        load();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [src]);
+
+    const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
         if (src) seenUrls.add(src);
         setLoaded(true);
         onLoad?.(e);
-    }, [src, onLoad]);
+    };
+
+    const handleError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+        setError(true);
+        onError?.(e);
+    };
+
+    // If fetch failed completely (e.g. 429 after retries), we don't render img or render fallback?
+    // Using empty src or error handling.
+    if (error) {
+        return (
+            <div className={`${className} bg-slate-100 flex items-center justify-center text-slate-300`}>
+                <span className="text-xs">!</span>
+            </div>
+        );
+    }
 
     return (
         <img
-            src={src}
+            src={imageSrc} // Use the blob URL from loader
             alt={alt || ''}
             loading="lazy"
             onLoad={handleLoad}
+            onError={handleError}
             className={className}
             style={{
                 ...style,
-                opacity: loaded ? 1 : 0,
-                transition: alreadySeen ? 'none' : 'opacity 0.3s ease',
+                opacity: (loaded && !error) ? 1 : 0,
+                transition: (seenUrls.has(src!) || noCache) ? 'none' : 'opacity 0.3s ease',
             }}
             {...props}
         />

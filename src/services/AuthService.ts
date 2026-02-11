@@ -27,6 +27,81 @@ export interface AuthService {
 // Create the Tag
 export const AuthService = Context.GenericTag<AuthService>("AuthService");
 
+import { internalizeProfileImage } from "../lib/profileImageService";
+
+// Helper to internalize profile image if needed
+const synchronizeProfileImage = async (user: any) => {
+  try {
+    if (!user.photoURL) return user.photoURL;
+
+    const userRef = doc(db, "users", user.uid);
+    // We need to check existing data first to see last update time
+    // However, reading it here adds latency to login. 
+    // We can do it optimistically or in background.
+    // Let's do a quick check.
+    // Or better: rely on the URL structure.
+    // If URL is already ours (firebasestorage), check metadata (if we had it in doc).
+
+    // Simpler heuristic:
+    // 1. If it's NOT a firebase storage URL -> Internalize it (it's new from Google/FB)
+    // 2. If it IS a firebase storage URL -> Check last update time from doc (if available)
+
+    // For now, let's implement the "Internalize if external" logic + "Update if old" logic.
+    // But we don't have the doc data easily here without a fetch.
+    // We'll trust the caller to have basic profile.
+
+    // Actually, we can just fire-and-forget this process so it doesn't block login UI!
+    // The user logs in, UI shows old/current photo. Background process updates it.
+    // When it finishes, Firestore updates, UI updates automatically via onSnapshot.
+
+    // BUT, for the *very first* time, we might want to wait? No, speed is key.
+
+    // Let's define the background task:
+    (async () => {
+      try {
+        const { getDoc, updateDoc } = await import("firebase/firestore");
+        const snapshot = await getDoc(userRef);
+        const data = snapshot.data();
+
+        const now = Date.now();
+        const lastUpdate = data?.lastPhotoUpdate || 0;
+        const isInternal = data?.photoURL?.includes("firebasestorage.googleapis.com");
+        const shouldUpdate = !isInternal || (now - lastUpdate > 30 * 24 * 60 * 60 * 1000); // 30 days
+
+        if (shouldUpdate && user.photoURL) {
+          console.log("[AuthService] Internalizing profile image...");
+          // If it's already internal, we might want to refresh it from the *provider* URL if available?
+          // The provider URL is in `user.providerData[0].photoURL`.
+          // `user.photoURL` might be the internal one if we already replaced it.
+
+          // We should prefer the PROVIDER's live URL for the fresh fetch.
+          const providerPhoto = user.providerData?.[0]?.photoURL || user.photoURL;
+
+          // If provider photo is also internal (unlikely for Google), we skip.
+          if (providerPhoto.includes("firebasestorage.googleapis.com") && isInternal) {
+            // Nothing to update from
+            return;
+          }
+
+          const internalUrlEffect = internalizeProfileImage(providerPhoto, user.uid);
+          const internalUrl = await Effect.runPromise(internalUrlEffect);
+
+          await updateDoc(userRef, {
+            photoURL: internalUrl,
+            lastPhotoUpdate: now
+          });
+          console.log("[AuthService] Profile image updated to internal storage");
+        }
+      } catch (err) {
+        console.warn("[AuthService] Background image sync failed:", err);
+      }
+    })();
+
+  } catch (e) {
+    console.warn("[AuthService] Error starting image sync:", e);
+  }
+};
+
 // Implement the Live Layer
 export const AuthServiceLive = Layer.succeed(
   AuthService,
@@ -34,6 +109,7 @@ export const AuthServiceLive = Layer.succeed(
     login: Effect.tryPromise({
       try: async () => {
         const provider = new GoogleAuthProvider();
+        let user: any = null;
 
         // Use Native Plugin for mobile to avoid the "localhost" redirect issue
         if (Capacitor.isNativePlatform()) {
@@ -49,7 +125,8 @@ export const AuthServiceLive = Layer.succeed(
             console.log("DEBUG: idToken received, attempting bridge sign-in...");
             const credential = GoogleAuthProvider.credential(idToken);
             try {
-              await signInWithCredential(auth, credential);
+              const cred = await signInWithCredential(auth, credential);
+              user = cred.user; // Use the bridged user
               console.log("DEBUG: Bridge sign-in successful");
             } catch (bridgeError) {
               console.error("DEBUG: Bridge sign-in FAILED:", bridgeError);
@@ -58,28 +135,27 @@ export const AuthServiceLive = Layer.succeed(
           } else {
             console.error("CRITICAL: No idToken received. Available fields:", Object.keys(result.user));
             // Without this token, Firestore write below will likely fail with permission-denied
+            user = result.user; // Fallback to raw result (might be incomplete)
           }
-
-          const profile: UserProfile = {
-            uid: result.user.uid,
-            displayName: result.user.displayName,
-            email: result.user.email,
-            photoURL: result.user.photoUrl,
-          };
-          await setDoc(doc(db, "users", result.user.uid), profile, { merge: true });
-          return profile;
+        } else {
+          const result = await signInWithPopup(auth, provider);
+          user = result.user;
         }
 
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
+        // Basic Profile Update
         const profile: UserProfile = {
           uid: user.uid,
           displayName: user.displayName,
           email: user.email,
-          photoURL: user.photoURL,
+          photoURL: user.photoURL, // This might be overridden by background sync momentarily
         };
 
+        // We write the *current* state first to ensure doc exists
         await setDoc(doc(db, "users", user.uid), profile, { merge: true });
+
+        // Trigger background sync of image
+        // We pass the fresh 'user' object which contains the provider data
+        synchronizeProfileImage(user);
 
         return profile;
       },
