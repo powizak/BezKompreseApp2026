@@ -1,8 +1,9 @@
 class ImageLoaderService {
     private static instance: ImageLoaderService;
-    private queue: Array<() => Promise<void>> = [];
+    private highPriorityQueue: Array<() => Promise<void>> = [];
+    private normalQueue: Array<() => Promise<void>> = [];
     private activeCount = 0;
-    private maxConcurrency = 3; // Reduced concurrency to be safer against 429s (Google LH3 is strict)
+    private maxConcurrency = 3; // Reverted to 3 to prevent 429 errors (Google is strict)
     private cache = new Map<string, Promise<void>>();
     private readonly FAILURE_CACHE_KEY = 'img_load_failures';
     private readonly FAILURE_TTL = 5 * 60 * 1000; // 5 minutes
@@ -19,10 +20,24 @@ class ImageLoaderService {
     }
 
     /**
+     * Clears the failure cache (circuit breaker).
+     */
+    public resetFailureCache() {
+        try {
+            localStorage.removeItem(this.FAILURE_CACHE_KEY);
+            this.cache.clear();
+        } catch (e) {
+            console.warn("[ImageLoader] Failed to reset cache:", e);
+        }
+    }
+
+    /**
      * Pre-loads the image using standard Browser Image object.
      * Includes persistent "circuit breaker" via localStorage to prevent loops on reload.
+     * @param url The image URL to load
+     * @param priority If true, image is placed at the front of the loading queue (e.g. cars over avatars)
      */
-    public loadImage(url: string): Promise<void> {
+    public loadImage(url: string, priority: boolean = false): Promise<void> {
         if (this.cache.has(url)) {
             return this.cache.get(url)!;
         }
@@ -44,44 +59,53 @@ class ImageLoaderService {
                     reject(error);
                     // Keep the rejected promise in cache to prevent immediate retries in this session
                 }
-            });
+            }, priority);
         });
 
         this.cache.set(url, promise);
         return promise;
     }
 
-    private enqueue(task: () => Promise<void>) {
-        this.queue.push(task);
+    private enqueue(task: () => Promise<void>, priority: boolean) {
+        if (priority) {
+            this.highPriorityQueue.push(task);
+        } else {
+            this.normalQueue.push(task);
+        }
         this.processQueue();
     }
 
     private async processQueue() {
-        if (this.activeCount >= this.maxConcurrency || this.queue.length === 0) {
+        if (this.activeCount >= this.maxConcurrency) {
+            return;
+        }
+
+        // Try high priority first, then normal
+        const task = this.highPriorityQueue.shift() || this.normalQueue.shift();
+
+        if (!task) {
             return;
         }
 
         this.activeCount++;
-        const task = this.queue.shift();
-
-        if (task) {
-            try {
-                await task();
-            } finally {
-                this.activeCount--;
-                // Add small delay between tasks to avoid bursting
-                setTimeout(() => this.processQueue(), 100);
-            }
+        try {
+            await task();
+        } finally {
+            this.activeCount--;
+            // Reduced delay to process queue faster
+            setTimeout(() => this.processQueue(), 50);
         }
     }
 
     private loadImageNative(url: string, attempt = 1): Promise<void> {
         return new Promise((resolve, reject) => {
             const img = new Image();
+            let timer: any = null;
 
             const cleanup = () => {
                 img.onload = null;
                 img.onerror = null;
+                if (timer) clearTimeout(timer);
             };
 
             img.onload = () => {
@@ -91,16 +115,19 @@ class ImageLoaderService {
 
             img.onerror = async () => {
                 cleanup();
-                const maxRetries = 5;
+                const maxRetries = 3; // Reduced from 5 to 3 for faster feedback
 
                 if (attempt < maxRetries) {
-                    // Exponential backoff with jitter: 2s, 4s, 8s, 16s... + random
-                    // Starting higher (2s) because 429s need patience.
-                    const baseDelay = 2000 * Math.pow(2, attempt - 1);
-                    const jitter = Math.random() * 1000;
+                    // Backoff: 1s, 2s, 4s
+                    const baseDelay = 1000 * Math.pow(2, attempt - 1);
+                    const jitter = Math.random() * 500;
                     const delay = baseDelay + jitter;
 
-                    console.warn(`[ImageLoader] Retry ${attempt}/${maxRetries} for ${url} in ${Math.round(delay)}ms`);
+                    // Only warn on later retries to reduce noise
+                    if (attempt > 1) {
+                        console.warn(`[ImageLoader] Retry ${attempt}/${maxRetries} for ${url}`);
+                    }
+
                     await new Promise(r => setTimeout(r, delay));
 
                     try {
@@ -114,6 +141,14 @@ class ImageLoaderService {
                     reject(new Error(`Failed to load image: ${url}`));
                 }
             };
+
+            // Hard timeout to prevent hanging forever on mobile
+            timer = setTimeout(() => {
+                cleanup();
+                // We resolve even on timeout? No, we reject, but maybe with a special error?
+                // Rejection is safer, let the UI fallback.
+                reject(new Error(`Image load timed out: ${url}`));
+            }, 15000); // 15 seconds max per image
 
             img.src = url;
         });

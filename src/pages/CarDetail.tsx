@@ -108,6 +108,7 @@ export default function CarDetail() {
                             <CachedImage
                                 src={getImageUrl(car.photos[activeImageIndex], 'large')}
                                 alt={car.name}
+                                priority={true}
                                 className="w-full h-full object-cover cursor-zoom-in transition-all duration-500"
                                 onClick={() => setIsImageModalOpen(true)}
                             />
@@ -336,6 +337,7 @@ export default function CarDetail() {
                             <CachedImage
                                 src={getImageUrl(car.photos[activeImageIndex], 'large')}
                                 alt={car.name}
+                                priority={true}
                                 className="max-w-full max-h-full object-contain shadow-2xl rounded-lg animate-in zoom-in-95 duration-500"
                             />
 

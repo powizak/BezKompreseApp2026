@@ -283,7 +283,7 @@ export default function Market() {
                             {/* Image */}
                             <div className="aspect-video bg-slate-100 relative overflow-hidden">
                                 {car.photos && car.photos.length > 0 ? (
-                                    <CachedImage src={getImageUrl(car.photos[0], 'thumb')} alt={car.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                    <CachedImage src={getImageUrl(car.photos[0], 'thumb')} alt={car.name} priority={true} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                 ) : (
                                     <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
                                         <CarFront size={48} strokeWidth={1.5} />
@@ -378,7 +378,7 @@ export default function Market() {
                                 {/* Image */}
                                 <div className="aspect-video bg-slate-100 relative overflow-hidden">
                                     {listing.imageUrl ? (
-                                        <CachedImage src={getImageUrl(listing.imageUrl, 'thumb')} alt={listing.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                        <CachedImage src={getImageUrl(listing.imageUrl, 'thumb')} alt={listing.title} priority={true} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                     ) : (
                                         <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
                                             <ShoppingBag size={48} strokeWidth={1.5} />

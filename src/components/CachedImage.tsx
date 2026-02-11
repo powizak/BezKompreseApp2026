@@ -10,6 +10,8 @@ const seenUrls = new Set<string>();
 interface CachedImageProps extends ImgHTMLAttributes<HTMLImageElement> {
     /** Set to true to skip fade-in animation */
     noCache?: boolean;
+    /** If true, this image will be loaded before standard images (e.g. car photos > avatars) */
+    priority?: boolean;
 }
 
 /**
@@ -18,7 +20,7 @@ interface CachedImageProps extends ImgHTMLAttributes<HTMLImageElement> {
  * - Shows a subtle fade-in on first load, instant on subsequent renders
  * - Lazy-loads off-screen images by default
  */
-export default function CachedImage({ src, alt, noCache, className, style, onLoad, onError, ...props }: CachedImageProps) {
+export default function CachedImage({ src, alt, noCache, priority, className, style, onLoad, onError, ...props }: CachedImageProps) {
     const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
@@ -31,16 +33,19 @@ export default function CachedImage({ src, alt, noCache, className, style, onLoa
             try {
                 // Use our loader which handles 429 backoff
                 // This ensures the image is in the browser cache
-                await ImageLoader.loadImage(src);
+                await ImageLoader.loadImage(src, priority);
 
                 if (isMounted) {
                     // Now set the src, the browser will pull it from cache instantly
                     setImageSrc(src);
                 }
             } catch (e) {
-                // ImageLoader keeps log in console
+                // If Loader fails (timeout, 429, etc), we still try to set the SRC.
+                // The browser might have partial data or handle it better directly.
+                // If it fails again, the <img onError> will catch it.
                 if (isMounted) {
-                    setError(true);
+                    // console.warn("Loader failed, falling back to direct render:", src);
+                    setImageSrc(src);
                 }
             }
         };
