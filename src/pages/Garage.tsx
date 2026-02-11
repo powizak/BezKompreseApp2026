@@ -640,18 +640,37 @@ export default function Garage() {
                 )}
                 <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
 
-                {/* For Sale Badge */}
-                {car.forSale && (
-                  <div className="absolute top-11 left-3 z-20">
+                {/* Badges Stack */}
+                <div className="absolute top-3 left-3 z-20 flex flex-col gap-2 items-start">
+                  {/* Ownership Badge */}
+                  {(car.isOwned ?? true) ? (
+                    <span className="bg-brand text-slate-900 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg border border-brand-light flex items-center gap-1">
+                      V garáži
+                    </span>
+                  ) : (
+                    <span className="bg-slate-800 text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg flex items-center gap-1 opacity-90">
+                      Historie
+                    </span>
+                  )}
+
+                  {/* For Sale Badge */}
+                  {car.forSale && (
                     <span className="bg-green-500 text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg flex items-center gap-1">
                       <Tag size={12} />
                       Na prodej
                     </span>
-                  </div>
-                )}
+                  )}
+
+                  {/* Vehicle Status Badge */}
+                  {car.status && (
+                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded shadow border flex items-center gap-1 ${VEHICLE_STATUS_CONFIG[car.status].color.bg} ${VEHICLE_STATUS_CONFIG[car.status].color.text} ${VEHICLE_STATUS_CONFIG[car.status].color.border}`}>
+                      {VEHICLE_STATUS_CONFIG[car.status].label}
+                    </span>
+                  )}
+                </div>
 
                 <div className="absolute bottom-0 left-0 p-4 text-white">
-                  <h3 className="font-black text-2xl tracking-tight leading-none mb-1">{car.name}</h3>
+                  <h3 className="font-black text-xl tracking-tight leading-none mb-1">{car.name}</h3>
                   <p className="text-sm font-medium opacity-90">{car.make} {car.model} {car.year}</p>
                 </div>
 
@@ -671,30 +690,7 @@ export default function Garage() {
                   </button>
                 </div>
 
-                {/* Ownership Badge */}
-                {(car.isOwned ?? true) && (
-                  <div className="absolute top-3 left-3 z-20">
-                    <span className="bg-brand text-slate-900 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg border border-brand-light flex items-center gap-1">
-                      V garáži
-                    </span>
-                  </div>
-                )}
-                {!(car.isOwned ?? true) && (
-                  <div className="absolute top-3 left-3 z-20">
-                    <span className="bg-slate-800 text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg flex items-center gap-1 opacity-90">
-                      Historie
-                    </span>
-                  </div>
-                )}
 
-                {/* Vehicle Status Badge */}
-                {car.status && (
-                  <div className="absolute top-11 left-3 z-20">
-                    <span className={`text - [10px] font - bold uppercase tracking - wider px - 2 py - 1 rounded shadow border flex items - center gap - 1 ${VEHICLE_STATUS_CONFIG[car.status].color.bg} ${VEHICLE_STATUS_CONFIG[car.status].color.text} ${VEHICLE_STATUS_CONFIG[car.status].color.border} `}>
-                      {VEHICLE_STATUS_CONFIG[car.status].label}
-                    </span>
-                  </div>
-                )}
 
                 {/* Reminder Status Dot */}
                 {(() => {
