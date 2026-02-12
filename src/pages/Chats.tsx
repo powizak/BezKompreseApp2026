@@ -8,6 +8,7 @@ import type { ChatRoom } from '../types/chat';
 import LoginRequired from '../components/LoginRequired';
 import ChatDrawer from '../components/ChatDrawer';
 import CachedImage from '../components/CachedImage';
+import LoadingState from '../components/LoadingState';
 import { formatDistanceToNow } from 'date-fns';
 import { cs } from 'date-fns/locale';
 
@@ -119,10 +120,7 @@ export default function Chats() {
             {/* Chat List */}
             <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
                 {loading ? (
-                    <div className="p-8 text-center">
-                        <div className="animate-spin w-8 h-8 border-4 border-brand border-t-transparent rounded-full mx-auto mb-3" />
-                        <p className="text-slate-500 text-sm font-medium">Načítám konverzace...</p>
-                    </div>
+                    <LoadingState message="Načítám konverzace..." />
                 ) : chats.length === 0 ? (
                     <div className="p-12 text-center">
                         <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-4">

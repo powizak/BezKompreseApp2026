@@ -7,6 +7,7 @@ import { Search, Users as UsersIcon, UserPlus, UserMinus, User, Heart } from 'lu
 import { Link } from 'react-router-dom';
 import LoginRequired from '../components/LoginRequired';
 import CachedImage from '../components/CachedImage';
+import LoadingState from '../components/LoadingState';
 
 export default function UsersPage() {
     const { user: currentUser } = useAuth();
@@ -148,10 +149,7 @@ export default function UsersPage() {
             </div>
 
             {loading ? (
-                <div className="text-center py-20">
-                    <div className="w-12 h-12 border-4 border-brand/30 border-t-brand rounded-full animate-spin mx-auto mb-4" />
-                    <p className="text-slate-400 font-medium animate-pulse">Načítám komunitu...</p>
-                </div>
+                <LoadingState message="Načítám komunitu..." className="py-20" />
             ) : (
                 <>
                     {/* Search Results Mode */}
@@ -275,8 +273,8 @@ function UserCard({ user, currentUser, onFriendAction, highlight, rank }: { user
                     <button
                         onClick={() => onFriendAction(user.uid, isFriend)}
                         className={`w-full py-2.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${isFriend
-                                ? 'bg-red-50 text-red-500 hover:bg-red-100'
-                                : 'bg-slate-900 text-white hover:bg-brand hover:text-black shadow-lg shadow-slate-900/20 hover:shadow-brand/20'
+                            ? 'bg-red-50 text-red-500 hover:bg-red-100'
+                            : 'bg-slate-900 text-white hover:bg-brand hover:text-black shadow-lg shadow-slate-900/20 hover:shadow-brand/20'
                             }`}
                     >
                         {isFriend ? (

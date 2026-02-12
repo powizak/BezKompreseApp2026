@@ -6,6 +6,7 @@ import { Play, Instagram, Facebook, Youtube, Image, Film, ArrowRight } from 'luc
 import { formatDistanceToNow } from 'date-fns';
 import { cs } from 'date-fns/locale';
 import CachedImage from '../components/CachedImage';
+import LoadingState from '../components/LoadingState';
 
 type FilterType = 'all' | SocialPlatform;
 
@@ -32,7 +33,7 @@ export default function Home() {
     return feed.filter(post => post.platform === activeFilter);
   }, [feed, activeFilter]);
 
-  if (loading) return <div className="p-10 text-center text-slate-500 font-mono">Načítám feed...</div>;
+  if (loading) return <LoadingState message="Načítám feed..." className="py-20" />;
 
   const getIcon = (platform: string) => {
     switch (platform) {

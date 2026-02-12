@@ -9,6 +9,7 @@ import { LISTING_TYPE_LABELS, LISTING_TYPE_COLORS } from '../types';
 import LoginRequired from '../components/LoginRequired';
 import ChatDrawer from '../components/ChatDrawer';
 import CachedImage from '../components/CachedImage';
+import LoadingState from '../components/LoadingState';
 import { compressImage } from '../lib/imageOptimizer';
 import {
     Store, ShoppingBag, Search, Plus, X, MessageCircle, Tag, User,
@@ -272,9 +273,7 @@ export default function Market() {
 
             {/* Content */}
             {loading ? (
-                <div className="flex justify-center py-20">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
-                </div>
+                <LoadingState message="Načítám bazar..." className="py-20" />
             ) : activeTab === 'cars' ? (
                 /* Cars for Sale Grid */
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

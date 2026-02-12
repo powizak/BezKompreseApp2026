@@ -18,6 +18,7 @@ function cn(...inputs: (string | undefined | null | false)[]) {
 import LoginRequired from '../components/LoginRequired';
 import VehicleRemindersEditor from '../components/VehicleRemindersEditor';
 import CachedImage from '../components/CachedImage';
+import LoadingState from '../components/LoadingState';
 
 // Helper to determine worst reminder status for a car
 function getReminderStatus(reminders?: VehicleReminder[]): 'green' | 'yellow' | 'red' | null {
@@ -620,9 +621,7 @@ export default function Garage() {
       )}
 
       {loading ? (
-        <div className="flex justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
-        </div>
+        <LoadingState message="Načítám garáž..." className="py-20" />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {cars.map(car => (

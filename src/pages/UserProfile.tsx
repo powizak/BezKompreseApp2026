@@ -14,6 +14,7 @@ import 'leaflet/dist/leaflet.css';
 import LoginRequired from '../components/LoginRequired';
 import NotificationSettingsSection from '../components/NotificationSettings';
 import CachedImage from '../components/CachedImage';
+import LoadingState from '../components/LoadingState';
 
 // Fix Leaflet icon issue
 // @ts-ignore
@@ -183,7 +184,7 @@ export default function UserProfilePage() {
         return homeLocation ? <Marker position={[homeLocation.lat, homeLocation.lng]} /> : null;
     }
 
-    if (loading) return <div className="p-10 text-center text-slate-500">Načítám profil...</div>;
+    if (loading) return <LoadingState message="Načítám profil..." className="py-20" />;
     if (!profile) return <div className="p-10 text-center text-slate-500">Uživatel nenalezen.</div>;
 
     const isMe = currentUser?.uid === profile.uid;

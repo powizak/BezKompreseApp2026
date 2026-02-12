@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Effect, Stream } from "effect";
 import { AuthService, AuthServiceLive } from "../services/AuthService";
 import type { UserProfile } from "../types";
+import LoadingState from "../components/LoadingState";
 
 interface AuthContextType {
   user: UserProfile | null;
@@ -58,10 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return (
     <AuthContext.Provider value={{ user, loading, login, logout }}>
       {loading ? (
-        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center">
-          <div className="w-16 h-16 border-4 border-slate-200 border-t-brand rounded-full animate-spin"></div>
-          <p className="mt-4 text-slate-500 font-medium animate-pulse">Načítám...</p>
-        </div>
+        <LoadingState message="Načítám aplikaci..." className="min-h-screen" />
       ) : (
         children
       )}

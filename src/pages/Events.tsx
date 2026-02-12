@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom';
 import { getImageUrl } from '../lib/imageService';
 import LoginRequired from '../components/LoginRequired';
 import CachedImage from '../components/CachedImage';
+import LoadingState from '../components/LoadingState';
 
 const ALL_EVENT_TYPES: EventType[] = ['minisraz', 'velky_sraz', 'trackday', 'vyjizdka'];
 
@@ -447,10 +448,7 @@ export default function Events() {
 
             {/* Events List */}
             {loading ? (
-                <div className="p-12 text-center text-slate-400">
-                    <div className="animate-spin w-8 h-8 border-4 border-slate-200 border-t-brand rounded-full mx-auto mb-4"></div>
-                    <p className="font-bold uppercase tracking-wide text-sm">Načítám akce...</p>
-                </div>
+                <LoadingState message="Načítám akce..." className="p-12" />
             ) : filteredEvents.length === 0 ? (
                 <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl p-12 text-center text-slate-400 animate-in fade-in zoom-in-95">
                     <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">

@@ -9,6 +9,7 @@ import LoginRequired from '../components/LoginRequired';
 import { Link } from 'react-router-dom';
 import { CarFront, Filter, X, Search, Calendar, Gauge, Tag } from 'lucide-react';
 import CachedImage from '../components/CachedImage';
+import LoadingState from '../components/LoadingState';
 
 export default function CarsPage() {
     const { user } = useAuth();
@@ -98,11 +99,7 @@ export default function CarsPage() {
     const resetFilters = () => setFilters({ make: '', model: '', engine: '' });
 
     if (loading && cars.length === 0) {
-        return (
-            <div className="flex justify-center items-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
-            </div>
-        );
+        return <LoadingState message="Načítám auta..." className="py-20" />;
     }
 
     if (!user) {
