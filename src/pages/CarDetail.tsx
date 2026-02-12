@@ -9,6 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { getImageUrl } from '../lib/imageService';
 import LoginRequired from '../components/LoginRequired';
 import CachedImage from '../components/CachedImage';
+import LoadingState from '../components/LoadingState';
 
 export default function CarDetail() {
     const { id } = useParams<{ id: string }>();
@@ -78,7 +79,7 @@ export default function CarDetail() {
         setActiveImageIndex((prev) => (prev - 1 + car.photos.length) % car.photos.length);
     };
 
-    if (loading) return <div className="p-12 text-center text-slate-400 font-mono">Načítám vozidlo...</div>;
+    if (loading) return <LoadingState message="Načítám vozidlo..." className="py-20" />;
     if (!car) return <div className="p-12 text-center text-slate-400 font-mono">Vozidlo nenalezeno.</div>;
 
 
