@@ -177,31 +177,41 @@ export const AuthServiceLive = Layer.succeed(
         }
 
         if (firebaseUser) {
-          // 1. Ensure basic auth data is synced
-          const userRef = doc(db, "users", firebaseUser.uid);
-          await setDoc(userRef, {
+          // OPTIMIZATION: Emit the user IMMEDIATELY based on Auth data
+          // This prevents the "flash of login screen" while waiting for Firestore
+          const initialProfile: UserProfile = {
             uid: firebaseUser.uid,
             displayName: firebaseUser.displayName,
             email: firebaseUser.email,
             photoURL: firebaseUser.photoURL
-          }, { merge: true });
+          };
+          emit.single(initialProfile);
 
-          // 2. Listen to the document
+          // 1. Ensure basic auth data is synced (fire-and-forget/background)
+          const userRef = doc(db, "users", firebaseUser.uid);
+          // We don't await this to avoid blocking the stream if possible, 
+          // but we need the doc to exist for onSnapshot. 
+          // setDoc is fast usually.
+          try {
+            await setDoc(userRef, {
+              uid: firebaseUser.uid,
+              displayName: firebaseUser.displayName,
+              email: firebaseUser.email,
+              photoURL: firebaseUser.photoURL
+            }, { merge: true });
+          } catch (e) {
+            console.error("Failed to sync user doc", e);
+          }
+
+          // 2. Listen to the document for full profile (friends, settings, etc.)
           const { onSnapshot } = await import("firebase/firestore");
           unsubscribeDoc = onSnapshot(userRef, (snap) => {
             const data = snap.data() as UserProfile | undefined;
             if (data) {
               emit.single(data);
-            } else {
-              // Fallback
-              emit.single({
-                uid: firebaseUser.uid,
-                displayName: firebaseUser.displayName,
-                email: firebaseUser.email,
-                photoURL: firebaseUser.photoURL,
-                friends: []
-              });
             }
+            // If data is missing (shouldn't happen due to setDoc above), 
+            // we already emitted the initialProfile, so we remain logged in.
           });
         } else {
           emit.single(null);

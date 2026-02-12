@@ -70,7 +70,7 @@ export default function Garage() {
     } else {
       setLoading(false);
     }
-  }, [user]);
+  }, [user?.uid]);
 
   const fetchCars = () => {
     if (!user) return;

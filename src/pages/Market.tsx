@@ -55,7 +55,7 @@ export default function Market() {
             return;
         }
         loadData();
-    }, [user]);
+    }, [user?.uid]);
 
     const loadData = async () => {
         setLoading(true);

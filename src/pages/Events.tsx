@@ -101,7 +101,7 @@ export default function Events() {
         } else {
             setLoading(false);
         }
-    }, [user]);
+    }, [user?.uid]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];

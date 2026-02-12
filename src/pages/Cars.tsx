@@ -71,11 +71,10 @@ export default function CarsPage() {
             }
         };
 
-        // Debounce slightly to prevent rapid firing if user clicks fast, 
-        // though for selects it's less critical than text inputs.
+        // Debouce loading to prevent too many requests
         const timer = setTimeout(loadCars, 100);
         return () => clearTimeout(timer);
-    }, [user, filters]);
+    }, [user?.uid, filters]);
 
     const loadMore = async () => {
         if (!lastVisible || loadingMore) return;

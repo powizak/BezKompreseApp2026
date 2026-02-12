@@ -76,7 +76,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
             isActive = false;
             reader.cancel();
         };
-    }, [user, activeChat]);
+    }, [user?.uid, activeChat]);
 
     // Clear unread when opening chat
     const openChat = (roomId: string, recipientId: string, recipientName: string) => {
