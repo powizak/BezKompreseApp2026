@@ -302,6 +302,22 @@ export const DataServiceLive = Layer.succeed(
         }),
         getSocialFeed: Effect.tryPromise({
             try: async () => {
+                const CACHE_KEY = 'social_feed_cache';
+                const CACHE_DURATION = 1000 * 60 * 10; // 10 minutes
+
+                // Try to get from cache first
+                const cached = localStorage.getItem(CACHE_KEY);
+                if (cached) {
+                    try {
+                        const { timestamp, data } = JSON.parse(cached);
+                        if (Date.now() - timestamp < CACHE_DURATION) {
+                            return data as SocialPost[];
+                        }
+                    } catch (e) {
+                        console.warn('Failed to parse social feed cache', e);
+                    }
+                }
+
                 let posts: SocialPost[] = [];
                 const YT_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
                 const YT_CHANNEL = import.meta.env.VITE_YOUTUBE_CHANNEL_ID || "UCw7nrQwqRDvG6Q3CSEmcOSw";
@@ -378,6 +394,14 @@ export const DataServiceLive = Layer.succeed(
                 }
 
                 if (posts.length === 0) {
+                    // Try to use cache even if expired if fetch failed and we have no posts
+                    if (cached) {
+                        try {
+                            const { data } = JSON.parse(cached);
+                            if (data && data.length > 0) return data as SocialPost[];
+                        } catch (e) { /* ignore */ }
+                    }
+
                     const mockSocial: SocialPost[] = [
                         {
                             id: 'ig1', platform: 'instagram', type: 'reel',
@@ -397,6 +421,12 @@ export const DataServiceLive = Layer.succeed(
                         }
                     ];
                     posts = mockSocial;
+                } else {
+                    // Cache the successful result
+                    localStorage.setItem(CACHE_KEY, JSON.stringify({
+                        timestamp: Date.now(),
+                        data: posts
+                    }));
                 }
 
                 return posts.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
