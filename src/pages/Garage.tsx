@@ -242,14 +242,14 @@ export default function Garage() {
 
       const carData = {
         ownerId: user.uid,
-        name: formData.name,
-        make: formData.make,
-        model: formData.model,
+        name: formData.name.trim(),
+        make: formData.make.trim(),
+        model: formData.model.trim(),
         year: parseInt(formData.year),
-        engine: formData.engine,
+        engine: formData.engine.trim(),
         power: formData.power,
         stockPower: formData.stockPower,
-        fuelConsumption: formData.fuelConsumption || undefined,
+        fuelConsumption: formData.fuelConsumption ? formData.fuelConsumption.trim() : undefined,
         mods: formData.mods,
         photos: finalPhotos,
         isOwned: formData.isOwned,
@@ -257,7 +257,7 @@ export default function Garage() {
         status: formData.status || undefined,
         forSale: formData.forSale,
         salePrice: formData.salePrice ? parseInt(formData.salePrice) : undefined,
-        saleDescription: formData.saleDescription || undefined
+        saleDescription: formData.saleDescription ? formData.saleDescription.trim() : undefined
       };
 
 
