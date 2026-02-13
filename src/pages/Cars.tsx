@@ -213,40 +213,34 @@ export default function CarsPage() {
                                     <p className="text-sm font-medium opacity-90">{car.make} {car.model}</p>
                                 </div>
 
-                                {/* For Sale Badge */}
-                                {car.forSale && (
-                                    <div className="absolute top-3 left-3 z-20">
-                                        <span className="bg-green-500 text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg flex items-center gap-1">
+                                {/* Badges Stack */}
+                                <div className="absolute top-3 left-3 z-20 flex flex-col gap-2 items-start">
+                                    {/* Ownership Badge */}
+                                    {(car.isOwned ?? true) ? (
+                                        <div className="bg-brand text-slate-900 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg border border-brand-light flex items-center gap-1">
+                                            V garáži
+                                        </div>
+                                    ) : (
+                                        <div className="bg-slate-800 text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg flex items-center gap-1 opacity-90">
+                                            Historie
+                                        </div>
+                                    )}
+
+                                    {/* For Sale Badge */}
+                                    {car.forSale && (
+                                        <div className="bg-green-500 text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg flex items-center gap-1">
                                             <Tag size={12} />
                                             Na prodej
-                                        </span>
-                                    </div>
-                                )}
+                                        </div>
+                                    )}
 
-                                {/* Ownership Badge */}
-                                {(car.isOwned ?? true) && (
-                                    <div className="absolute top-3 right-3 z-20">
-                                        <span className="bg-brand text-slate-900 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg border border-brand-light flex items-center gap-1">
-                                            V garáži
-                                        </span>
-                                    </div>
-                                )}
-                                {!(car.isOwned ?? true) && (
-                                    <div className="absolute top-3 right-3 z-20">
-                                        <span className="bg-slate-800 text-white text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-lg flex items-center gap-1 opacity-90">
-                                            Historie
-                                        </span>
-                                    </div>
-                                )}
-
-                                {/* Vehicle Status Badge */}
-                                {car.status && (
-                                    <div className="absolute top-3 left-3 z-20">
-                                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded shadow border flex items-center gap-1 ${VEHICLE_STATUS_CONFIG[car.status].color.bg} ${VEHICLE_STATUS_CONFIG[car.status].color.text} ${VEHICLE_STATUS_CONFIG[car.status].color.border}`}>
+                                    {/* Vehicle Status Badge */}
+                                    {car.status && (
+                                        <div className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded shadow border flex items-center gap-1 ${VEHICLE_STATUS_CONFIG[car.status].color.bg} ${VEHICLE_STATUS_CONFIG[car.status].color.text} ${VEHICLE_STATUS_CONFIG[car.status].color.border}`}>
                                             {VEHICLE_STATUS_CONFIG[car.status].label}
-                                        </span>
-                                    </div>
-                                )}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             {/* Info */}

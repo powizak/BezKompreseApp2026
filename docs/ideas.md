@@ -57,6 +57,8 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - Označení štítkem v seznamu aut (jako máme vlastněno)
 - Možno kontaktovat vlastníka auta / poptávajícího přímo z marketu - otevře chat s daným uživatelem / založí nový, pokud ještě spolu nekomunikovali
 - Přímo z inzeratu může vlastník označit auto jako "Prodané" - tedy vymaže inzerát a zároveň v garáži mu odznačí "Vlastněno"  
+- **Vizuální Oprava (v0.0.31)**: Oprava překrývání štítků "Na prodej" a statusů na kartách aut
+
 
 ### Rozšíření funkcí inzerce
 - Ověření Bez Komprese - možnost si zažádat o certifikát např. na základě VIN

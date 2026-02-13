@@ -64,6 +64,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Filtrování a Hledání**: Fulltextové vyhledávání v inzerátech a autech na prodej
 - **Přímý Kontakt**: Tlačítko pro okamžité zahájení chatu s prodejcem
 - **Notifikace**: Upozornění na nové příspěvky v bazaru (volitelné)
+- **Vizuální Opravy**: Sjednocené a vrstvené štítky u inzerátů (předcházení překryvu)
 
 ### 🔔 Push Notifikace (NOVÉ!)
 - **SOS Upozornění**: Okamžitá notifikace při volání o pomoc

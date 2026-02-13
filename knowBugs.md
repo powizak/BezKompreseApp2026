@@ -6,6 +6,12 @@
 
  - uživatelé mohou ve starých verzích aplikace (Android) zadávat data s whitespace na konci -> kazí to filtrování -> nutno ještě jednou vyčistit scriptem
 
- - stránka "Lidé" má příliš velký viewport a nesprávně se posouvá
- - štítek "Na prodej" se zobrazuje přes další (na stránce /cars)
+ - stránka "Lidé" má příliš velký viewport a nesprávně se posouvá na nízké šířce zobrazení, případně v Android app
 
+
+- nelze mazat ani upravovat události, které uživatel vytvořil
+
+- je žádoucí mít možnost přidat inzerát na auto i jako samostatný - nejen proklikem z garáže s tím, že pak nebude vidět detail auta, ale bude se to chovat, jako obyčejný inzerát
+- zároveň je potřeba přidat možnost si zobrazit detail inzerátu (nejen pokud se jedná o auta z garáže)
+- podívat se také na kategorie bazaru - nyní jsou auta, poptávky a v poptávkách je pak i prodej dílů - potřeba domyslet
+- pro marketplace také nejspíše nefunguje úplně správně převod fotek - zůstala tam large s velikostí téměř 5MB
