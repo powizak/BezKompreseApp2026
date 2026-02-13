@@ -7,7 +7,7 @@ import { useChat } from '../contexts/ChatContext';
 import type { UserProfile, Car, AppEvent, NotificationSettings } from '../types';
 import { getImageUrl } from '../lib/imageService';
 import { DEFAULT_NOTIFICATION_SETTINGS } from '../types';
-import { Car as CarIcon, UserPlus, UserMinus, Users, Calendar, MapPin, User, ChevronRight, Settings, Shield, Save, CarFront, Gauge, Fuel, MessageCircle, LogOut } from 'lucide-react';
+import { Car as CarIcon, UserPlus, UserMinus, Users, Calendar, MapPin, User, ChevronRight, Settings, Shield, Save, CarFront, Gauge, Fuel, MessageCircle, LogOut, Award } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -16,6 +16,8 @@ import NotificationSettingsSection from '../components/NotificationSettings';
 import CachedImage from '../components/CachedImage';
 import LoadingState from '../components/LoadingState';
 import UserAvatar from '../components/UserAvatar';
+import { BadgeGrid } from '../components/gamification/BadgeGrid';
+import { BadgeService } from '../services/BadgeService';
 
 // Fix Leaflet icon issue
 // @ts-ignore
@@ -36,7 +38,7 @@ export default function UserProfilePage() {
     const [friends, setFriends] = useState<UserProfile[]>([]);
     const [loading, setLoading] = useState(true);
     const [isFriend, setIsFriend] = useState(false);
-    const [activeTab, setActiveTab] = useState<'garage' | 'events' | 'friends' | 'settings'>('garage');
+    const [activeTab, setActiveTab] = useState<'garage' | 'events' | 'friends' | 'settings' | 'badges'>('garage');
     const [saving, setSaving] = useState(false);
     const [homeLocation, setHomeLocation] = useState<{ lat: number; lng: number } | undefined>(undefined);
     const [trackerSettings, setTrackerSettings] = useState<import('../types').TrackerSettings>({
@@ -90,6 +92,9 @@ export default function UserProfilePage() {
                     setFriends(validFriends);
                 } else {
                     setFriends([]);
+                }
+                if (currentUser && id === currentUser.uid) {
+                    BadgeService.checkRetroactiveBadges(currentUser.uid).catch(console.error);
                 }
             }
             setLoading(false);
@@ -215,6 +220,9 @@ export default function UserProfilePage() {
                     <p className="text-slate-500 font-medium flex items-center justify-center md:justify-start gap-2">
                         <Users size={16} />
                         {profile.friends?.length || 0} přátel
+                        <span className="w-1 h-1 bg-slate-300 rounded-full mx-2"></span>
+                        <Award size={16} />
+                        {new Set(profile.badges?.map(b => b.badgeId)).size || 0} odznaků
                     </p>
                 </div>
 
@@ -253,6 +261,9 @@ export default function UserProfilePage() {
                 </button>
                 <button onClick={() => setActiveTab('friends')} className={`pb-3 px-2 md:px-4 text-xs md:text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-1 md:gap-2 whitespace-nowrap flex-shrink-0 ${activeTab === 'friends' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
                     <Users size={16} className="md:w-[18px] md:h-[18px]" /> Přátelé <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 text-slate-500">{friends.length}</span>
+                </button>
+                <button onClick={() => setActiveTab('badges')} className={`pb-3 px-2 md:px-4 text-xs md:text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-1 md:gap-2 whitespace-nowrap flex-shrink-0 ${activeTab === 'badges' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
+                    <Award size={16} className="md:w-[18px] md:h-[18px]" /> Odznaky <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 text-slate-500">{profile?.badges?.length || 0}</span>
                 </button>
                 {isMe && (
                     <button onClick={() => setActiveTab('settings')} className={`pb-3 px-2 md:px-4 text-xs md:text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-1 md:gap-2 whitespace-nowrap flex-shrink-0 ${activeTab === 'settings' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
@@ -367,6 +378,23 @@ export default function UserProfilePage() {
                                 <p className="font-bold">Seznam přátel je prázdný</p>
                             </div>
                         )}
+                    </div>
+                )}
+
+                {/* Badges Tab */}
+                {activeTab === 'badges' && (
+                    <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm animate-in fade-in zoom-in-95 duration-300">
+                        <div className="flex items-center gap-3 mb-8">
+                            <div className="p-3 bg-brand/10 text-brand rounded-2xl">
+                                <Award size={32} strokeWidth={1.5} />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-black italic uppercase tracking-tighter">Sbírka odznaků</h2>
+                                <p className="text-sm text-slate-500 font-medium">Plň výzvy a sbírej unikátní ocenení</p>
+                            </div>
+                        </div>
+
+                        <BadgeGrid userBadges={profile.badges || []} />
                     </div>
                 )}
 

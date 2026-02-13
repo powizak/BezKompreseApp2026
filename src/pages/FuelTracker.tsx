@@ -64,7 +64,7 @@ export default function FuelTracker() {
             const [carData, recordsData, serviceData] = await Promise.all([
                 Effect.runPromise(dataService.getCarById(carId)),
                 Effect.runPromise(dataService.getFuelRecords(carId)),
-                Effect.runPromise(dataService.getServiceRecords(carId))
+                Effect.runPromise(dataService.getServiceRecords(carId, user?.uid))
             ]);
 
             if (!carData || carData.ownerId !== user?.uid) {

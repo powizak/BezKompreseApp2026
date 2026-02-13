@@ -70,7 +70,7 @@ export default function ServiceBook() {
         try {
             const [carData, recordsData] = await Promise.all([
                 Effect.runPromise(dataService.getCarById(carId)),
-                Effect.runPromise(dataService.getServiceRecords(carId))
+                Effect.runPromise(dataService.getServiceRecords(carId, user?.uid))
             ]);
 
             if (!carData) {

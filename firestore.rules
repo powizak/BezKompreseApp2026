@@ -65,7 +65,11 @@ service cloud.firestore {
     // ============ SERVICE-RECORDS Kolekce ============
     // Pouze owner může číst a psát záznamy
     match /service-records/{recordId} {
-      allow read, write: if isAuthenticated() 
+      allow read: if isAuthenticated() 
+                    && resource.data.ownerId == getUserId();
+      allow create: if isAuthenticated() 
+                    && request.resource.data.ownerId == getUserId();
+      allow update, delete: if isAuthenticated() 
                     && resource.data.ownerId == getUserId();
     }
 
@@ -74,7 +78,9 @@ service cloud.firestore {
     // Psát může pouze owner
     match /fuel-records/{recordId} {
       allow read: if isAuthenticated();
-      allow write: if isAuthenticated() 
+      allow create: if isAuthenticated() 
+                    && request.resource.data.ownerId == getUserId();
+      allow update, delete: if isAuthenticated() 
                     && resource.data.ownerId == getUserId();
     }
 

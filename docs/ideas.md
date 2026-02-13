@@ -66,13 +66,25 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - Přidat značku, zda již někdo přečetl zprávu či nikoliv (pro toho, kdo si ji má přečíst - v seznamu zpráv)
 - Přidat do "info" - celkový počet uživatelů / aut v aplikaci? 
 
-### 🏆 Gamifikace a "Build Threads"
-- Odznaky (Badges): "High Miler" (nájezd 300k+), "Wrench Wizard" (více než 10 DIY záznamů), "Event Junkie" (účast na srazech) atd.
+### ✅ Gamifikace - IMPLEMENTOVÁNO (Fáze 1)
+#### Fáze 1
+- **Odznaky (Badges)**: "High Miler", "Wrench Wizard", "Early Adopter", "Socialite", "Organizer" atd.
+- **Technologie**: Transakční udělování (prevence race conditions), automatická deduplikace, retroaktivní kontroly při načtení profilu.
+- **UI**: Karta "Odznaky" na profilu, detailní modály, počítadlo unikátních odznaků.
 - Levely podle najetých km a podle počtu záznamů, účasti na srazech atd.
+- Pro všechny, co se podíleli na testování dát odznak "Testovací jezdec" 
+- Odznaky možno "vystavit" 3 na profilu
+- Uživatel (i ostatní) uvidí všechny své odznaky na další kartě na svém profilu (jako je karta nastavení) s tím, že uživatel samotný uvidí i další, které existují zašedlé, když je ještě nemá
+- Na každý odznak bude možno kliknout (vyjede pop-up, jako máme např. přidávání záznamů tankování, jen bez možnosti úprav) s tím, že se zobrazí informace o daném odznaku - název, popis, za co byl udělen, kdy byl udělen
+##### Vytvořit databázi odznaků
+
+
+#### Fáze 2
 - Sbírání BezKomprese známeček -> možnost si vybrat za známky "dárek" -> sleva na eshop nebo samolepka atd. 
 - Fight kartiček ve stylu "Kdo má lepší auto" - na základě statistik aut
 - Soutěže - nejlepší tuning, nejlepší fotka, nejlepší video, nejlepší úprava, nejvíce najetých kilometrů atd. 
-- Pro všechny, co se podíleli na testování dát odznak "Testovací jezdec" 
+
+#### Fáze 0
 - **✅ BK Team Badge - IMPLEMENTOVÁNO**: Speciální odznak pro členy týmu na jejich profilech. 
 
 

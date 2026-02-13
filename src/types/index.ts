@@ -34,6 +34,7 @@ export interface UserProfile {
   searchKey?: string; // Lowercase display name for search
   _random?: number; // Random integer for random sorting
   isBKTeam?: boolean; // Member of Bez Komprese Team
+  badges?: import('./badges').UserBadge[]; // Collected badges
 }
 
 export interface CarModification {

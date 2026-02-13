@@ -143,21 +143,36 @@ export const AuthServiceLive = Layer.succeed(
         }
 
         // Basic Profile Update
-        const profile: UserProfile = {
+        const profile: Partial<UserProfile> = {
           uid: user.uid,
           displayName: user.displayName,
           email: user.email,
-          photoURL: user.photoURL, // This might be overridden by background sync momentarily
+          photoURL: user.photoURL,
         };
 
         // We write the *current* state first to ensure doc exists
-        await setDoc(doc(db, "users", user.uid), profile, { merge: true });
+        // We Use setDoc with merge: true to avoid overwriting existing fields like 'friends'
+        // We also want to ensure 'createdAt' exists for badges
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await import("firebase/firestore").then(m => m.getDoc(docRef));
+
+        if (!docSnap.exists() || !docSnap.data().createdAt) {
+          // For new users or users without createdAt, set it.
+          // Try to use metadata from auth user
+          let createdAt = new Date().toISOString();
+          if (user.metadata && user.metadata.creationTime) {
+            createdAt = new Date(user.metadata.creationTime).toISOString();
+          }
+          (profile as any).createdAt = createdAt;
+        }
+
+        await setDoc(docRef, profile, { merge: true });
 
         // Trigger background sync of image
         // We pass the fresh 'user' object which contains the provider data
         synchronizeProfileImage(user);
 
-        return profile;
+        return profile as UserProfile;
       },
       catch: (error) => new AuthError("Failed to login", error)
     }),

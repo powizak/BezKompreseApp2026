@@ -7,6 +7,7 @@ import { db } from "../config/firebase";
 import type { Car, AppEvent, SocialPost, UserProfile, ServiceRecord, FuelRecord, HelpBeacon, EventType, EventComment, MarketplaceListing, ImageVariants } from "../types";
 import type { PresenceInfo, Message, ChatRoom } from "../types/chat";
 import { processAndUploadImage } from "../lib/imageService";
+import { BadgeService } from "./BadgeService";
 
 export class DataError {
     readonly _tag = "DataError";
@@ -75,7 +76,7 @@ export interface DataService {
     readonly respondToBeacon: (beaconId: string, helperId: string, helperName: string) => Effect.Effect<void, DataError>;
 
     // Service Records
-    readonly getServiceRecords: (carId: string) => Effect.Effect<ServiceRecord[], DataError>;
+    readonly getServiceRecords: (carId: string, userId?: string) => Effect.Effect<ServiceRecord[], DataError>;
     readonly addServiceRecord: (record: Omit<ServiceRecord, "id">) => Effect.Effect<string, DataError>;
     readonly updateServiceRecord: (recordId: string, data: Partial<ServiceRecord>) => Effect.Effect<void, DataError>;
     readonly deleteServiceRecord: (recordId: string) => Effect.Effect<void, DataError>;
@@ -184,22 +185,34 @@ export const DataServiceLive = Layer.succeed(
             },
             catch: (e) => new DataError("Failed to fetch cars", e)
         }),
+
         addCar: (car) => Effect.tryPromise({
             try: async () => {
-                // Filter out undefined values and empty strings as Firestore doesn't accept them
+                // Filter out undefined values and empty strings
                 const cleanCar = Object.fromEntries(
                     Object.entries(car)
                         .filter(([_, v]) => v !== undefined && v !== "")
                         .map(([k, v]) => [k, typeof v === 'string' ? v.trim() : v])
                 );
                 const docRef = await addDoc(collection(db, "cars"), cleanCar);
+
+                // Check Badges (Async, don't block)
+                try {
+                    const q = query(collection(db, "cars"), where("ownerId", "==", car.ownerId));
+                    const snapshot = await getDocs(q);
+                    const cars = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Car));
+                    BadgeService.checkCarBadges(car.ownerId, cars).catch(console.error);
+                } catch (e) {
+                    console.error("Badge check failed", e);
+                }
+
                 return docRef.id;
             },
             catch: (e) => new DataError("Failed to add car", e)
         }),
         updateCar: (carId, data) => Effect.tryPromise({
             try: async () => {
-                // Filter out undefined values and empty strings as Firestore doesn't accept them
+                // Filter out undefined values
                 const cleanData = Object.fromEntries(
                     Object.entries(data)
                         .filter(([_, v]) => v !== undefined && v !== "")
@@ -207,6 +220,20 @@ export const DataServiceLive = Layer.succeed(
                 );
                 const carRef = doc(db, "cars", carId);
                 await updateDoc(carRef, cleanData);
+
+                // Check Badges
+                try {
+                    const carSnap = await getDoc(carRef);
+                    if (carSnap.exists()) {
+                        const carData = carSnap.data() as Car;
+                        const q = query(collection(db, "cars"), where("ownerId", "==", carData.ownerId));
+                        const snapshot = await getDocs(q);
+                        const cars = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Car));
+                        BadgeService.checkCarBadges(carData.ownerId, cars).catch(console.error);
+                    }
+                } catch (e) {
+                    console.error("Badge check failed", e);
+                }
             },
             catch: (e) => new DataError("Failed to update car", e)
         }),
@@ -249,6 +276,12 @@ export const DataServiceLive = Layer.succeed(
                     Object.entries(event).filter(([_, v]) => v !== undefined)
                 );
                 const docRef = await addDoc(collection(db, "events"), cleanEvent);
+
+                // Check Badges - Organizer
+                if (event.creatorId) {
+                    BadgeService.checkOrganizerBadge(event.creatorId).catch(console.error);
+                }
+
                 return docRef.id;
             },
             catch: (e) => new DataError("Failed to add event", e)
@@ -476,6 +509,9 @@ export const DataServiceLive = Layer.succeed(
                     friends: arrayUnion(friendId),
                     friendsCount: ((await getDoc(userRef)).data()?.friends?.length || 0) + 1
                 });
+
+                // Check Badges - Socialite
+                BadgeService.checkProfileBadges(currentUserId).catch(console.error);
             },
             catch: (e) => new DataError("Failed to add friend", e)
         }),
@@ -487,6 +523,10 @@ export const DataServiceLive = Layer.succeed(
                     friends: arrayRemove(friendId),
                     friendsCount: Math.max(0, ((await getDoc(userRef)).data()?.friends?.length || 1) - 1)
                 });
+
+                // Check Badges - Socialite (in case of removal, though badges are usually permanent, we might want to re-evaluate)
+                // Actually, badges are usually permanent. But let's check anyway for consistency/updates.
+                BadgeService.checkProfileBadges(currentUserId).catch(console.error);
             },
             catch: (e) => new DataError("Failed to remove friend", e)
         }),
@@ -561,12 +601,14 @@ export const DataServiceLive = Layer.succeed(
             catch: (e) => new DataError("Failed to fetch car", e)
         }),
 
-        getServiceRecords: (carId) => Effect.tryPromise({
+        getServiceRecords: (carId: string, userId?: string) => Effect.tryPromise({
             try: async () => {
-                const q = query(
-                    collection(db, "service-records"),
-                    where("carId", "==", carId)
-                );
+                const constraints = [where("carId", "==", carId)];
+                if (userId) {
+                    constraints.push(where("ownerId", "==", userId));
+                }
+
+                const q = query(collection(db, "service-records"), ...constraints);
                 const snapshot = await getDocs(q);
                 const records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ServiceRecord));
                 return records.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -576,7 +618,30 @@ export const DataServiceLive = Layer.succeed(
 
         addServiceRecord: (record) => Effect.tryPromise({
             try: async () => {
-                const docRef = await addDoc(collection(db, "service-records"), record);
+                const docRef = await addDoc(collection(db, "service-records"), {
+                    ...record,
+                    createdAt: serverTimestamp()
+                });
+
+                // Check Badges - Fire and forget
+                // We use a new query that includes ownerId to satisfy rules
+                try {
+                    const constraints = [where("carId", "==", record.carId)];
+                    if (record.ownerId) {
+                        constraints.push(where("ownerId", "==", record.ownerId));
+                    }
+                    const q = query(collection(db, "service-records"), ...constraints);
+
+                    const snapshot = await getDocs(q);
+                    const records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ServiceRecord));
+
+                    if (record.ownerId) {
+                        BadgeService.checkServiceBadges(record.ownerId, records).catch(console.error);
+                    }
+                } catch (e) {
+                    console.error("Badge check failed", e);
+                }
+
                 return docRef.id;
             },
             catch: (e) => new DataError("Failed to add service record", e)
@@ -614,6 +679,19 @@ export const DataServiceLive = Layer.succeed(
         addFuelRecord: (record) => Effect.tryPromise({
             try: async () => {
                 const docRef = await addDoc(collection(db, "fuel-records"), record);
+
+                // Check Badges
+                try {
+                    const q = query(collection(db, "fuel-records"), where("carId", "==", record.carId));
+                    const snapshot = await getDocs(q);
+                    const records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as FuelRecord));
+                    if (record.ownerId) {
+                        BadgeService.checkFuelBadges(record.ownerId, records).catch(console.error);
+                    }
+                } catch (e) {
+                    console.error("Badge check failed", e);
+                }
+
                 return docRef.id;
             },
             catch: (e) => new DataError("Failed to add fuel record", e)
@@ -897,6 +975,16 @@ export const DataServiceLive = Layer.succeed(
                 await updateDoc(eventRef, {
                     participants: arrayUnion(userId)
                 });
+
+                // Check Badges
+                try {
+                    const q = query(collection(db, "events"), where("participants", "array-contains", userId));
+                    const snapshot = await getDocs(q);
+                    const count = snapshot.size; // This includes the one just joined if the update was precise, or we assume eventually consistent
+                    BadgeService.checkEventBadges(userId, count).catch(console.error);
+                } catch (e) {
+                    console.error("Badge check failed", e);
+                }
             },
             catch: (e) => new DataError("Failed to join event", e)
         }),
@@ -995,6 +1083,17 @@ export const DataServiceLive = Layer.succeed(
                     ...listing,
                     createdAt: serverTimestamp()
                 });
+
+                // Check Badges
+                try {
+                    const q = query(collection(db, "marketplace-listings"), where("userId", "==", listing.userId));
+                    const snapshot = await getDocs(q);
+                    const count = snapshot.size;
+                    BadgeService.checkMarketplaceBadges(listing.userId, count).catch(console.error);
+                } catch (e) {
+                    console.error("Badge check failed", e);
+                }
+
                 return docRef.id;
             },
             catch: (e) => new DataError("Failed to add marketplace listing", e)
