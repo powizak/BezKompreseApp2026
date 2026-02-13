@@ -4,14 +4,14 @@ import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
 import type { AppEvent, EventType, UserProfile } from '../types';
 import { EVENT_TYPE_LABELS, EVENT_TYPE_COLORS } from '../types';
-import { MapPin, Map as MapIcon, List, Plus, X, ChevronRight, Upload, Calendar, Filter, Flag, Users, DollarSign, Link as LinkIcon, FileText, Phone } from 'lucide-react';
+import { MapPin, Map as MapIcon, List, Plus, X, ChevronRight, Calendar, Filter, Users } from 'lucide-react';
 import EventMap from '../components/EventMap';
-import LocationPicker from '../components/LocationPicker';
 import { Link } from 'react-router-dom';
 import { getImageUrl } from '../lib/imageService';
 import LoginRequired from '../components/LoginRequired';
 import CachedImage from '../components/CachedImage';
 import LoadingState from '../components/LoadingState';
+import EventForm from '../components/EventForm';
 
 const ALL_EVENT_TYPES: EventType[] = ['minisraz', 'velky_sraz', 'trackday', 'vyjizdka'];
 
@@ -27,24 +27,6 @@ export default function Events() {
     // Filters
     const [filterType, setFilterType] = useState<EventType | 'all'>('all');
     const [filterUpcoming, setFilterUpcoming] = useState<boolean | 'all'>(true);
-
-    // Form State
-    const [formData, setFormData] = useState({
-        title: '',
-        description: '',
-        location: '',
-        date: '',
-        endDate: '',
-        eventType: 'minisraz' as EventType,
-        registrationUrl: '',
-        price: '',
-        capacity: '',
-        rules: '',
-        contactInfo: ''
-    });
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [locationData, setLocationData] = useState<{ address: string; coordinates: { lat: number; lng: number } | null }>({ address: '', coordinates: null });
 
     // Get available event types from current events (for filter)
     const availableTypes = useMemo(() => {
@@ -68,6 +50,48 @@ export default function Events() {
         // Sort by date
         return result.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     }, [events, filterType, filterUpcoming]);
+
+    const handleCreateEvent = async (data: Omit<AppEvent, 'id' | 'creatorId'>, imageFile: File | null) => {
+        if (!user) return;
+
+        // Check if user can create trackday
+        if (data.eventType === 'trackday' && !userProfile?.isOrganizer) {
+            alert('Pro vytvoření Trackday musíte mít status organizátora.');
+            return;
+        }
+
+        setSubmitting(true);
+
+        const dataService = Effect.runSync(
+            Effect.gen(function* (_) {
+                return yield* _(DataService);
+            }).pipe(Effect.provide(DataServiceLive))
+        );
+
+        try {
+            const newEvent: Omit<AppEvent, 'id'> = {
+                ...data,
+                creatorId: user.uid,
+            };
+
+            const eventId = await Effect.runPromise(dataService.addEvent(newEvent));
+
+            // Upload image if provided
+            if (imageFile) {
+                const imageUrl = await Effect.runPromise(dataService.uploadEventImage(imageFile, eventId));
+                await Effect.runPromise(dataService.updateEvent(eventId, { imageUrl }));
+            }
+
+            // Reset form
+            setShowForm(false);
+            loadEvents();
+        } catch (error) {
+            console.error('Failed to create event:', error);
+            alert('Nepodařilo se vytvořit akci. Zkuste to prosím znovu.');
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     const loadEvents = async () => {
         const dataService = Effect.runSync(
@@ -104,82 +128,6 @@ export default function Events() {
         }
     }, [user?.uid]);
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setImageFile(file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!user) return;
-
-        // Check if user can create trackday
-        if (formData.eventType === 'trackday' && !userProfile?.isOrganizer) {
-            alert('Pro vytvoření Trackday musíte mít status organizátora.');
-            return;
-        }
-
-        setSubmitting(true);
-
-        const dataService = Effect.runSync(
-            Effect.gen(function* (_) {
-                return yield* _(DataService);
-            }).pipe(Effect.provide(DataServiceLive))
-        );
-
-        try {
-            const newEvent: Omit<AppEvent, 'id'> = {
-                creatorId: user.uid,
-                title: formData.title,
-                description: formData.description,
-                location: locationData.address || formData.location,
-                date: new Date(formData.date).toISOString(),
-                endDate: formData.endDate ? new Date(formData.endDate).toISOString() : undefined,
-                eventType: formData.eventType,
-                coordinates: locationData.coordinates || undefined,
-                registrationUrl: formData.eventType === 'trackday' ? formData.registrationUrl || undefined : undefined,
-                price: formData.eventType === 'trackday' ? formData.price || undefined : undefined,
-                capacity: formData.capacity ? parseInt(formData.capacity) : undefined,
-                rules: formData.eventType === 'trackday' ? formData.rules || undefined : undefined,
-                contactInfo: formData.contactInfo || undefined
-            };
-
-            const eventId = await Effect.runPromise(dataService.addEvent(newEvent));
-
-            // Upload image if provided
-            if (imageFile) {
-                const imageUrl = await Effect.runPromise(dataService.uploadEventImage(imageFile, eventId));
-                await Effect.runPromise(dataService.updateEvent(eventId, { imageUrl }));
-            }
-
-            // Reset form
-            setShowForm(false);
-            setFormData({
-                title: '', description: '', location: '', date: '', endDate: '',
-                eventType: 'minisraz', registrationUrl: '', price: '', capacity: '', rules: '', contactInfo: ''
-            });
-            setImageFile(null);
-            setImagePreview(null);
-            setLocationData({ address: '', coordinates: null });
-            loadEvents();
-        } catch (error) {
-            console.error('Failed to create event:', error);
-            alert('Nepodařilo se vytvořit akci. Zkuste to prosím znovu.');
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    const isTrackday = formData.eventType === 'trackday';
-    const canCreateTrackday = userProfile?.isOrganizer === true;
-
     if (!user) {
         return (
             <LoginRequired
@@ -189,6 +137,8 @@ export default function Events() {
             />
         );
     }
+
+    // ... (rest of the component)
 
     return (
         <div>
@@ -278,173 +228,16 @@ export default function Events() {
                     <button onClick={() => setShowForm(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 bg-slate-50 p-2 rounded-full hover:bg-slate-200 transition-colors"><X size={20} /></button>
                     <h3 className="font-black text-xl mb-6 uppercase italic tracking-wide">Nová akce</h3>
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        {/* Event Type */}
-                        <div>
-                            <label className="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Typ akce</label>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                {ALL_EVENT_TYPES.map(type => {
-                                    const disabled = type === 'trackday' && !canCreateTrackday;
-                                    return (
-                                        <button
-                                            key={type}
-                                            type="button"
-                                            disabled={disabled}
-                                            onClick={() => setFormData({ ...formData, eventType: type })}
-                                            className={`p-3 rounded-xl border-2 text-sm font-bold transition-all ${formData.eventType === type
-                                                ? `${EVENT_TYPE_COLORS[type].bg} ${EVENT_TYPE_COLORS[type].text} border-current`
-                                                : disabled
-                                                    ? 'border-slate-100 text-slate-300 bg-slate-50 cursor-not-allowed'
-                                                    : 'border-slate-200 text-slate-600 hover:border-slate-300'
-                                                }`}
-                                        >
-                                            {EVENT_TYPE_LABELS[type]}
-                                            {type === 'trackday' && !canCreateTrackday && (
-                                                <span className="block text-[10px] font-medium mt-1 opacity-60">Pouze pro organizátory</span>
-                                            )}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-
-                        {/* Image Upload */}
-                        <div>
-                            <label className="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Náhledový obrázek</label>
-                            <div className="relative">
-                                {imagePreview ? (
-                                    <div className="relative rounded-xl overflow-hidden">
-                                        <CachedImage src={imagePreview} alt="Preview" className="w-full h-48 object-cover" noCache />
-                                        <button
-                                            type="button"
-                                            onClick={() => { setImageFile(null); setImagePreview(null); }}
-                                            className="absolute top-2 right-2 bg-black/50 text-white p-1.5 rounded-full hover:bg-black/70"
-                                        >
-                                            <X size={16} />
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-brand hover:bg-brand/5 transition-all">
-                                        <Upload size={24} className="text-slate-400 mb-2" />
-                                        <span className="text-sm font-medium text-slate-400">Klikni pro nahrání</span>
-                                        <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
-                                    </label>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Title */}
-                        <div>
-                            <label className="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Název akce</label>
-                            <input required className="w-full border-2 border-slate-200 bg-slate-50 p-3 rounded-xl focus:border-brand focus:ring-0 outline-none font-bold transition-colors" placeholder="Např. Večerní projížďka" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
-                        </div>
-
-                        {/* Date & Time */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2 flex items-center gap-2">
-                                    <Calendar size={14} /> Začátek
-                                </label>
-                                <input required type="datetime-local" className="w-full border-2 border-slate-200 bg-slate-50 p-3 rounded-xl focus:border-brand focus:ring-0 outline-none font-bold transition-colors" value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2 flex items-center gap-2">
-                                    <Calendar size={14} /> Konec <span className="text-slate-400 font-medium">(volitelné)</span>
-                                </label>
-                                <input type="datetime-local" className="w-full border-2 border-slate-200 bg-slate-50 p-3 rounded-xl focus:border-brand focus:ring-0 outline-none font-bold transition-colors" value={formData.endDate} onChange={e => setFormData({ ...formData, endDate: e.target.value })} />
-                            </div>
-                        </div>
-
-                        {/* Location */}
-                        <div>
-                            <label className="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2 flex items-center gap-2">
-                                <MapPin size={14} /> Místo konání
-                            </label>
-                            <LocationPicker
-                                value={locationData}
-                                onChange={setLocationData}
-                            />
-                        </div>
-
-                        {/* Description */}
-                        <div>
-                            <label className="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Popis</label>
-                            <textarea required className="w-full border-2 border-slate-200 bg-slate-50 p-3 rounded-xl focus:border-brand focus:ring-0 outline-none font-medium transition-colors h-24" placeholder="Podrobnosti o akci..." value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
-                        </div>
-
-                        {/* Trackday specific fields */}
-                        {isTrackday && (
-                            <div className="bg-green-50 border border-green-200 rounded-xl p-4 space-y-4">
-                                <h4 className="font-bold text-green-800 uppercase text-sm flex items-center gap-2">
-                                    <Flag size={16} /> Trackday informace
-                                </h4>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-bold uppercase tracking-wide text-green-700 mb-2 flex items-center gap-2">
-                                            <LinkIcon size={14} /> Registrace URL
-                                        </label>
-                                        <input className="w-full border-2 border-green-200 bg-white p-3 rounded-xl focus:border-green-500 focus:ring-0 outline-none font-medium transition-colors" placeholder="https://..." value={formData.registrationUrl} onChange={e => setFormData({ ...formData, registrationUrl: e.target.value })} />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold uppercase tracking-wide text-green-700 mb-2 flex items-center gap-2">
-                                            <DollarSign size={14} /> Cena
-                                        </label>
-                                        <input className="w-full border-2 border-green-200 bg-white p-3 rounded-xl focus:border-green-500 focus:ring-0 outline-none font-bold transition-colors" placeholder="Např. 2500 Kč" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-bold uppercase tracking-wide text-green-700 mb-2 flex items-center gap-2">
-                                            <Users size={14} /> Kapacita
-                                        </label>
-                                        <input type="number" className="w-full border-2 border-green-200 bg-white p-3 rounded-xl focus:border-green-500 focus:ring-0 outline-none font-bold transition-colors" placeholder="Počet míst" value={formData.capacity} onChange={e => setFormData({ ...formData, capacity: e.target.value })} />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold uppercase tracking-wide text-green-700 mb-2 flex items-center gap-2">
-                                            <Phone size={14} /> Kontakt
-                                        </label>
-                                        <input className="w-full border-2 border-green-200 bg-white p-3 rounded-xl focus:border-green-500 focus:ring-0 outline-none font-medium transition-colors" placeholder="Email nebo telefon" value={formData.contactInfo} onChange={e => setFormData({ ...formData, contactInfo: e.target.value })} />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-xs font-bold uppercase tracking-wide text-green-700 mb-2 flex items-center gap-2">
-                                        <FileText size={14} /> Pravidla / Co mít s sebou
-                                    </label>
-                                    <textarea className="w-full border-2 border-green-200 bg-white p-3 rounded-xl focus:border-green-500 focus:ring-0 outline-none font-medium transition-colors h-20" placeholder="Např. Helma povinná, požadavky na auto..." value={formData.rules} onChange={e => setFormData({ ...formData, rules: e.target.value })} />
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Contact for non-trackday */}
-                        {!isTrackday && (
-                            <div>
-                                <label className="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2 flex items-center gap-2">
-                                    <Phone size={14} /> Kontakt <span className="text-slate-400 font-medium">(volitelné)</span>
-                                </label>
-                                <input className="w-full border-2 border-slate-200 bg-slate-50 p-3 rounded-xl focus:border-brand focus:ring-0 outline-none font-medium transition-colors" placeholder="Email nebo telefon" value={formData.contactInfo} onChange={e => setFormData({ ...formData, contactInfo: e.target.value })} />
-                            </div>
-                        )}
-
-                        <button
-                            type="submit"
-                            disabled={submitting}
-                            className="w-full bg-slate-900 text-white font-black uppercase tracking-wider py-4 rounded-xl hover:bg-black transition-colors shadow-lg shadow-slate-900/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                        >
-                            {submitting ? (
-                                <>
-                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    Ukládám...
-                                </>
-                            ) : (
-                                'Vytvořit akci'
-                            )}
-                        </button>
-                    </form>
+                    <EventForm
+                        onSubmit={handleCreateEvent}
+                        onCancel={() => setShowForm(false)}
+                        isSubmitting={submitting}
+                        userProfile={userProfile}
+                        submitLabel="Vytvořit akci"
+                    />
                 </div>
             )}
+
 
             {/* Events List */}
             {loading ? (

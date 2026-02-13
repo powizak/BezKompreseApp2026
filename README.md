@@ -34,7 +34,8 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Oficiální Akce**: Přehled nadcházejících srazů a eventů
 - **Komunitní Srazy**: Možnost vytvořit vlastní sraz
 - **Mapa**: Zobrazení akcí na interaktivní mapě
-- **Detaily**: Informace o místě, čase a organizátorovi
+- **🆕 Detaily**: Informace o místě, čase a organizátorovi včetně navigace a mapy
+- **🆕 Správa akcí**: Organizátoři mohou své akce upravovat nebo mazat (omezeno na budoucí akce)
 - **🆕 Účast na akcích**: Tlačítko "Zúčastním se" s ukládáním do databáze
 - **🆕 Diskuze pod akcí**: Komentáře a diskuze přímo u každé akce
 
@@ -98,7 +99,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 *   **Stylování:** Tailwind CSS
 *   **Backend:** Firebase (Auth, Firestore, Storage, Cloud Functions)
 *   **Mapy:** Leaflet + OpenStreetMap
-*   **Optimalizace:** Image caching (Cache-Control immutable, ImageLoader concurrency limit & circuit breaker, Prioritized loading for cars > avatars, Profile photo internalization), Input sanitation (auto-trim), Fast Initial Auth emission (Stale-while-revalidate), Stable useEffect dependencies (Double-loading prevention), Unified Loading UX (Rotating Logo), Social Feed caching (10min limit), YouTube API optimization (using playlistItems for 100x quota saving), Advanced Code Splitting (Vite manualChunks)
+*   **Optimalizace:** Image caching (Cache-Control immutable, ImageLoader concurrency limit & circuit breaker, Prioritized loading for cars > avatars, Profile photo internalization), Input sanitation (auto-trim), Fast Initial Auth emission (Stale-while-revalidate), Stable useEffect dependencies (Double-loading prevention), Unified Loading UX (Rotating Logo), Social Feed caching (10min limit), YouTube API optimization (using playlistItems for 100x quota saving), Advanced Code Splitting (Vite manualChunks), Reusable Event Form with runtime validation/cleaning (preventing Firestore invalid-argument errors)
 
 ## Jak spustit projekt
 

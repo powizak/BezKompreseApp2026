@@ -9,7 +9,7 @@
  - stránka "Lidé" má příliš velký viewport a nesprávně se posouvá na nízké šířce zobrazení, případně v Android app
 
 
-- nelze mazat ani upravovat události, které uživatel vytvořil
+- **✅ Vyřešeno**: Mazání a úprava událostí (možné pouze pro budoucí akce)
 
 - je žádoucí mít možnost přidat inzerát na auto i jako samostatný - nejen proklikem z garáže s tím, že pak nebude vidět detail auta, ale bude se to chovat, jako obyčejný inzerát
 - zároveň je potřeba přidat možnost si zobrazit detail inzerátu (nejen pokud se jedná o auta z garáže)

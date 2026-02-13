@@ -44,6 +44,7 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - Další typ akce, které jsou již momentálně definované
 - Možno filtrovat přímo na mapě či v seznamu
 - Rozšířené informace o akci (cena, kapacita, odkaz na registraci)
+- **✅ Úprava a mazání akcí**: Možnost pro organizátora spravovat své akce (pouze budoucí).
 
 ### ✅ Chat s uživateli - IMPLEMENTOVÁNO
 - Uživatel může vyvolat stránku chatu, a tedy vidět své předchozí konverzace a vytvořit novou s ostatními uživateli

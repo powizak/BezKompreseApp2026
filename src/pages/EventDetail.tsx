@@ -11,6 +11,8 @@ import { getImageUrl } from '../lib/imageService';
 import LoginRequired from '../components/LoginRequired';
 import CachedImage from '../components/CachedImage';
 import UserAvatar from '../components/UserAvatar';
+import EventForm from '../components/EventForm';
+import { Edit, X } from 'lucide-react';
 
 export default function EventDetail() {
     const { id } = useParams();
@@ -21,6 +23,8 @@ export default function EventDetail() {
     const [loading, setLoading] = useState(true);
     const [joined, setJoined] = useState(false);
     const [joiningLoading, setJoiningLoading] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
 
     // Comments state
     const [comments, setComments] = useState<EventComment[]>([]);
@@ -105,6 +109,45 @@ export default function EventDetail() {
             setComments(prev => prev.filter(c => c.id !== commentId));
         } catch (error) {
             console.error('Failed to delete comment:', error);
+        }
+    };
+
+    const handleDeleteEvent = async () => {
+        if (!event || !user || user.uid !== event.creatorId) return;
+        if (!window.confirm('Opravdu chcete tuto akci smazat? Tato akce je nevratná.')) return;
+
+        try {
+            await Effect.runPromise(dataService.deleteEvent(event.id));
+            navigate('/events');
+        } catch (error) {
+            console.error('Failed to delete event:', error);
+            alert('Nepodařilo se smazat akci.');
+        }
+    };
+
+    const handleUpdateEvent = async (data: Omit<AppEvent, 'id' | 'creatorId'>, imageFile: File | null) => {
+        if (!event || !user) return;
+        setSubmitting(true);
+
+        try {
+            // Update basic info
+            await Effect.runPromise(dataService.updateEvent(event.id, data));
+
+            // Update image if provided
+            if (imageFile) {
+                const imageUrl = await Effect.runPromise(dataService.uploadEventImage(imageFile, event.id));
+                await Effect.runPromise(dataService.updateEvent(event.id, { imageUrl }));
+                data.imageUrl = imageUrl;
+            }
+
+            // Update local state
+            setEvent(prev => prev ? { ...prev, ...data } : null);
+            setIsEditing(false);
+        } catch (error) {
+            console.error('Failed to update event:', error);
+            alert('Nepodařilo se upravit akci.');
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -280,6 +323,23 @@ export default function EventDetail() {
                                 <Navigation size={16} /> Navigovat
                             </button>
                         )}
+                        {/* Owner Actions - only for upcoming events */}
+                        {user && event.creatorId === user.uid && new Date(event.date) > new Date() && (
+                            <>
+                                <button
+                                    onClick={() => setIsEditing(true)}
+                                    className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:bg-brand/10 hover:text-brand hover:border-brand/20 transition-colors"
+                                >
+                                    <Edit size={16} /> Upravit
+                                </button>
+                                <button
+                                    onClick={handleDeleteEvent}
+                                    className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 hover:border-red-200 transition-colors"
+                                >
+                                    <Trash2 size={16} /> Smazat
+                                </button>
+                            </>
+                        )}
                     </div>
 
                     <button
@@ -414,6 +474,34 @@ export default function EventDetail() {
                     </button>
                 </div>
             </div>
-        </div>
+
+
+            {/* Edit Modal */}
+            {
+                isEditing && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+                        <div className="bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl p-6 shadow-2xl relative animate-in zoom-in-95 duration-200">
+                            <button
+                                onClick={() => setIsEditing(false)}
+                                className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 bg-slate-100 p-2 rounded-full hover:bg-slate-200 transition-colors"
+                            >
+                                <X size={20} />
+                            </button>
+
+                            <h3 className="font-black text-2xl mb-6 uppercase italic tracking-wide pr-10">Upravit akci</h3>
+
+                            <EventForm
+                                initialData={event}
+                                onSubmit={handleUpdateEvent}
+                                onCancel={() => setIsEditing(false)}
+                                isSubmitting={submitting}
+                                userProfile={creator} // Creator is the current user since we checked the ID
+                                submitLabel="Uložit změny"
+                            />
+                        </div>
+                    </div>
+                )
+            }
+        </div >
     );
 }
