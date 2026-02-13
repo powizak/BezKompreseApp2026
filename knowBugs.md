@@ -8,3 +8,4 @@
 
  - stránka "Lidé" má příliš velký viewport a nesprávně se posouvá
  - štítek "Na prodej" se zobrazuje přes další (na stránce /cars)
+

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cs } from 'date-fns/locale';
+import LoadingState from '../components/LoadingState';
 
 const SERVICE_TEMPLATES = [
     { category: 'oil', title: 'Výměna oleje + filtry', interval: 10000, type: 'scheduled' },
@@ -215,9 +216,7 @@ export default function ServiceBook() {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center min-h-[50vh]">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
-            </div>
+            <LoadingState message="Načítám servisní knížku..." className="py-20 min-h-[50vh]" />
         );
     }
 
