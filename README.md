@@ -60,11 +60,11 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
   - Sledování stavu (aktivní, pomoc na cestě, vyřešeno)
 
 ### 🏪 Bazar a Marketplace (NOVÉ!)
-- **Prodej aut**: Možnost označit auto v garáži jako "Na prodej" s cenou a popisem
-- **Poptávky a Inzerce**: Vytváření inzerátů typu "Sháním auto/díly", "Nabízím díly/servis"
-- **Filtrování a Hledání**: Fulltextové vyhledávání v inzerátech a autech na prodej
-- **Přímý Kontakt**: Tlačítko pro okamžité zahájení chatu s prodejcem
-- **Notifikace**: Upozornění na nové příspěvky v bazaru (volitelné)
+- **🆕 Tří-tabový layout**: Přenastavení bazaru na sekce "Prodej aut", "Poptávky" a "Nabídky" pro lepší přehlednost
+- **🆕 Unified Grid**: Sjednocené zobrazení aut z garáže i samostatných inzerátů v jednom feedu
+- **🆕 Samostatné Inzeráty**: Možnost prodat auto i bez nutnosti mít ho v aplikaci v garáži
+- **🆕 Detail Inzerátu**: Nová detailní stránka pro každý inzerát s velkou galerií a sdílením
+- **🆕 Navigace**: Chytré přesměrování (samostatný inzerát vs detail auta v garáži)
 - **Vizuální Opravy**: Sjednocené a vrstvené štítky u inzerátů (předcházení překryvu)
 
 ### 🔔 Push Notifikace (NOVÉ!)
@@ -99,7 +99,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 *   **Stylování:** Tailwind CSS
 *   **Backend:** Firebase (Auth, Firestore, Storage, Cloud Functions)
 *   **Mapy:** Leaflet + OpenStreetMap
-*   **Optimalizace:** Image caching (Cache-Control immutable, ImageLoader concurrency limit & circuit breaker, Prioritized loading for cars > avatars, Profile photo internalization with storage optimization & fallback strategy), Input sanitation (auto-trim), Fast Initial Auth emission (Stale-while-revalidate), Stable useEffect dependencies (Double-loading prevention), Unified Loading UX (Rotating Logo), Social Feed caching (10min limit), YouTube API optimization (using playlistItems for 100x quota saving), Advanced Code Splitting (Vite manualChunks), Reusable Event Form with runtime validation/cleaning (preventing Firestore invalid-argument errors), Visual layout stability & navigation fix (Users page), Efficient App Stats (using getCountFromServer for user/car counts), App Versioning in Footer (automated build-time display)
+*   **Optimalizace:** Image caching (Cache-Control immutable, ImageLoader concurrency limit & circuit breaker, Prioritized loading for cars > avatars, Profile photo internalization with storage optimization & fallback strategy), Input sanitation (auto-trim), Fast Initial Auth emission (Stale-while-revalidate), Stable useEffect dependencies (Double-loading prevention), Unified Loading UX (Rotating Logo), Social Feed caching (10min limit), YouTube API optimization (using playlistItems for 100x quota saving), Advanced Code Splitting (Vite manualChunks), Reusable Event Form with runtime validation/cleaning (preventing Firestore invalid-argument errors), Visual layout stability & navigation fix (Users page), Efficient App Stats (using getCountFromServer for user/car counts), App Versioning in Footer (automated build-time display), Market Phase 2 (3-tab refactor, Standalone car ads, High-res photo support up to 25MB with client-side compression)
 
 ## Jak spustit projekt
 

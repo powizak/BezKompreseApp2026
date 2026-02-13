@@ -240,6 +240,24 @@ export default function CarDetail() {
                             )}
                         </div>
 
+                        {/* Sale Description */}
+                        {car.forSale && car.saleDescription && (
+                            <div>
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className="h-px bg-slate-200 flex-1" />
+                                    <h2 className="text-2xl font-black italic uppercase tracking-[0.15em] flex items-center gap-3 whitespace-nowrap">
+                                        <Tag className="text-brand" size={28} /> Popis inzerátu
+                                    </h2>
+                                    <div className="h-px bg-slate-200 flex-1" />
+                                </div>
+                                <div className="bg-white border border-slate-100 p-8 rounded-3xl shadow-sm relative overflow-hidden">
+                                    <p className="text-slate-600 text-lg leading-relaxed whitespace-pre-wrap font-medium">
+                                        {car.saleDescription}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Mods List */}
                         <div>
                             <div className="flex items-center gap-4 mb-10">

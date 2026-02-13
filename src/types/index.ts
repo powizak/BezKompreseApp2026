@@ -281,20 +281,39 @@ export interface HelpBeacon {
 }
 
 // Marketplace Listing Types ("Bazar")
-export type ListingType = 'wanted_car' | 'wanted_parts' | 'selling_parts' | 'service';
+export type ListingType =
+  | 'wanted_car'
+  | 'wanted_parts'
+  | 'wanted_service'
+  | 'wanted_other'
+  | 'selling_car' // Standalone car ad
+  | 'selling_parts'
+  | 'selling_service'
+  | 'selling_other'
+  | 'service'; // Legacy compatibility
 
 export const LISTING_TYPE_LABELS: Record<ListingType, string> = {
   wanted_car: 'Sháním auto',
   wanted_parts: 'Sháním díly',
+  wanted_service: 'Poptávám službu',
+  wanted_other: 'Poptávám ostatní',
+  selling_car: 'Prodám auto',
   selling_parts: 'Prodám díly',
-  service: 'Nabízím službu'
+  selling_service: 'Nabízím službu',
+  selling_other: 'Nabízím ostatní',
+  service: 'Nabízím službu' // Legacy
 };
 
 export const LISTING_TYPE_COLORS: Record<ListingType, { bg: string; text: string }> = {
   wanted_car: { bg: 'bg-blue-100', text: 'text-blue-700' },
-  wanted_parts: { bg: 'bg-purple-100', text: 'text-purple-700' },
-  selling_parts: { bg: 'bg-green-100', text: 'text-green-700' },
-  service: { bg: 'bg-orange-100', text: 'text-orange-700' }
+  wanted_parts: { bg: 'bg-indigo-100', text: 'text-indigo-700' },
+  wanted_service: { bg: 'bg-sky-100', text: 'text-sky-700' },
+  wanted_other: { bg: 'bg-slate-100', text: 'text-slate-700' },
+  selling_car: { bg: 'bg-green-100', text: 'text-green-700' },
+  selling_parts: { bg: 'bg-emerald-100', text: 'text-emerald-700' },
+  selling_service: { bg: 'bg-orange-100', text: 'text-orange-700' },
+  selling_other: { bg: 'bg-lime-100', text: 'text-lime-700' },
+  service: { bg: 'bg-orange-100', text: 'text-orange-700' } // Legacy
 };
 
 export interface MarketplaceListing {

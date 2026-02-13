@@ -1,3 +1,4 @@
+
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import { AuthProvider } from './contexts/AuthContext';
@@ -18,6 +19,7 @@ import FuelTracker from './pages/FuelTracker';
 import Tracker from './pages/Tracker';
 import Chats from './pages/Chats';
 import Market from './pages/Market';
+import MarketDetail from './pages/MarketDetail';
 import { CookieConsentProvider } from './contexts/CookieConsentContext';
 import { ChatProvider } from './contexts/ChatContext';
 
@@ -41,6 +43,7 @@ function App() {
                 <Route path="/car/:id" element={<CarDetail />} />
                 <Route path="/chats" element={<Chats />} />
                 <Route path="/market" element={<Market />} />
+                <Route path="/market/:id" element={<MarketDetail />} />
                 <Route path="/info" element={<Info />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />

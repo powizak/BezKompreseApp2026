@@ -61,13 +61,13 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - **Vizuální Oprava (v0.0.31)**: Oprava překrývání štítků "Na prodej" a statusů na kartách aut
 
 #### Phase 2: 
-- je žádoucí mít možnost přidat inzerát na auto i jako samostatný - nejen proklikem z garáže. S tím, že pak nebude vidět detail auta, ale bude se to chovat, jako obyčejný inzerát
+- je žádoucí mít možnost přidat inzerát na auto i jako samostatný - nejen určením auta "na prodej" v úpravě vozidla. S tím, že pak nebude vidět detail auta, ale bude se to chovat, jako obyčejný inzerát
 - zároveň je potřeba přidat možnost si zobrazit detail inzerátu (nejen pokud se jedná o auta z garáže, ale jakýkoliv typ inzerátu (stále platí, že auto z garáže přejde na kartu daného vozidla))
 - podívat se také na kategorie bazaru - nyní jsou auta, poptávky a v poptávkách je pak i prodej dílů 
-    - rozdělit na 3 záložky (nyní jsou prodej aut a poptávky), a to: prodej aut, poptávky (díly, auta, služby), nabídky (díly, auta, služby)
+    - rozdělit na 3 záložky - neměnit UI - prostě přidat další přepínač, takto to vypadá super (nyní jsou prodej aut a poptávky), a to: prodej aut, poptávky (díly, auta, služby), nabídky (díly, auta, služby)
 - u poptávek a nabídek je potřeba přidat možnost filtrování podle kategorie (díly, auta, služby)
-- v případě, že je auto na prodej, zobrazí se popis inzerátu i na kartě vozidla (/car)
--  pro marketplace také nejspíše nefunguje úplně správně převod fotek - zůstala tam large s velikostí téměř 5MB
+- v případě, že je auto na prodej, zobrazí se popis inzerátu (je to již parametr auta) i na kartě vozidla (/car)
+-  pro marketplace také nejspíše nefunguje úplně správně převod fotek - zůstala tam fotka "large.webp" s velikostí téměř 5MB -> zkontrolovat
 
 
 ### Rozšíření funkcí inzerce
@@ -76,6 +76,7 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 
 ### 🚀 Vylepšení UX
 - Přidat značku, zda již někdo přečetl zprávu či nikoliv (pro toho, kdo si ji má přečíst - v seznamu zpráv)
+- Dodělat swipe na všech stránkách pro vrácení se zpět pro Android (některé Android to tak mohou mít nastavené)
 - ✅ **Přidat do footeru vedle "Not affilitated officially." verzi aplikace** - IMPLEMENTOVÁNO v0.0.31
 - ✅ **Přidat do "info" - celkový počet uživatelů / aut v aplikaci** - IMPLEMENTOVÁNO v0.0.31 
 
