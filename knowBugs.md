@@ -6,7 +6,3 @@
 
  - uživatelé mohou ve starých verzích aplikace (Android) zadávat data s whitespace na konci -> kazí to filtrování -> nutno ještě jednou vyčistit scriptem
 
-- je žádoucí mít možnost přidat inzerát na auto i jako samostatný - nejen proklikem z garáže s tím, že pak nebude vidět detail auta, ale bude se to chovat, jako obyčejný inzerát
-- zároveň je potřeba přidat možnost si zobrazit detail inzerátu (nejen pokud se jedná o auta z garáže)
-- podívat se také na kategorie bazaru - nyní jsou auta, poptávky a v poptávkách je pak i prodej dílů - potřeba domyslet
-- pro marketplace také nejspíše nefunguje úplně správně převod fotek - zůstala tam large s velikostí téměř 5MB

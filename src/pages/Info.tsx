@@ -1,4 +1,6 @@
-import { ShoppingBag, Wrench, Camera, Youtube, Instagram, Facebook, Truck, Shield, FileText, Mail } from 'lucide-react';
+import { ShoppingBag, Wrench, Camera, Youtube, Instagram, Facebook, Truck, Shield, FileText, Mail, Users, Car } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { getAppStats, type AppStats } from '../lib/appStats';
 
 export default function Info() {
   const sections = [
@@ -43,6 +45,11 @@ export default function Info() {
       <div className="text-center py-8">
         <h2 className="text-4xl font-black italic text-brand mb-3 uppercase tracking-tighter">BEZ KOMPRESE</h2>
         <p className="text-slate-600 text-lg">Komunita petrolheadů. Děláme to srdcem a s vůní benzínu.</p>
+
+        {/* Stats */}
+        <div className="flex justify-center gap-8 mt-6">
+          <StatsDisplay />
+        </div>
       </div>
 
       <div className="grid gap-4">
@@ -106,5 +113,44 @@ export default function Info() {
         </div>
       </div>
     </div>
+  );
+}
+
+function StatsDisplay() {
+  const [stats, setStats] = useState<AppStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getAppStats()
+      .then(data => {
+        setStats(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading || !stats) return null;
+
+  return (
+    <>
+      <div className="flex flex-col items-center">
+        <div className="flex items-center gap-2 text-slate-500 mb-1">
+          <Users size={18} />
+          <span className="text-xs uppercase font-bold tracking-wider">Uživatelů</span>
+        </div>
+        <span className="text-2xl font-black text-slate-800">{stats.userCount}</span>
+      </div>
+      <div className="w-px h-10 bg-slate-200"></div>
+      <div className="flex flex-col items-center">
+        <div className="flex items-center gap-2 text-slate-500 mb-1">
+          <Car size={18} />
+          <span className="text-xs uppercase font-bold tracking-wider">Vozidel</span>
+        </div>
+        <span className="text-2xl font-black text-slate-800">{stats.carCount}</span>
+      </div>
+    </>
   );
 }

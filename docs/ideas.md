@@ -60,6 +60,15 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - Přímo z inzeratu může vlastník označit auto jako "Prodané" - tedy vymaže inzerát a zároveň v garáži mu odznačí "Vlastněno"  
 - **Vizuální Oprava (v0.0.31)**: Oprava překrývání štítků "Na prodej" a statusů na kartách aut
 
+#### Phase 2: 
+- je žádoucí mít možnost přidat inzerát na auto i jako samostatný - nejen proklikem z garáže. S tím, že pak nebude vidět detail auta, ale bude se to chovat, jako obyčejný inzerát
+- zároveň je potřeba přidat možnost si zobrazit detail inzerátu (nejen pokud se jedná o auta z garáže, ale jakýkoliv typ inzerátu (stále platí, že auto z garáže přejde na kartu daného vozidla))
+- podívat se také na kategorie bazaru - nyní jsou auta, poptávky a v poptávkách je pak i prodej dílů 
+    - rozdělit na 3 záložky (nyní jsou prodej aut a poptávky), a to: prodej aut, poptávky (díly, auta, služby), nabídky (díly, auta, služby)
+- u poptávek a nabídek je potřeba přidat možnost filtrování podle kategorie (díly, auta, služby)
+- v případě, že je auto na prodej, zobrazí se popis inzerátu i na kartě vozidla (/car)
+-  pro marketplace také nejspíše nefunguje úplně správně převod fotek - zůstala tam large s velikostí téměř 5MB
+
 
 ### Rozšíření funkcí inzerce
 - Ověření Bez Komprese - možnost si zažádat o certifikát např. na základě VIN
@@ -67,10 +76,13 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 
 ### 🚀 Vylepšení UX
 - Přidat značku, zda již někdo přečetl zprávu či nikoliv (pro toho, kdo si ji má přečíst - v seznamu zpráv)
-- Přidat do "info" - celkový počet uživatelů / aut v aplikaci? 
+- ✅ **Přidat do footeru vedle "Not affilitated officially." verzi aplikace** - IMPLEMENTOVÁNO v0.0.31
+- ✅ **Přidat do "info" - celkový počet uživatelů / aut v aplikaci** - IMPLEMENTOVÁNO v0.0.31 
 
-### ✅ Gamifikace - IMPLEMENTOVÁNO (Fáze 1)
-#### Fáze 1
+### ✅ Gamifikace - IMPLEMENTOVÁNO (Fáze 0,1)
+#### Fáze 0
+- **✅ BK Team Badge - IMPLEMENTOVÁNO**: Speciální odznak pro členy týmu na jejich profilech. 
+#### ✅ Fáze 1 - IMPLEMENTOVÁNO
 - **Odznaky (Badges)**: "High Miler", "Wrench Wizard", "Early Adopter", "Socialite", "Organizer" atd.
 - **Technologie**: Transakční udělování (prevence race conditions), automatická deduplikace, retroaktivní kontroly při načtení profilu.
 - **UI**: Karta "Odznaky" na profilu, detailní modály, počítadlo unikátních odznaků.
@@ -84,12 +96,10 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 
 #### Fáze 2
 - Sbírání BezKomprese známeček -> možnost si vybrat za známky "dárek" -> sleva na eshop nebo samolepka atd. 
+
+#### Fáze 3
 - Fight kartiček ve stylu "Kdo má lepší auto" - na základě statistik aut
 - Soutěže - nejlepší tuning, nejlepší fotka, nejlepší video, nejlepší úprava, nejvíce najetých kilometrů atd. 
-
-#### Fáze 0
-- **✅ BK Team Badge - IMPLEMENTOVÁNO**: Speciální odznak pro členy týmu na jejich profilech. 
-
 
 ## 3. Technická Vylepšení (Technical)
 ### 🩺 OBD-II Integrace (Budoucí rozvoj)
@@ -99,11 +109,3 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 ### 📱 PWA a Offline Mode
 - Vylepšit cachování map pro "Tracker" v místech bez signálu (časté na okreskách).
 - Synchronizace servisní knížky (offline-first), aby šlo zapisovat i v garáži bez Wi-Fi.  
-
-### ✅ Internalizace profilových fotek - IMPLEMENTOVÁNO
-- Automatické stažení Google profilovek na náš Firebase Storage.
-- Obnova jednou za 30 dní.
-- **Optimalizace úložiště**: Použití fixního názvu souboru (`profile.webp`) místo časových značek (prevence plýtvání místem).
-- **Fallback strategie**: Automatické přepnutí na Google URL, pokud náš Storage selže nebo obrázek chybí.
-- Eliminace 429 Rate Limitů od externích poskytovatelů.
-- **YouTube API optimalizace**: Přechod na `playlistItems` endpoint pro úsporu 100x kvóty.
