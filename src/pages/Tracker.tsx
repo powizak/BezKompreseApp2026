@@ -294,6 +294,7 @@ export default function Tracker() {
                             uid: user.uid,
                             displayName: user.displayName || 'Anonymous',
                             photoURL: user.photoURL || '',
+                            fallbackPhotoURL: user.fallbackPhotoURL || null,
                             status: user.trackerSettings?.status || 'Jen tak',
                             location: { lat: latitude, lng: longitude },
                             lastActive: new Date(),
@@ -494,8 +495,8 @@ export default function Tracker() {
                                         </div>
                                         <div class="relative z-10">
                                             <div class="w-12 h-12 rounded-full border-4 border-white shadow-2xl overflow-hidden bg-slate-100 relative z-10">
-                                                ${user?.photoURL
-                                        ? `<img src="${user.photoURL}" class="w-full h-full object-cover" />`
+                                                ${(user?.photoURL || user?.fallbackPhotoURL)
+                                        ? `<img src="${user?.fallbackPhotoURL || user?.photoURL}" class="w-full h-full object-cover" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><div style="display:none" class="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>`
                                         : `<div class="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                                                     </div>`
@@ -534,7 +535,7 @@ export default function Tracker() {
                                         </div>
                                         <div class="w-10 h-10 rounded-full border-2 border-white shadow-xl overflow-hidden bg-slate-100 z-10">
                                             ${p.photoURL
-                                            ? `<img src="${p.photoURL}" class="w-full h-full object-cover" />`
+                                            ? `<img src="${p.photoURL}" class="w-full h-full object-cover" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><div style="display:none" class="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>`
                                             : `<div class="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                                             </div>`
@@ -611,12 +612,20 @@ export default function Tracker() {
                                     <div className="flex items-center gap-3 mb-3">
                                         <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-red-100">
                                             {beacon.photoURL ? (
-                                                <img src={beacon.photoURL} alt={beacon.displayName} className="w-full h-full object-cover" />
-                                            ) : (
-                                                <div className="w-full h-full bg-red-50 flex items-center justify-center text-red-400">
-                                                    <User size={20} />
-                                                </div>
-                                            )}
+                                                <img 
+                                                    src={beacon.photoURL} 
+                                                    alt={beacon.displayName} 
+                                                    className="w-full h-full object-cover" 
+                                                    onError={(e) => { 
+                                                        const target = e.target as HTMLImageElement;
+                                                        target.style.display = 'none';
+                                                        target.nextElementSibling?.classList.remove('hidden');
+                                                    }} 
+                                                />
+                                            ) : null}
+                                            <div className="w-full h-full bg-red-50 flex items-center justify-center text-red-400 hidden">
+                                                <User size={20} />
+                                            </div>
                                         </div>
                                         <div>
                                             <h4 className="font-bold text-sm">{beacon.displayName}</h4>

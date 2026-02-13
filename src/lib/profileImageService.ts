@@ -33,13 +33,9 @@ export const internalizeProfileImage = (
             const blob = await response.blob();
 
             // 2. Upload to Firebase Storage
-            // Path: users/{uid}/profile_internal.webp
-            // We use a fixed name so we don't accumulate junk, 
-            // but we might add a timestamp query param or metadata if needed for busting.
-            // Actually, user wants to update it once per 30 days.
-            // Using a timestamp in filename can help with browser caching issues if the content changes.
-            const timestamp = Date.now();
-            const storagePath = `users/${userId}/profile_${timestamp}.webp`;
+            // Path: users/{uid}/profile.webp
+            // Using a fixed name so we overwrite instead of accumulating junk
+            const storagePath = `users/${userId}/profile.webp`;
 
             const storageRef = ref(storage, storagePath);
 

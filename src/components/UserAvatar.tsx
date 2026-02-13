@@ -2,6 +2,7 @@ import { User } from 'lucide-react';
 import CachedImage from './CachedImage';
 import { cn } from '../lib/utils';
 import type { UserProfile } from '../types';
+import { useState, useEffect } from 'react';
 
 interface UserAvatarProps {
     user?: Partial<UserProfile> | null;
@@ -24,19 +25,39 @@ export default function UserAvatar({
 }: UserAvatarProps) {
     // Resolve data from user object or direct props
     const finalPhotoURL = user?.photoURL ?? photoURL;
+    const fallbackPhotoURL = user?.fallbackPhotoURL ?? null; // Google account photo URL
     const finalDisplayName = user?.displayName ?? displayName ?? 'Uživatel';
     // Explicit isBKTeam prop takes precedence, otherwise check user object
     const finalIsBKTeam = isBKTeam ?? user?.isBKTeam ?? false;
 
+    // Track current image source with fallback support
+    const [currentSrc, setCurrentSrc] = useState<string | null>(finalPhotoURL ?? null);
+    const [hasTriedFallback, setHasTriedFallback] = useState(false);
+
+    // Reset when primary URL changes
+    useEffect(() => {
+        setCurrentSrc(finalPhotoURL ?? null);
+        setHasTriedFallback(false);
+    }, [finalPhotoURL]);
+
+    const handleImageError = () => {
+        // If main image fails and we haven't tried fallback yet, use Google URL
+        if (!hasTriedFallback && fallbackPhotoURL) {
+            setHasTriedFallback(true);
+            setCurrentSrc(fallbackPhotoURL);
+        }
+    };
+
     return (
         <div className={cn("relative inline-block rounded-full", className)}>
             <div className="w-full h-full rounded-[inherit] overflow-hidden bg-slate-100 flex items-center justify-center border border-slate-100 relative z-0">
-                {finalPhotoURL ? (
+                {currentSrc ? (
                     <CachedImage
-                        src={finalPhotoURL}
+                        src={currentSrc}
                         alt={finalDisplayName}
                         priority="low"
                         className="w-full h-full object-cover"
+                        onError={handleImageError}
                     />
                 ) : (
                     <User size={size ? size * 0.5 : '50%'} className="text-slate-300" />

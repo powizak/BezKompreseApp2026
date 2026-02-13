@@ -19,6 +19,7 @@ export interface PresenceInfo {
     uid: string;
     displayName: string;
     photoURL: string;
+    fallbackPhotoURL?: string | null; // Google account photo URL as fallback
     status: string;
     location: { lat: number; lng: number } | null; // null if hidden/near home
     lastActive: any;

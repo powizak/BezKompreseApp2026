@@ -88,6 +88,7 @@ const synchronizeProfileImage = async (user: any) => {
 
           await updateDoc(userRef, {
             photoURL: internalUrl,
+            fallbackPhotoURL: providerPhoto, // Keep Google URL as backup
             lastPhotoUpdate: now
           });
           console.log("[AuthService] Profile image updated to internal storage");
@@ -148,6 +149,7 @@ export const AuthServiceLive = Layer.succeed(
           displayName: user.displayName,
           email: user.email,
           photoURL: user.photoURL,
+          fallbackPhotoURL: user.providerData?.[0]?.photoURL || user.photoURL, // Store Google URL as backup
         };
 
         // We write the *current* state first to ensure doc exists

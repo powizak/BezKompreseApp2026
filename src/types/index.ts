@@ -22,6 +22,8 @@ export interface UserProfile {
   displayName: string | null;
   email: string | null;
   photoURL: string | null;
+  lastPhotoUpdate?: number; // Timestamp of last profile photo internalization
+  fallbackPhotoURL?: string | null; // Google account photo URL as fallback if internalized photo fails
   friends?: string[]; // Array of user UIDs
   homeLocation?: { lat: number; lng: number };
   trackerSettings?: TrackerSettings;
