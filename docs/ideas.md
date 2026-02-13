@@ -72,6 +72,7 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - Sbírání BezKomprese známeček -> možnost si vybrat za známky "dárek" -> sleva na eshop nebo samolepka atd. 
 - Fight kartiček ve stylu "Kdo má lepší auto" - na základě statistik aut
 - Soutěže - nejlepší tuning, nejlepší fotka, nejlepší video, nejlepší úprava, nejvíce najetých kilometrů atd. 
+- Pro všechny, co se podíleli na testování dát odznak "Testovací jezdec" 
 
 
 ## 3. Technická Vylepšení (Technical)

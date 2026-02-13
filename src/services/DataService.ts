@@ -327,18 +327,21 @@ export const DataServiceLive = Layer.succeed(
 
                 if (YT_KEY) {
                     try {
-                        const response = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${YT_KEY}&channelId=${YT_CHANNEL}&part=snippet,id&order=date&maxResults=6`);
+                        // Optimalizace: Používáme playlistItems místo search (1 quota místo 100)
+                        // ID playlistu "Uploads" je většinou ID kanálu s 'UU' na začátku místo 'UC'
+                        const YT_PLAYLIST = YT_CHANNEL.replace(/^UC/, 'UU');
+                        const response = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${YT_PLAYLIST}&key=${YT_KEY}&maxResults=6`);
+
                         if (response.ok) {
                             const data = await response.json();
                             const ytPosts = data.items
-                                .filter((item: any) => item.id.videoId)
                                 .map((item: any) => ({
-                                    id: item.id.videoId,
+                                    id: item.snippet.resourceId.videoId,
                                     platform: 'youtube',
                                     type: 'video',
                                     title: item.snippet.title,
-                                    thumbnail: item.snippet.thumbnails.high.url,
-                                    url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
+                                    thumbnail: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url,
+                                    url: `https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}`,
                                     publishedAt: item.snippet.publishedAt
                                 }));
                             posts = [...posts, ...ytPosts];
