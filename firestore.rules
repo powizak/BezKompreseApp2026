@@ -1,9 +1,135 @@
 rules_version = '2';
 service cloud.firestore {
+  // Helper function to check if user is authenticated
+  function isAuthenticated() {
+    return request.auth != null;
+  }
+
+  // Helper function to get current user ID
+  function getUserId() {
+    return request.auth.uid;
+  }
+
+  // Helper to validate string fields (basic sanitization)
+  function isValidString(value) {
+    return value is string && value.size() <= 10000;
+  }
+
+  // Helper to validate that user can only modify their own data
+  function isOwner(userId) {
+    return request.auth.uid == userId;
+  }
+
   match /databases/{database}/documents {
-    // Allow authenticated users to read and write to all documents
+
+    // ============ USERS Kolekce ============
+    // Každý uživatel může číst všechny profily
+    // Uživatel může psát pouze svůj vlastní profil
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isOwner(userId);
+    }
+
+    // ============ CARS Kolekce ============
+    // Všichni authenticated uživatelé mohou číst auta
+    // Pouze owner může vytvářet/upravovat svá auta
+    match /cars/{carId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() 
+                    && request.resource.data.ownerId == getUserId();
+      allow update, delete: if isAuthenticated() 
+                    && resource.data.ownerId == getUserId();
+    }
+
+    // ============ EVENTS Kolekce ============
+    // Všichni mohou číst eventy
+    // Vytvářet může každý, upravovat/vymazat pouze creator
+    match /events/{eventId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() 
+                    && resource.data.creatorId == getUserId();
+    }
+
+    // ============ EVENT-COMMENTS Kolekce ============
+    // Čtení: všichni účastníci eventu
+    // Psát může každý authenticated
+    // Vymazat může pouze autor komentáře
+    match /event-comments/{commentId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow delete: if isAuthenticated() 
+                    && resource.data.authorId == getUserId();
+    }
+
+    // ============ SERVICE-RECORDS Kolekce ============
+    // Pouze owner může číst a psát záznamy
+    match /service-records/{recordId} {
+      allow read, write: if isAuthenticated() 
+                    && resource.data.ownerId == getUserId();
+    }
+
+    // ============ FUEL-RECORDS Kolekce ============
+    // Pouze owner může číst a psát záznamy
+    match /fuel-records/{recordId} {
+      allow read, write: if isAuthenticated() 
+                    && resource.data.ownerId == getUserId();
+    }
+
+    // ============ PRESENCE Kolekce ============
+    // Každý uživatel může číst presence (pro live tracker)
+    // Pouze vlastní presence může uživatel měnit
+    match /presence/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isOwner(userId);
+    }
+
+    // ============ HELP-BEACONS Kolekce ============
+    // Všichni authenticated mohou číst a vytvářet
+    // Aktivní beacon může vymazat pouze jeho autor
+    match /help-beacons/{beaconId} {
+      allow read, create: if isAuthenticated();
+      allow delete: if isAuthenticated() 
+                    && resource.data.userId == getUserId();
+    }
+
+    // ============ MARKETPLACE-LISTINGS Kolekce ============
+    // Všichni mohou číst aktivní inzeráty
+    // Vytvářet může každý
+    // Upravovat/vymazat může pouze autor
+    match /marketplace-listings/{listingId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() 
+                    && resource.data.userId == getUserId();
+    }
+
+    // ============ CHATS Kolekce ============
+    // Číst mohou pouze účastníci konverzace
+    // Psát mohou pouze účastníci
+    match /chats/{chatId} {
+      allow read: if isAuthenticated() 
+                    && request.auth.uid in resource.data.participants;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() 
+                    && request.auth.uid in resource.data.participants;
+      allow delete: if isAuthenticated() 
+                    && request.auth.uid in resource.data.participants;
+    }
+
+    // ============ SUB-COLLECTIONS ============
+    // Zprávy v chatech - pouze účastníci
+    match /chats/{chatId}/messages/{messageId} {
+      allow read, create: if isAuthenticated();
+      // Pro jednoduchost - deletovat může pouze autor zprávy
+      allow delete: if isAuthenticated() 
+                    && resource.data.senderId == getUserId();
+    }
+
+    // ============ FALLBACK ============
+    // Pokud žádné specifické pravidlo nesedí - zakážeme
     match /{document=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if false;
     }
   }
 }

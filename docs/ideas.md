@@ -88,3 +88,6 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - Automatické stažení Google profilovek na náš Firebase Storage.
 - Obnova jednou za 30 dní.
 - Eliminace 429 Rate Limitů od externích poskytovatelů.
+- **YouTube API optimalizace**: Přechod na `playlistItems` endpoint pro úsporu 100x kvóty.
+- **Unifikovaný Loading UX**: Sjednocený stav načítání napříč celou aplikací s rotujícím logem.
+- **Pokročilé dělení kódu**: Optimalizované bundle chunks ve Vite pro rychlejší první načtení.
