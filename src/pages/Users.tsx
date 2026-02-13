@@ -174,7 +174,7 @@ export default function UsersPage() {
                             {topUsers.length > 0 && (
                                 <section className="relative">
                                     {/* Decorative background element */}
-                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-full bg-slate-50/50 -skew-y-3 -z-10" />
+                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-full bg-slate-50/50 -skew-y-3 -z-10" />
 
                                     <div className="flex items-center gap-3 mb-8 px-4">
                                         <div className="p-2 bg-red-100 text-red-600 rounded-xl">

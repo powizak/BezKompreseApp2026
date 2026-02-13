@@ -107,3 +107,4 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - **YouTube API optimalizace**: Přechod na `playlistItems` endpoint pro úsporu 100x kvóty.
 - **Unifikovaný Loading UX**: Sjednocený stav načítání napříč celou aplikací s rotujícím logem.
 - **Pokročilé dělení kódu**: Optimalizované bundle chunks ve Vite pro rychlejší první načtení.
+- **Vylepšení stability layoutu**: Oprava scrollování a mizení menu na stránce Uživatelé.
