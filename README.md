@@ -43,6 +43,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Seznam Uživatelů**: Procházení komunity s přehledem **TOP 5 nejoblíbenějších členů** (dle počtu přátel) a náhodný výběr dalších petrolheadů
 - **🆕 Efektivní Vyhledávání**: Optimalizované vyhledávání uživatelů s minimálním počtem requestů
 - **Veřejné Garáže**: Inspirace od ostatních autíčkářů
+- **🆕 BK Team Odznak**: Speciální označení pro členy týmu Bez Komprese u jejich avatarů
 - **🚀 Výkonné Procházení**: Serverové stránkování a filtrování všech aut pro bleskové načítání i při tisících vozidlech
 
 ### 📍 Live Tracker (NOVÉ!)

@@ -4,12 +4,13 @@ import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import type { Car, UserProfile } from '../types';
 import { VEHICLE_STATUS_CONFIG } from '../types';
-import { Car as CarIcon, Calendar, Gauge, Wrench, User, ChevronLeft, ChevronRight, X, Zap, ArrowUpRight, CarFront, Fuel, Tag } from 'lucide-react';
+import { Car as CarIcon, Calendar, Gauge, Wrench, ChevronLeft, ChevronRight, X, Zap, ArrowUpRight, CarFront, Fuel, Tag } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getImageUrl } from '../lib/imageService';
 import LoginRequired from '../components/LoginRequired';
 import CachedImage from '../components/CachedImage';
 import LoadingState from '../components/LoadingState';
+import UserAvatar from '../components/UserAvatar';
 
 export default function CarDetail() {
     const { id } = useParams<{ id: string }>();
@@ -294,17 +295,15 @@ export default function CarDetail() {
                             {owner ? (
                                 <Link to={`/profile/${owner.uid}`} className="block group">
                                     <div className="flex items-center gap-6 mb-8">
-                                        <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-slate-800 shadow-xl group-hover:border-brand transition-all rotate-3 group-hover:rotate-0">
-                                            {owner.photoURL ? (
-                                                <CachedImage src={owner.photoURL} alt={owner.displayName || 'User'} className="w-full h-full object-cover" />
-                                            ) : (
-                                                <div className="w-full h-full bg-slate-800 flex items-center justify-center text-slate-600">
-                                                    <User size={32} />
-                                                </div>
-                                            )}
+                                        <div className="w-20 h-20 shrink-0 rounded-2xl border-2 border-slate-800 shadow-xl group-hover:border-brand transition-all rotate-3 group-hover:rotate-0">
+                                            <UserAvatar
+                                                user={owner}
+                                                size={32}
+                                                className="w-full h-full rounded-2xl"
+                                            />
                                         </div>
-                                        <div>
-                                            <p className="font-black text-2xl text-white group-hover:text-brand transition-colors tracking-tighter italic uppercase">{owner.displayName || 'Neznámý'}</p>
+                                        <div className="min-w-0">
+                                            <p className="font-black text-2xl text-white group-hover:text-brand transition-colors tracking-tighter italic uppercase truncate">{owner.displayName || 'Neznámý'}</p>
                                             <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mt-1">Člen komunity</p>
                                         </div>
                                     </div>

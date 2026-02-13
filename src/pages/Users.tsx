@@ -3,11 +3,11 @@ import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
 import type { UserProfile } from '../types';
-import { Search, Users as UsersIcon, UserPlus, UserMinus, User, Heart } from 'lucide-react';
+import { Search, Users as UsersIcon, UserPlus, UserMinus, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import LoginRequired from '../components/LoginRequired';
-import CachedImage from '../components/CachedImage';
 import LoadingState from '../components/LoadingState';
+import UserAvatar from '../components/UserAvatar';
 
 export default function UsersPage() {
     const { user: currentUser } = useAuth();
@@ -240,14 +240,8 @@ function UserCard({ user, currentUser, onFriendAction, highlight, rank }: { user
 
             <div className="p-5 flex items-center gap-4">
                 <Link to={`/profile/${user.uid}`} className="shrink-0 relative">
-                    <div className={`w-16 h-16 rounded-full overflow-hidden border-2 ${highlight ? 'border-brand' : 'border-slate-100 group-hover:border-brand/50'} transition-colors`}>
-                        {user.photoURL ? (
-                            <CachedImage src={user.photoURL} alt={user.displayName || 'User'} className="w-full h-full object-cover" />
-                        ) : (
-                            <div className="w-full h-full bg-slate-50 flex items-center justify-center text-slate-300">
-                                <User size={28} />
-                            </div>
-                        )}
+                    <div className={`w-16 h-16 rounded-full border-2 ${highlight ? 'border-brand' : 'border-slate-100 group-hover:border-brand/50'} transition-colors`}>
+                        <UserAvatar user={user} size={28} className="w-full h-full" />
                     </div>
                     {isFriend && (
                         <div className="absolute -bottom-1 -right-1 bg-green-500 text-white rounded-full p-1 border-2 border-white">

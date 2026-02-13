@@ -10,9 +10,10 @@ import LoginRequired from '../components/LoginRequired';
 import ChatDrawer from '../components/ChatDrawer';
 import CachedImage from '../components/CachedImage';
 import LoadingState from '../components/LoadingState';
+import UserAvatar from '../components/UserAvatar';
 import { compressImage } from '../lib/imageOptimizer';
 import {
-    Store, ShoppingBag, Search, Plus, X, MessageCircle, Tag, User,
+    Store, ShoppingBag, Search, Plus, X, MessageCircle, Tag,
     CarFront, Gauge, Calendar, Check, AlertCircle, Camera, Save, Trash2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -408,14 +409,12 @@ export default function Market() {
 
                                     {/* Author & Time */}
                                     <div className="flex items-center gap-2 mb-4">
-                                        <div className="w-6 h-6 rounded-full overflow-hidden bg-slate-100">
-                                            {listing.userPhotoURL ? (
-                                                <CachedImage src={listing.userPhotoURL} alt="" className="w-full h-full object-cover" />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-slate-400">
-                                                    <User size={14} />
-                                                </div>
-                                            )}
+                                        <div className="w-6 h-6 rounded-full bg-slate-100">
+                                            <UserAvatar
+                                                user={{ photoURL: listing.userPhotoURL, displayName: listing.userName, isBKTeam: listing.isBKTeam }}
+                                                size={14}
+                                                className="w-full h-full"
+                                            />
                                         </div>
                                         <span className="text-xs text-slate-500 font-medium">{listing.userName}</span>
                                         <span className="text-xs text-slate-400">•</span>

@@ -4,12 +4,13 @@ import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import type { AppEvent, UserProfile, EventComment } from '../types';
 import { EVENT_TYPE_LABELS, EVENT_TYPE_COLORS } from '../types';
-import { MapPin, Calendar, ArrowLeft, Share2, Check, User, Navigation, ExternalLink, Users, FileText, Phone, Send, Trash2 } from 'lucide-react';
+import { MapPin, Calendar, ArrowLeft, Share2, Check, Navigation, ExternalLink, Users, FileText, Phone, Send, Trash2 } from 'lucide-react';
 import EventMap from '../components/EventMap';
 import { useAuth } from '../contexts/AuthContext';
 import { getImageUrl } from '../lib/imageService';
 import LoginRequired from '../components/LoginRequired';
 import CachedImage from '../components/CachedImage';
+import UserAvatar from '../components/UserAvatar';
 
 export default function EventDetail() {
     const { id } = useParams();
@@ -189,8 +190,8 @@ export default function EventDetail() {
                                 </div>
                                 {creator && (
                                     <Link to={`/profile/${creator.uid}`} className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full hover:bg-white/20 transition-colors">
-                                        <div className="w-5 h-5 rounded-full bg-slate-500 overflow-hidden">
-                                            {creator.photoURL ? <CachedImage src={creator.photoURL} alt={creator.displayName || 'User'} /> : <User size={12} className="m-1" />}
+                                        <div className="w-5 h-5 rounded-full bg-slate-500">
+                                            <UserAvatar user={creator} size={12} className="w-full h-full" />
                                         </div>
                                         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300">{creator.displayName || 'Organizátor'}</span>
                                     </Link>
@@ -305,12 +306,8 @@ export default function EventDetail() {
                         Organizátor
                     </h3>
                     <Link to={`/profile/${creator.uid}`} className="flex items-center gap-4 group">
-                        <div className="w-14 h-14 rounded-full bg-slate-200 overflow-hidden">
-                            {creator.photoURL ? (
-                                <img src={creator.photoURL} alt={creator.displayName || 'User'} className="w-full h-full object-cover" />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center text-slate-400"><User size={24} /></div>
-                            )}
+                        <div className="w-14 h-14 rounded-full bg-slate-200">
+                            <UserAvatar user={creator} size={24} className="w-full h-full" />
                         </div>
                         <div>
                             <div className="font-bold text-lg group-hover:text-brand transition-colors">{creator.displayName || 'Neznámý uživatel'}</div>
@@ -362,12 +359,12 @@ export default function EventDetail() {
                         comments.map((comment) => (
                             <div key={comment.id} className="flex gap-3 group">
                                 <Link to={`/profile/${comment.userId}`} className="flex-shrink-0">
-                                    <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
-                                        {comment.userPhotoURL ? (
-                                            <img src={comment.userPhotoURL} alt={comment.userName} className="w-full h-full object-cover" />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-slate-400"><User size={16} /></div>
-                                        )}
+                                    <div className="w-10 h-10 rounded-full bg-slate-200">
+                                        <UserAvatar
+                                            user={{ photoURL: comment.userPhotoURL, displayName: comment.userName, isBKTeam: comment.isBKTeam }}
+                                            size={16}
+                                            className="w-full h-full"
+                                        />
                                     </div>
                                 </Link>
                                 <div className="flex-1 min-w-0">

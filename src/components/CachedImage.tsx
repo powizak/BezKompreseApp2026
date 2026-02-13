@@ -10,8 +10,8 @@ const seenUrls = new Set<string>();
 interface CachedImageProps extends ImgHTMLAttributes<HTMLImageElement> {
     /** Set to true to skip fade-in animation */
     noCache?: boolean;
-    /** If true, this image will be loaded before standard images (e.g. car photos > avatars) */
-    priority?: boolean;
+    /** If true/high, loads first. If low, loads last. Default normal. */
+    priority?: boolean | 'high' | 'normal' | 'low';
 }
 
 /**

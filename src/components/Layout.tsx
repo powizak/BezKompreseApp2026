@@ -7,7 +7,7 @@ import Footer from './Footer';
 import CookieBanner from './CookieBanner';
 import ChatDrawer from './ChatDrawer';
 import SupportSection from './SupportSection';
-import CachedImage from './CachedImage';
+import UserAvatar from './UserAvatar';
 
 export default function Layout() {
   const { pathname } = useLocation();
@@ -68,8 +68,8 @@ export default function Layout() {
         <div className="p-4 border-t border-slate-800">
           {user ? (
             <div className="flex items-center gap-3 px-4 py-2">
-              <Link to={`/profile/${user.uid}`} className="w-8 h-8 rounded-full bg-slate-700 overflow-hidden ring-2 ring-brand block hover:scale-105 transition-transform">
-                {user.photoURL ? <CachedImage src={user.photoURL} alt="User" className="w-full h-full object-cover" /> : <div className="p-1 text-slate-400 h-full w-full flex items-center justify-center"><Car size={16} /></div>}
+              <Link to={`/profile/${user.uid}`} className="block hover:scale-105 transition-transform">
+                <UserAvatar user={user} size={16} className="w-8 h-8 ring-2 ring-brand rounded-full" />
               </Link>
               <div className="flex-1 overflow-hidden">
                 <Link to={`/profile/${user.uid}`} className="text-sm font-bold truncate text-white hover:text-brand transition-colors block">{user.displayName || 'Uživatel'}</Link>
@@ -89,8 +89,8 @@ export default function Layout() {
         <div className="p-4 flex justify-between items-center w-full">
           <img src="/logo.svg" alt="Bez Komprese" className="h-6" />
           {user ? (
-            <Link to={`/profile/${user.uid}`} className="w-8 h-8 rounded-full bg-white/10 overflow-hidden ring-1 ring-brand block">
-              {user.photoURL ? <CachedImage src={user.photoURL} alt="User" className="w-full h-full object-cover" /> : <div className="p-1 h-full w-full flex items-center justify-center"><Car size={16} /></div>}
+            <Link to={`/profile/${user.uid}`} className="block">
+              <UserAvatar user={user} size={16} className="w-8 h-8 ring-1 ring-brand rounded-full" />
             </Link>
           ) : (
             <Link to="/login" className="text-sm font-bold text-brand hover:underline flex items-center gap-1 uppercase tracking-wider">

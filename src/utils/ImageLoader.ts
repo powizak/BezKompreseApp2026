@@ -2,6 +2,7 @@ class ImageLoaderService {
     private static instance: ImageLoaderService;
     private highPriorityQueue: Array<() => Promise<void>> = [];
     private normalQueue: Array<() => Promise<void>> = [];
+    private lowPriorityQueue: Array<() => Promise<void>> = [];
     private activeCount = 0;
     private maxConcurrency = 3; // Reverted to 3 to prevent 429 errors (Google is strict)
     private cache = new Map<string, Promise<void>>();
@@ -35,9 +36,9 @@ class ImageLoaderService {
      * Pre-loads the image using standard Browser Image object.
      * Includes persistent "circuit breaker" via localStorage to prevent loops on reload.
      * @param url The image URL to load
-     * @param priority If true, image is placed at the front of the loading queue (e.g. cars over avatars)
+     * @param priority If true/'high', image is placed at the front. 'low' places it at the back. Default/false is normal.
      */
-    public loadImage(url: string, priority: boolean = false): Promise<void> {
+    public loadImage(url: string, priority: boolean | 'high' | 'normal' | 'low' = 'normal'): Promise<void> {
         if (this.cache.has(url)) {
             return this.cache.get(url)!;
         }
@@ -66,9 +67,11 @@ class ImageLoaderService {
         return promise;
     }
 
-    private enqueue(task: () => Promise<void>, priority: boolean) {
-        if (priority) {
+    private enqueue(task: () => Promise<void>, priority: boolean | 'high' | 'normal' | 'low') {
+        if (priority === true || priority === 'high') {
             this.highPriorityQueue.push(task);
+        } else if (priority === 'low') {
+            this.lowPriorityQueue.push(task);
         } else {
             this.normalQueue.push(task);
         }
@@ -80,8 +83,8 @@ class ImageLoaderService {
             return;
         }
 
-        // Try high priority first, then normal
-        const task = this.highPriorityQueue.shift() || this.normalQueue.shift();
+        // Try high priority first, then normal, then low
+        const task = this.highPriorityQueue.shift() || this.normalQueue.shift() || this.lowPriorityQueue.shift();
 
         if (!task) {
             return;

@@ -73,6 +73,7 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - Fight kartiček ve stylu "Kdo má lepší auto" - na základě statistik aut
 - Soutěže - nejlepší tuning, nejlepší fotka, nejlepší video, nejlepší úprava, nejvíce najetých kilometrů atd. 
 - Pro všechny, co se podíleli na testování dát odznak "Testovací jezdec" 
+- **✅ BK Team Badge - IMPLEMENTOVÁNO**: Speciální odznak pro členy týmu na jejich profilech. 
 
 
 ## 3. Technická Vylepšení (Technical)

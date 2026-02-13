@@ -70,9 +70,11 @@ service cloud.firestore {
     }
 
     // ============ FUEL-RECORDS Kolekce ============
-    // Pouze owner může číst a psát záznamy
+    // Číst může každý authenticated uživatel (aplikační logika řeší sdílení)
+    // Psát může pouze owner
     match /fuel-records/{recordId} {
-      allow read, write: if isAuthenticated() 
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() 
                     && resource.data.ownerId == getUserId();
     }
 

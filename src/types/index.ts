@@ -33,6 +33,7 @@ export interface UserProfile {
   friendsCount?: number;
   searchKey?: string; // Lowercase display name for search
   _random?: number; // Random integer for random sorting
+  isBKTeam?: boolean; // Member of Bez Komprese Team
 }
 
 export interface CarModification {
@@ -187,6 +188,7 @@ export interface EventComment {
   userPhotoURL?: string;
   text: string;
   createdAt: any; // Firebase Timestamp
+  isBKTeam?: boolean;
 }
 
 export type SocialPlatform = 'youtube' | 'instagram' | 'facebook';
@@ -272,6 +274,7 @@ export interface HelpBeacon {
   updatedAt: any;
   helperId?: string; // UID of user who is coming to help
   helperName?: string; // Display name of helper
+  isBKTeam?: boolean;
 }
 
 // Marketplace Listing Types ("Bazar")
@@ -296,6 +299,7 @@ export interface MarketplaceListing {
   userId: string;
   userName: string;
   userPhotoURL?: string;
+  isBKTeam?: boolean;
   type: ListingType;
   title: string;
   description: string;

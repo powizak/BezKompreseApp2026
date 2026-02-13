@@ -15,6 +15,7 @@ import LoginRequired from '../components/LoginRequired';
 import NotificationSettingsSection from '../components/NotificationSettings';
 import CachedImage from '../components/CachedImage';
 import LoadingState from '../components/LoadingState';
+import UserAvatar from '../components/UserAvatar';
 
 // Fix Leaflet icon issue
 // @ts-ignore
@@ -205,14 +206,8 @@ export default function UserProfilePage() {
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 flex flex-col md:flex-row items-center md:items-start gap-6 relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-slate-900 to-slate-800"></div>
 
-                <div className="relative z-10 w-32 h-32 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white">
-                    {profile.photoURL ? (
-                        <CachedImage src={profile.photoURL} alt={profile.displayName || 'User'} className="w-full h-full object-cover" />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-300">
-                            <CarIcon size={48} />
-                        </div>
-                    )}
+                <div className="relative z-10 w-32 h-32 rounded-full border-4 border-white shadow-xl bg-white">
+                    <UserAvatar user={profile} size={64} className="w-full h-full" />
                 </div>
 
                 <div className="relative z-10 pt-12 md:pt-24 text-center md:text-left flex-1">
@@ -358,14 +353,8 @@ export default function UserProfilePage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {friends.length > 0 ? friends.map(friend => (
                             <Link key={friend.uid} to={`/profile/${friend.uid}`} className="flex items-center gap-4 bg-white p-4 rounded-xl border border-slate-100 hover:border-brand transition-all shadow-sm hover:shadow-md">
-                                <div className="w-12 h-12 rounded-full overflow-hidden border border-slate-100 flex-shrink-0">
-                                    {friend.photoURL ? (
-                                        <CachedImage src={friend.photoURL} alt={friend.displayName || 'User'} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-300">
-                                            <User size={20} />
-                                        </div>
-                                    )}
+                                <div className="w-12 h-12 flex-shrink-0">
+                                    <UserAvatar user={friend} size={24} className="w-full h-full" />
                                 </div>
                                 <div>
                                     <h4 className="font-bold text-slate-900">{friend.displayName || 'Bezejmenný'}</h4>
