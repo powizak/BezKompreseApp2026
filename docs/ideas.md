@@ -60,7 +60,7 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - Přímo z inzeratu může vlastník označit auto jako "Prodané" - tedy vymaže inzerát a zároveň v garáži mu odznačí "Vlastněno"  
 - **Vizuální Oprava (v0.0.31)**: Oprava překrývání štítků "Na prodej" a statusů na kartách aut
 
-#### Phase 2: 
+#### ✅ Phase 2 - IMPLEMENTOVÁNO: 
 - je žádoucí mít možnost přidat inzerát na auto i jako samostatný - nejen určením auta "na prodej" v úpravě vozidla. S tím, že pak nebude vidět detail auta, ale bude se to chovat, jako obyčejný inzerát
 - zároveň je potřeba přidat možnost si zobrazit detail inzerátu (nejen pokud se jedná o auta z garáže, ale jakýkoliv typ inzerátu (stále platí, že auto z garáže přejde na kartu daného vozidla))
 - podívat se také na kategorie bazaru - nyní jsou auta, poptávky a v poptávkách je pak i prodej dílů 
@@ -81,8 +81,8 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - ✅ **Přidat do "info" - celkový počet uživatelů / aut v aplikaci** - IMPLEMENTOVÁNO v0.0.31 
 
 ### ✅ Gamifikace - IMPLEMENTOVÁNO (Fáze 0,1)
-#### Fáze 0
-- **✅ BK Team Badge - IMPLEMENTOVÁNO**: Speciální odznak pro členy týmu na jejich profilech. 
+#### ✅ Fáze 0 - IMPLEMENTOVÁNO
+- ** BK Team Badge - IMPLEMENTOVÁNO**: Speciální odznak pro členy týmu na jejich profilech. 
 #### ✅ Fáze 1 - IMPLEMENTOVÁNO
 - **Odznaky (Badges)**: "High Miler", "Wrench Wizard", "Early Adopter", "Socialite", "Organizer" atd.
 - **Technologie**: Transakční udělování (prevence race conditions), automatická deduplikace, retroaktivní kontroly při načtení profilu.
