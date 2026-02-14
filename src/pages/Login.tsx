@@ -2,7 +2,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 
 export default function Login() {
-  const { login, user, loading } = useAuth();
+  const { login, user, loading, error } = useAuth();
 
   if (loading) return null;
   if (user) return <Navigate to="/garage" replace />;
@@ -25,6 +25,12 @@ export default function Login() {
           </svg>
           Přihlásit přes Google
         </button>
+
+        {error && (
+          <div className="mt-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">
+            {error}
+          </div>
+        )}
       </div>
     </div>
   );
