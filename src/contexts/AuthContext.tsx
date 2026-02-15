@@ -7,7 +7,7 @@ import LoadingState from "../components/LoadingState";
 interface AuthContextType {
   user: UserProfile | null;
   loading: boolean;
-  login: () => Promise<void>;
+  login: (mode?: 'native' | 'web') => Promise<void>;
   logout: () => Promise<void>;
   error: string | null;
 }
@@ -43,10 +43,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     runStream();
   }, []);
 
-  const login = async () => {
+  const login = async (mode: 'native' | 'web' = 'native') => {
     setError(null);
     try {
-      await Effect.runPromise(authService.login);
+      await Effect.runPromise(authService.login(mode));
     } catch (e: any) {
       console.error("Login failed:", e);
       // Extract meaningful message

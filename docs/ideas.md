@@ -110,3 +110,11 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 ### 📱 PWA a Offline Mode
 - Vylepšit cachování map pro "Tracker" v místech bez signálu (časté na okreskách).
 - Synchronizace servisní knížky (offline-first), aby šlo zapisovat i v garáži bez Wi-Fi.  
+
+### ✅ Auth Refactor (v0.0.32) - IMPLEMENTOVÁNO
+- **BREAKING**: Reimplementace Google Sign-In pro Android 14.
+- Odstranění nespolehlivého webového fallbacku na nativních platformách.
+- Implementace 15s timeoutu pro nativní plugin (prevence zamrznutí).
+- Přidání Play Services metadata do Manifestu.
+- Detekce "Silent Failure" (prázdný error) s nápovědou pro kontrolu SHA-1.
+- Vylepšené zobrazení chyb v UI.

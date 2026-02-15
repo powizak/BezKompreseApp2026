@@ -1,5 +1,6 @@
 import { useAuth } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
+import { Capacitor } from '@capacitor/core';
 
 export default function Login() {
   const { login, user, loading, error } = useAuth();
@@ -14,7 +15,7 @@ export default function Login() {
         <p className="text-slate-500 mb-8">Přihlaste se pro správu svých aut a účast na srazech.</p>
 
         <button
-          onClick={login}
+          onClick={() => login()}
           className="w-full bg-slate-900 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -27,8 +28,21 @@ export default function Login() {
         </button>
 
         {error && (
-          <div className="mt-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">
-            {error}
+          <div className="mt-4 flex flex-col gap-3">
+            <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">
+              {error}
+            </div>
+
+            {/* Manual Fallback Button - WEB ONLY */}
+            {/* Web fallback on native is unreliable due to cross-origin storage partitioning (Error: missing initial state) */}
+            {!Capacitor.isNativePlatform() && (
+              <button
+                onClick={() => login('web')}
+                className="w-full bg-white text-slate-700 font-medium py-2 px-4 rounded-lg border border-slate-300 hover:bg-slate-50 transition-colors text-sm"
+              >
+                Zkusit přihlášení přes web (záloha)
+              </button>
+            )}
           </div>
         )}
       </div>

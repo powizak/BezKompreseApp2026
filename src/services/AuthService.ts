@@ -19,7 +19,7 @@ export class AuthError {
 
 // Define the Service Interface
 export interface AuthService {
-  readonly login: Effect.Effect<UserProfile, AuthError>;
+  readonly login: (mode?: 'native' | 'web') => Effect.Effect<UserProfile, AuthError>;
   readonly logout: Effect.Effect<void, AuthError>;
   readonly currentUser: Stream.Stream<UserProfile | null>;
 }
@@ -107,38 +107,59 @@ const synchronizeProfileImage = async (user: any) => {
 export const AuthServiceLive = Layer.succeed(
   AuthService,
   AuthService.of({
-    login: Effect.tryPromise({
+    login: (mode?: 'native' | 'web') => Effect.tryPromise({
       try: async () => {
         const provider = new GoogleAuthProvider();
         let user: any = null;
 
-        // Use Native Plugin for mobile to avoid the "localhost" redirect issue
-        if (Capacitor.isNativePlatform()) {
-          const result = await FirebaseAuthentication.signInWithGoogle();
-          console.log("DEBUG: Native Login Result:", JSON.stringify(result));
+        // Use Native Plugin unless explicitly requested otherwise
+        if (Capacitor.isNativePlatform() && mode !== 'web') {
+          try {
+            // Add timeout to prevent infinite hanging
+            const resultPromise = FirebaseAuthentication.signInWithGoogle();
+            const timeoutPromise = new Promise((_, reject) =>
+              setTimeout(() => reject(new Error("Přihlášení trvalo příliš dlouho. Zkontrolujte připojení k internetu.")), 15000)
+            );
 
-          if (!result.user) throw new Error("No user returned from native login");
+            const result = await Promise.race([resultPromise, timeoutPromise]) as any;
 
-          // CRITICAL FIX: Bridge native auth to JS SDK
-          // This ensures 'auth.currentUser' is set, so Firestore knows who we are.
-          const idToken = (result as any).credential?.idToken || (result.user as any).idToken;
-          if (idToken) {
-            console.log("DEBUG: idToken received, attempting bridge sign-in...");
-            const credential = GoogleAuthProvider.credential(idToken);
-            try {
-              const cred = await signInWithCredential(auth, credential);
-              user = cred.user; // Use the bridged user
-              console.log("DEBUG: Bridge sign-in successful");
-            } catch (bridgeError) {
-              console.error("DEBUG: Bridge sign-in FAILED:", bridgeError);
-              throw bridgeError;
+            console.log("DEBUG: Native Login Result:", JSON.stringify(result));
+
+            if (!result.user) throw new Error("No user returned from native login");
+
+            // CRITICAL FIX: Bridge native auth to JS SDK
+            const idToken = result.credential?.idToken || result.user.idToken;
+            if (idToken) {
+              console.log("DEBUG: idToken received, attempting bridge sign-in...");
+              const credential = GoogleAuthProvider.credential(idToken);
+              try {
+                const cred = await signInWithCredential(auth, credential);
+                user = cred.user;
+              } catch (bridgeError) {
+                console.error("DEBUG: Bridge sign-in FAILED:", bridgeError);
+                throw bridgeError;
+              }
+            } else {
+              console.error("CRITICAL: No idToken received. Available fields:", Object.keys(result.user));
+              user = result.user;
             }
-          } else {
-            console.error("CRITICAL: No idToken received. Available fields:", Object.keys(result.user));
-            // Without this token, Firestore write below will likely fail with permission-denied
-            user = result.user; // Fallback to raw result (might be incomplete)
+          } catch (nativeError: any) {
+            const errorDetails = {
+              message: nativeError?.message || "Unknown Native Error",
+              code: nativeError?.code,
+              raw: JSON.stringify(nativeError, Object.getOwnPropertyNames(nativeError))
+            };
+
+            console.warn("Native Google Sign-In failed:", errorDetails);
+
+            if (errorDetails.message === "Unknown Native Error" || JSON.stringify(nativeError) === "{}") {
+              throw new Error(`Native Auth Failed (Silent). CHECK SHA-1 FINGERPRINT in Firebase Console! Original: ${errorDetails.message}`);
+            }
+
+            throw new Error(`Native Auth Failed: ${errorDetails.message} (Code: ${errorDetails.code})`);
           }
         } else {
+          // Web platform OR explicit 'web' mode requested
           const result = await signInWithPopup(auth, provider);
           user = result.user;
         }
