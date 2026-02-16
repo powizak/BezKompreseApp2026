@@ -63,6 +63,19 @@ function isQuietHours(settings) {
  * Respects user's quiet hours and enabled settings
  */
 async function sendPushNotification(payload) {
+    // Respect quiet hours (skip for alerts channel — SOS must always go through)
+    if (payload.channelId !== "alerts" && payload.quietHours?.enabled) {
+        const now = new Date();
+        const currentHour = now.getHours();
+        const { startHour, endHour } = payload.quietHours;
+        const inQuietHours = startHour > endHour
+            ? currentHour >= startHour || currentHour < endHour
+            : currentHour >= startHour && currentHour < endHour;
+        if (inQuietHours) {
+            console.log(`Skipping notification — quiet hours active (${startHour}:00-${endHour}:00)`);
+            return false;
+        }
+    }
     try {
         const message = {
             token: payload.token,

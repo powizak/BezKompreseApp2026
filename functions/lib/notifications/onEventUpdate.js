@@ -90,6 +90,7 @@ exports.onEventUpdated = functions
                 eventId,
             },
             channelId: "default",
+            quietHours: userData.settings?.quietHours,
         });
     });
     const results = await Promise.all(notifications);

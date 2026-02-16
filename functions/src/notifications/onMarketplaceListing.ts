@@ -64,6 +64,7 @@ export const onMarketplaceListingCreated = functions.firestore
                     listingType: listingData.type,
                 },
                 channelId: "marketplace",
+                quietHours: user.settings?.quietHours,
             })
         );
 
@@ -116,6 +117,7 @@ export const onCarForSale = functions.firestore
                     carId: carId,
                 },
                 channelId: "marketplace",
+                quietHours: user.settings?.quietHours,
             })
         );
 

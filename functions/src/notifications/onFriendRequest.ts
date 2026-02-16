@@ -53,6 +53,7 @@ export const onFriendAdded = functions
                     userId,
                 },
                 channelId: "default",
+                quietHours: userData.settings?.quietHours,
             });
         });
 

@@ -64,6 +64,7 @@ export const onEventCommentCreated = functions
                     eventId,
                 },
                 channelId: "default",
+                quietHours: userData.settings?.quietHours,
             });
         });
 

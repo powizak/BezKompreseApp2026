@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Effect } from 'effect';
-import { Bell, BellOff, AlertTriangle, Calendar, Users, MessageCircle, RefreshCw, Info, Moon, Layers, ExternalLink, Check, Car, Store } from 'lucide-react';
+import { Bell, BellOff, AlertTriangle, Calendar, Users, MessageCircle, RefreshCw, Info, Moon, Layers, ExternalLink, Check, Car, Store, Award, UserPlus } from 'lucide-react';
 import { NotificationService, NotificationServiceLive, type NotificationPermissionStatus } from '../services/NotificationService';
 import type { NotificationSettings, EventType } from '../types';
 import { EVENT_TYPE_LABELS } from '../types';
@@ -214,8 +214,8 @@ export default function NotificationSettingsSection({ settings, onChange, userId
 
                 <SettingRow
                     icon={Car}
-                    title="Digitální kaslík"
-                    description="STK, lékárnička, pojištění, dálniční známka"
+                    title="Digitální kaslík a servis"
+                    description="STK, lékárnička, pojištění, servisní upomínky"
                     enabled={settings.vehicleReminders}
                     onToggle={() => onChange({ ...settings, vehicleReminders: !settings.vehicleReminders })}
                     disabled={!settings.enabled}
@@ -227,6 +227,24 @@ export default function NotificationSettingsSection({ settings, onChange, userId
                     description="Nové poptávky a nabídky v bazaru"
                     enabled={settings.marketplaceNotifications}
                     onToggle={() => onChange({ ...settings, marketplaceNotifications: !settings.marketplaceNotifications })}
+                    disabled={!settings.enabled}
+                />
+
+                <SettingRow
+                    icon={Award}
+                    title="Nové odznaky"
+                    description="Když získáš nový odznak"
+                    enabled={settings.badgeNotifications}
+                    onToggle={() => onChange({ ...settings, badgeNotifications: !settings.badgeNotifications })}
+                    disabled={!settings.enabled}
+                />
+
+                <SettingRow
+                    icon={UserPlus}
+                    title="Účast na akcích"
+                    description="Když se někdo přihlásí na tvou akci"
+                    enabled={settings.eventParticipation}
+                    onToggle={() => onChange({ ...settings, eventParticipation: !settings.eventParticipation })}
                     disabled={!settings.enabled}
                 />
 

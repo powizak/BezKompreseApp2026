@@ -12,6 +12,8 @@ export interface NotificationPayload {
     body: string;
     data?: Record<string, string>;
     channelId?: string;
+    /** Pass user's quiet hours settings. Alerts channel ignores this. */
+    quietHours?: { enabled: boolean; startHour: number; endHour: number };
 }
 
 export interface NotificationSettings {
@@ -33,6 +35,8 @@ export interface NotificationSettings {
         enabled: boolean;
         types: string[];
     };
+    badgeNotifications: boolean;
+    eventParticipation: boolean;
     digestMode: boolean;
 }
 
@@ -60,6 +64,20 @@ function isQuietHours(settings: NotificationSettings): boolean {
 export async function sendPushNotification(
     payload: NotificationPayload
 ): Promise<boolean> {
+    // Respect quiet hours (skip for alerts channel — SOS must always go through)
+    if (payload.channelId !== "alerts" && payload.quietHours?.enabled) {
+        const now = new Date();
+        const currentHour = now.getHours();
+        const { startHour, endHour } = payload.quietHours;
+        const inQuietHours = startHour > endHour
+            ? currentHour >= startHour || currentHour < endHour
+            : currentHour >= startHour && currentHour < endHour;
+        if (inQuietHours) {
+            console.log(`Skipping notification — quiet hours active (${startHour}:00-${endHour}:00)`);
+            return false;
+        }
+    }
+
     try {
         const message: admin.messaging.Message = {
             token: payload.token,

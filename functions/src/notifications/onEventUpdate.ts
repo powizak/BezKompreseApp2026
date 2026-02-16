@@ -74,6 +74,7 @@ export const onEventUpdated = functions
                     eventId,
                 },
                 channelId: "default",
+                quietHours: userData.settings?.quietHours,
             });
         });
 

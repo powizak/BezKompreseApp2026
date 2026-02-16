@@ -77,6 +77,7 @@ exports.onMarketplaceListingCreated = functions.firestore
             listingType: listingData.type,
         },
         channelId: "marketplace",
+        quietHours: user.settings?.quietHours,
     }));
     await Promise.all(notifications);
     console.log(`Marketplace notification sent to ${recipients.length} users for listing ${listingId}`);
@@ -118,6 +119,7 @@ exports.onCarForSale = functions.firestore
             carId: carId,
         },
         channelId: "marketplace",
+        quietHours: user.settings?.quietHours,
     }));
     await Promise.all(notifications);
     console.log(`Car for sale notification sent to ${recipients.length} users for car ${carId}`);

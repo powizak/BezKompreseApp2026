@@ -9,6 +9,11 @@
  * - onNewChatMessage: Notifies users about new chat messages
  * - onMarketplaceListingCreated: Notifies users about new marketplace listings
  * - onCarForSale: Notifies users when a car is marked for sale
+ * - checkVehicleReminders: Scheduled check for vehicle reminders (STK, service, etc.)
+ * - onNewEventCreated: Notifies users about new events based on preferences
+ * - onBadgeAwarded: Notifies users when they earn a new badge
+ * - onBeaconStatusChange: Notifies about SOS beacon status changes
+ * - onEventParticipation: Notifies organizers about participant changes
  */
 
 export { onSosBeaconCreated } from "./notifications/onSosBeacon";
@@ -18,3 +23,7 @@ export { onFriendAdded } from "./notifications/onFriendRequest";
 export { checkVehicleReminders } from "./notifications/onVehicleReminderCheck";
 export { onNewChatMessage } from "./notifications/onNewChatMessage";
 export { onMarketplaceListingCreated, onCarForSale } from "./notifications/onMarketplaceListing";
+export { onNewEventCreated } from "./notifications/onNewEvent";
+export { onBadgeAwarded } from "./notifications/onBadgeAwarded";
+export { onBeaconStatusChange } from "./notifications/onBeaconStatusChange";
+export { onEventParticipation } from "./notifications/onEventParticipation";

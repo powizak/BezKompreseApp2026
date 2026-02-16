@@ -118,3 +118,4 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - Přidání Play Services metadata do Manifestu.
 - Detekce "Silent Failure" (prázdný error) s nápovědou pro kontrolu SHA-1.
 - Vylepšené zobrazení chyb v UI.
+- **✅ Notification Logic Refine (v0.0.33)**: Globální vynucení tichých hodin, škálování `onNewEvent` a inteligentní hlídání servisu po termínu (overdue) s cool-off periodou.

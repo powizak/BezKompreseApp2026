@@ -26,7 +26,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Digitální Evidence**: Sledování všech servisních zásahů a oprav
 - **Rychlé Šablony**: Předvyplněné formuláře pro běžné operace (olej, brzdy, pneumatiky)
 - **Nákladová Analýza**: Grafy celkových nákladů a průměrných měsíčních výdajů
-- **Upomínky**: Automatické připomínky nadcházejícího servisu podle km nebo data
+- **Upomínky**: Automatické připomínky nadcházejícího servisu podle km nebo data (včetně inteligentní detekce **servisu po termínu** s týdenním opakováním)
 - **Evidence Dílů**: Detailní seznam použitých dílů a materiálu
 - **Timeline**: Chronologický přehled celé historie servisu
 
@@ -75,14 +75,16 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **🆕 Digitální Kaslík**: Upozornění na vypršení STK, lékárničky, pojištění nebo dálniční známky
 - **🆕 Chat s uživateli**: Reálný chat mezi členy komunity s náhledy konverzací a historií
 - **🆕 Bazar a Marketplace**: Prodej aut přímo z garáže a inzerce poptávek po dílech či servisu
-- **Tiché hodiny**: Nastavitelný čas, kdy notifikace nepřijdou
+- **Tiché hodiny**: Nastavitelný čas, kdy notifikace nepřijdou (globální vynucení pro všechny typy kromě SOS)
 - **Nativní nastavení**: Přímý odkaz do systémového nastavení notifikací (v Android aplikaci)
+- **🚀 Optimalizace**: Serverové filtrování příjemců (onNewEvent) pro úsporu Firestore čtení při velkém počtu uživatelů
 
 ### 💡 Myšlenky pro budoucí verze
 - V [ideas.md](docs/ideas.md) najdete některé myšlenky pro budoucí verze aplikace, které můžete sami navrhovat.
 
 ### 🐛 Známé Chyby
 - V [knowBugs.md](knowBugs.md) najdete seznam známých chyb a technických problémů, na kterých pracujeme.
+- V [docs/firestore-indexes-guide.md](docs/firestore-indexes-guide.md) najdete postup pro nastavení databázových indexů.
 
 
 ### ⚖️ Právní informace a Soukromí (AKTUALIZOVÁNO!)
@@ -99,7 +101,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 *   **Stylování:** Tailwind CSS
 *   **Backend:** Firebase (Auth, Firestore, Storage, Cloud Functions)
 *   **Mapy:** Leaflet + OpenStreetMap
-*   **Optimalizace:** Image caching (Cache-Control immutable, ImageLoader concurrency limit & circuit breaker, Prioritized loading for cars > avatars, Profile photo internalization with storage optimization & fallback strategy), Input sanitation (auto-trim), Fast Initial Auth emission (Stale-while-revalidate), Stable useEffect dependencies (Double-loading prevention), Unified Loading UX (Rotating Logo), Social Feed caching (10min limit), YouTube API optimization (using playlistItems for 100x quota saving), Advanced Code Splitting (Vite manualChunks), Reusable Event Form with runtime validation/cleaning (preventing Firestore invalid-argument errors), Visual layout stability & navigation fix (Users page), Efficient App Stats (using getCountFromServer for user/car counts), App Versioning in Footer (automated build-time display), Market Phase 2 (3-tab refactor, Standalone car ads, High-res photo support up to 25MB with client-side compression), **v0.0.32 Auth Refactor (Breaking: Native timeout, Play Services meta-data, Removal of broken web fallback on native, Explicit SHA-1 silent failure detection)**
+*   **Optimalizace:** Image caching (Cache-Control immutable, ImageLoader concurrency limit & circuit breaker, Prioritized loading for cars > avatars, Profile photo internalization with storage optimization & fallback strategy), Input sanitation (auto-trim), Fast Initial Auth emission (Stale-while-revalidate), Stable useEffect dependencies (Double-loading prevention), Unified Loading UX (Rotating Logo), Social Feed caching (10min limit), YouTube API optimization (using playlistItems for 100x quota saving), Advanced Code Splitting (Vite manualChunks), Reusable Event Form with runtime validation/cleaning (preventing Firestore invalid-argument errors), Visual layout stability & navigation fix (Users page), Efficient App Stats (using getCountFromServer for user/car counts), App Versioning in Footer (automated build-time display), Market Phase 2 (3-tab refactor, Standalone car ads, High-res photo support up to 25MB with client-side compression), **v0.0.33 Notification Logic & Scalability (Quiet Hours enforcement across all functions, onNewEvent user filtering, Service overdue cool-off mechanism with 7-day retry)**
 
 ## Jak spustit projekt
 

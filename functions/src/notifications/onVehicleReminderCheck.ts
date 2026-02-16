@@ -2,6 +2,7 @@
  * Scheduled Cloud Function to check vehicle reminders and send notifications
  * Runs daily at 9:00 AM Prague time
  * Handles all reminder types: STK, first aid kit, highway vignette, liability insurance
+ * Also handles service reminders from service records (nextServiceDate, nextServiceMileage)
  */
 import * as functions from "firebase-functions";
 import { sendPushNotification, db } from "./sendNotification";
@@ -20,6 +21,17 @@ interface Car {
     make: string;
     model: string;
     reminders?: VehicleReminder[];
+    currentMileage?: number;
+}
+
+interface ServiceRecord {
+    id: string;
+    carId: string;
+    ownerId: string;
+    title: string;
+    nextServiceMileage?: number;
+    nextServiceDate?: string;
+    lastServiceNotificationSent?: string; // ISO date — cool-off tracking
 }
 
 const REMINDER_CONFIG: Record<string, {
@@ -31,6 +43,21 @@ const REMINDER_CONFIG: Record<string, {
     highway_vignette: { label: "Dálniční známka", warningDays: [30] },
     liability_insurance: { label: "Povinné ručení", warningDays: [60] }
 };
+
+const SERVICE_WARNING_DAYS = [7, 3, 1]; // Days before service to notify
+const SERVICE_WARNING_MILEAGE = [500, 200]; // Km before service mileage to notify
+const SERVICE_OVERDUE_COOLOFF_DAYS = 7; // Days between repeated overdue notifications
+
+/**
+ * Check if we should send an overdue notification based on cool-off period.
+ * Returns true if never sent before or if enough days have passed since last notification.
+ */
+function shouldSendOverdueNotification(service: ServiceRecord, now: Date): boolean {
+    if (!service.lastServiceNotificationSent) return true;
+    const lastSent = new Date(service.lastServiceNotificationSent);
+    const daysSince = Math.ceil((now.getTime() - lastSent.getTime()) / (1000 * 60 * 60 * 24));
+    return daysSince >= SERVICE_OVERDUE_COOLOFF_DAYS;
+}
 
 /**
  * Check all vehicle reminders and send notifications for upcoming expirations
@@ -90,7 +117,8 @@ export const checkVehicleReminders = functions
                                     carId: car.id,
                                     reminderType: reminder.type
                                 },
-                                channelId: "reminders"
+                                channelId: "reminders",
+                                quietHours: userData.notificationSettings?.quietHours
                             });
 
                             if (success) {
@@ -113,15 +141,143 @@ export const checkVehicleReminders = functions
                                     carId: car.id,
                                     reminderType: reminder.type
                                 },
-                                channelId: "reminders"
+                                channelId: "reminders",
+                                quietHours: userData.notificationSettings?.quietHours
                             });
                             notificationsSent++;
+                        }
+                    }
+
+                    // === SERVICE REMINDERS ===
+                    // Check service records for this car
+                    const serviceSnapshot = await db.collection("service-records")
+                        .where("carId", "==", car.id)
+                        .get();
+
+                    for (const serviceDoc of serviceSnapshot.docs) {
+                        const service = { id: serviceDoc.id, ...serviceDoc.data() } as ServiceRecord;
+                        let isOverdue = false;
+
+                        // Check date-based service reminders
+                        if (service.nextServiceDate) {
+                            const serviceDate = new Date(service.nextServiceDate);
+                            const daysUntilService = Math.ceil((serviceDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+                            if (daysUntilService <= 0) {
+                                // OVERDUE — send one notification, then cool off
+                                isOverdue = true;
+                                if (shouldSendOverdueNotification(service, now)) {
+                                    const title = "🔧 Servis po termínu!";
+                                    const body = `${car.name}: ${service.title} — termín vypršel ${serviceDate.toLocaleDateString("cs-CZ")}`;
+
+                                    const success = await sendPushNotification({
+                                        token: userData.fcmToken,
+                                        title,
+                                        body,
+                                        data: {
+                                            type: "service_reminder",
+                                            carId: car.id,
+                                            serviceId: service.id
+                                        },
+                                        channelId: "reminders",
+                                        quietHours: userData.notificationSettings?.quietHours
+                                    });
+
+                                    if (success) {
+                                        notificationsSent++;
+                                        await serviceDoc.ref.update({ lastServiceNotificationSent: now.toISOString() });
+                                        console.log(`Sent overdue service reminder for ${car.name}: ${service.title} (${Math.abs(daysUntilService)} days overdue)`);
+                                    }
+                                }
+                            } else if (SERVICE_WARNING_DAYS.includes(daysUntilService)) {
+                                const title = `🔧 Servis za ${daysUntilService} ${daysUntilService === 1 ? 'den' : daysUntilService < 5 ? 'dny' : 'dní'}`;
+                                const body = `${car.name}: ${service.title} - ${serviceDate.toLocaleDateString("cs-CZ")}`;
+
+                                const success = await sendPushNotification({
+                                    token: userData.fcmToken,
+                                    title,
+                                    body,
+                                    data: {
+                                        type: "service_reminder",
+                                        carId: car.id,
+                                        serviceId: service.id
+                                    },
+                                    channelId: "reminders",
+                                    quietHours: userData.notificationSettings?.quietHours
+                                });
+
+                                if (success) {
+                                    notificationsSent++;
+                                    console.log(`Sent service reminder for ${car.name}: ${service.title} (${daysUntilService} days)`);
+                                }
+                            }
+                        }
+
+                        // Check mileage-based service reminders (skip if already handled as date-overdue)
+                        if (!isOverdue && service.nextServiceMileage && car.currentMileage) {
+                            const kmUntilService = service.nextServiceMileage - car.currentMileage;
+
+                            if (kmUntilService <= 0) {
+                                // OVERDUE by mileage — cool off logic
+                                if (shouldSendOverdueNotification(service, now)) {
+                                    const title = "🔧 Servis po termínu!";
+                                    const body = `${car.name}: ${service.title} — nájezd překročen o ${Math.abs(kmUntilService)} km`;
+
+                                    const success = await sendPushNotification({
+                                        token: userData.fcmToken,
+                                        title,
+                                        body,
+                                        data: {
+                                            type: "service_reminder",
+                                            carId: car.id,
+                                            serviceId: service.id
+                                        },
+                                        channelId: "reminders",
+                                        quietHours: userData.notificationSettings?.quietHours
+                                    });
+
+                                    if (success) {
+                                        notificationsSent++;
+                                        await serviceDoc.ref.update({ lastServiceNotificationSent: now.toISOString() });
+                                        console.log(`Sent overdue mileage reminder for ${car.name}: ${service.title} (${Math.abs(kmUntilService)} km over)`);
+                                    }
+                                }
+                            } else {
+                                // Normal mileage threshold warnings
+                                for (let i = 0; i < SERVICE_WARNING_MILEAGE.length; i++) {
+                                    const warningKm = SERVICE_WARNING_MILEAGE[i];
+                                    const nextThreshold = SERVICE_WARNING_MILEAGE[i + 1] ?? 0;
+                                    if (kmUntilService <= warningKm && kmUntilService > nextThreshold) {
+                                        const title = `🔧 Servis za ${kmUntilService} km`;
+                                        const body = `${car.name}: ${service.title} - při ${service.nextServiceMileage.toLocaleString()} km`;
+
+                                        const success = await sendPushNotification({
+                                            token: userData.fcmToken,
+                                            title,
+                                            body,
+                                            data: {
+                                                type: "service_reminder",
+                                                carId: car.id,
+                                                serviceId: service.id
+                                            },
+                                            channelId: "reminders",
+                                            quietHours: userData.notificationSettings?.quietHours
+                                        });
+
+                                        if (success) {
+                                            notificationsSent++;
+                                            console.log(`Sent service reminder for ${car.name}: ${service.title} (${kmUntilService} km)`);
+                                        }
+                                        break; // Only send one mileage notification
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
 
-            console.log(`Vehicle reminder check complete. Sent ${notificationsSent} notifications.`);
+            console.log(`Vehicle & service reminder check complete. Sent ${notificationsSent} notifications.`);
             return null;
         } catch (error) {
             console.error("Error checking vehicle reminders:", error);

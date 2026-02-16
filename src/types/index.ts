@@ -242,6 +242,9 @@ export interface ServiceRecord {
   // Next service
   nextServiceMileage?: number;
   nextServiceDate?: string;
+
+  // Notification tracking
+  lastServiceNotificationSent?: string; // ISO date — cool-off for overdue notifications
 }
 
 export interface FuelRecord {
@@ -350,14 +353,18 @@ export interface NotificationSettings {
     enabled: boolean;
     types: EventType[]; // Which event types to notify about
   };
-  sosAlerts: boolean;          // SOS from others
+  sosAlerts: boolean;          // SOS from others + beacon status changes
   friendRequests: boolean;     // Added as friend
   eventComments: boolean;      // Comments on events I'm attending
   eventChanges: boolean;       // Changes to events I'm attending
   appUpdates: boolean;         // General info, new versions
-  vehicleReminders: boolean;   // Digitální kaslík (STK, lékárnička, pojištění...)
+  vehicleReminders: boolean;   // Digitální kaslík (STK, lékárnička, pojištění...) + servisní upomínky
   chatMessages: boolean;       // New chat messages
   marketplaceNotifications: boolean; // New marketplace listings
+
+  // New notification categories
+  badgeNotifications: boolean;     // New badge earned
+  eventParticipation: boolean;     // Someone joins/leaves my event (for organizers)
 
   // Digest mode (group notifications)
   digestMode: boolean;
@@ -375,5 +382,7 @@ export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
   vehicleReminders: true,
   chatMessages: true,
   marketplaceNotifications: true,
+  badgeNotifications: true,
+  eventParticipation: true,
   digestMode: false
 };

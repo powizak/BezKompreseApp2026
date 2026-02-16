@@ -76,6 +76,7 @@ export const onNewChatMessage = functions.firestore
                 senderId: senderId,
             },
             channelId: "messages",
+            quietHours: recipientData.settings?.quietHours,
         });
 
         console.log(`Chat notification sent to ${recipientId} from ${senderId}`);
