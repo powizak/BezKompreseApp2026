@@ -78,6 +78,8 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Tiché hodiny**: Nastavitelný čas, kdy notifikace nepřijdou (globální vynucení pro všechny typy kromě SOS)
 - **Nativní nastavení**: Přímý odkaz do systémového nastavení notifikací (v Android aplikaci)
 - **🚀 Optimalizace**: Serverové filtrování příjemců (onNewEvent) pro úsporu Firestore čtení při velkém počtu uživatelů
+- **🆕 iOS Launch Readiness**: Kompletní příprava pro iOS (Bundle ID, Firebase Auth, Push notifikace přes APNs, Geolocation permissions)
+
 
 ### 💡 Myšlenky pro budoucí verze
 - V [ideas.md](docs/ideas.md) najdete některé myšlenky pro budoucí verze aplikace, které můžete sami navrhovat.
@@ -101,7 +103,8 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 *   **Stylování:** Tailwind CSS
 *   **Backend:** Firebase (Auth, Firestore, Storage, Cloud Functions)
 *   **Mapy:** Leaflet + OpenStreetMap
-*   **Optimalizace:** Image caching (Cache-Control immutable, ImageLoader concurrency limit & circuit breaker, Prioritized loading for cars > avatars, Profile photo internalization with storage optimization & fallback strategy), Input sanitation (auto-trim), Fast Initial Auth emission (Stale-while-revalidate), Stable useEffect dependencies (Double-loading prevention), Unified Loading UX (Rotating Logo), Social Feed caching (10min limit), YouTube API optimization (using playlistItems for 100x quota saving), Advanced Code Splitting (Vite manualChunks), Reusable Event Form with runtime validation/cleaning (preventing Firestore invalid-argument errors), Visual layout stability & navigation fix (Users page), Efficient App Stats (using getCountFromServer for user/car counts), App Versioning in Footer (automated build-time display), Market Phase 2 (3-tab refactor, Standalone car ads, High-res photo support up to 25MB with client-side compression), **v0.0.33 Notification Logic & Scalability (Quiet Hours enforcement across all functions, onNewEvent user filtering, Service overdue cool-off mechanism with 7-day retry)**
+*   **Optimalizace:** Image caching (Cache-Control immutable, ImageLoader concurrency limit & circuit breaker, Prioritized loading for cars > avatars, Profile photo internalization with storage optimization & fallback strategy), Input sanitation (auto-trim), Fast Initial Auth emission (Stale-while-revalidate), Stable useEffect dependencies (Double-loading prevention), Unified Loading UX (Rotating Logo), Social Feed caching (10min limit), YouTube API optimization (using playlistItems for 100x quota saving), Advanced Code Splitting (Vite manualChunks), Reusable Event Form with runtime validation/cleaning (preventing Firestore invalid-argument errors), Visual layout stability & navigation fix (Users page), Efficient App Stats (using getCountFromServer for user/car counts), App Versioning in Footer (automated build-time display), Market Phase 2 (3-tab refactor, Standalone car ads, High-res photo support up to 25MB with client-side compression), v0.0.33 Notification Logic & Scalability (Quiet Hours enforcement across all functions, onNewEvent user filtering, Service overdue cool-off mechanism with 7-day retry), **v0.0.34 iOS Launch Readiness (Unified Bundle ID cz.bezkomprese.app, Firebase/APNs integration in AppDelegate, Geolocation privacy descriptions, NativeSettings for iOS, Platform guards for StatusBar)**
+
 
 ## Jak spustit projekt
 

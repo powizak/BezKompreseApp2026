@@ -9,7 +9,10 @@ import { StatusBar, Style } from '@capacitor/status-bar';
 // Initialize Capacitor plugins
 if (Capacitor.isNativePlatform()) {
   StatusBar.setStyle({ style: Style.Dark });
-  StatusBar.setBackgroundColor({ color: '#111111' }); // Match header background
+  // setBackgroundColor is Android-only — iOS uses UIViewControllerBasedStatusBarAppearance
+  if (Capacitor.getPlatform() === 'android') {
+    StatusBar.setBackgroundColor({ color: '#111111' });
+  }
 }
 
 // Register Service Worker for image caching (web only)
