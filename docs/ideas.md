@@ -119,4 +119,4 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - Detekce "Silent Failure" (prázdný error) s nápovědou pro kontrolu SHA-1.
 - Vylepšené zobrazení chyb v UI.
 - **✅ Notification Logic Refine (v0.0.33)**: Globální vynucení tichých hodin, škálování `onNewEvent` a inteligentní hlídání servisu po termínu (overdue) s cool-off periodou.
-- **✅ iOS Launch Readiness (v0.0.34)**: Sjednocení Bundle ID, integrace Firebase & APNs v nativním AppDelegate, přidání oprávnění pro polohu a push notifikace, oprava pádů StatusBaru na iOS.
+- **✅ iOS & Mac Compatibility (v0.0.34)**: Sjednocení Bundle ID, integrace Firebase & APNs v nativním AppDelegate, přidání oprávnění pro polohu a push notifikace, oprava pádů StatusBaru na iOS, oprava visícího Google přihlášení na iOS (initializeAuth fix), optimalizace balíčků pro Mac/Windows.

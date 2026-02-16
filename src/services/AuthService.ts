@@ -123,25 +123,29 @@ export const AuthServiceLive = Layer.succeed(
 
             const result = await Promise.race([resultPromise, timeoutPromise]) as any;
 
-            console.log("DEBUG: Native Login Result:", JSON.stringify(result));
+            console.log("DEBUG: Native Login Result keys:", Object.keys(result || {}));
+            console.log("DEBUG: result.user:", result?.user ? "present" : "null");
+            console.log("DEBUG: result.credential:", result?.credential ? "present" : "null");
 
-            if (!result.user) throw new Error("No user returned from native login");
+            // With skipNativeAuth: true, result.user will be null
+            // We need to get idToken from result.credential and bridge manually
+            const idToken = result?.credential?.idToken;
 
-            // CRITICAL FIX: Bridge native auth to JS SDK
-            const idToken = result.credential?.idToken || result.user.idToken;
-            if (idToken) {
-              console.log("DEBUG: idToken received, attempting bridge sign-in...");
-              const credential = GoogleAuthProvider.credential(idToken);
-              try {
-                const cred = await signInWithCredential(auth, credential);
-                user = cred.user;
-              } catch (bridgeError) {
-                console.error("DEBUG: Bridge sign-in FAILED:", bridgeError);
-                throw bridgeError;
-              }
-            } else {
-              console.error("CRITICAL: No idToken received. Available fields:", Object.keys(result.user));
-              user = result.user;
+            if (!idToken) {
+              // No idToken means Google Sign-In was cancelled or failed
+              console.error("CRITICAL: No idToken in credential. Full result:", JSON.stringify(result));
+              throw new Error("Přihlášení selhalo - nebyl získán přihlašovací token.");
+            }
+
+            console.log("DEBUG: idToken received, attempting bridge sign-in...");
+            const credential = GoogleAuthProvider.credential(idToken);
+            try {
+              const cred = await signInWithCredential(auth, credential);
+              user = cred.user;
+              console.log("DEBUG: Bridge sign-in SUCCESS, uid:", user.uid);
+            } catch (bridgeError: any) {
+              console.error("DEBUG: Bridge sign-in FAILED:", bridgeError?.message, bridgeError?.code);
+              throw bridgeError;
             }
           } catch (nativeError: any) {
             const errorDetails = {
@@ -197,7 +201,13 @@ export const AuthServiceLive = Layer.succeed(
 
         return profile as UserProfile;
       },
-      catch: (error) => new AuthError("Failed to login", error)
+      catch: (error) => {
+        console.error("[AuthService] Login failed. Raw error:", error);
+        try {
+          console.error("[AuthService] Error JSON:", JSON.stringify(error, Object.getOwnPropertyNames(error as any)));
+        } catch (_) { /* ignore serialization errors */ }
+        return new AuthError("Failed to login", error);
+      }
     }),
     logout: Effect.tryPromise({
       try: () => signOut(auth),

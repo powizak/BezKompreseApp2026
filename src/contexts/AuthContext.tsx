@@ -28,19 +28,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+
     // Subscribe to user changes
     const stream = authService.currentUser;
 
     const runStream = async () => {
+      console.log("[AuthContext] Subscribing to auth state...");
       await Effect.runPromise(
         Stream.runForEach(stream, (u) => Effect.sync(() => {
+          console.log("[AuthContext] Auth state changed:", u ? "User logged in" : "No user");
           setUser(u);
           setLoading(false);
+          // Clear timeout if auth resolves quickly
+          if (timeoutId) clearTimeout(timeoutId);
         }))
       );
     };
 
     runStream();
+
+    // Fallback timeout: If Firebase doesn't respond in 3s, stop loading
+    // This often happens on first launch or if config is bad
+    timeoutId = setTimeout(() => {
+      if (loading) { // Check if still loading
+        console.warn("[AuthContext] Auth Check Timed Out - Forcing app load");
+        setLoading(false);
+      }
+    }, 3000);
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   const login = async (mode: 'native' | 'web' = 'native') => {

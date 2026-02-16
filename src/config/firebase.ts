@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, initializeAuth, indexedDBLocalPersistence, GoogleAuthProvider } from "firebase/auth";
+import { Capacitor } from "@capacitor/core";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
@@ -13,7 +14,21 @@ const firebaseConfig = {
 };
 
 export const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+
+// On native platforms (iOS/Android), getAuth() sets up browser popup/redirect
+// resolvers that don't work in Capacitor WebView, causing signInWithCredential
+// to hang indefinitely. Using initializeAuth with explicit persistence fixes this.
+function getFirebaseAuth() {
+  if (Capacitor.isNativePlatform()) {
+    return initializeAuth(app, {
+      persistence: indexedDBLocalPersistence
+    });
+  } else {
+    return getAuth(app);
+  }
+}
+
+export const auth = getFirebaseAuth();
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const googleProvider = new GoogleAuthProvider();
