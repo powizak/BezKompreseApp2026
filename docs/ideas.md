@@ -111,6 +111,10 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - Vylepšit cachování map pro "Tracker" v místech bez signálu (časté na okreskách).
 - Synchronizace servisní knížky (offline-first), aby šlo zapisovat i v garáži bez Wi-Fi.  
 
+### 🗂️ Car Filter Index (10k+ aut)
+- Při překročení ~5000 aut vytvořit Cloud Function, která bude udržovat jeden `car-filter-index` dokument ve Firestore s relační mapou `{ make → { model → engines[] } }`.
+- Tím se redukuje počáteční načtení filtrů na 1 read místo N reads (všech aut).
+
 ### ✅ Auth Refactor (v0.0.32) - IMPLEMENTOVÁNO
 - **BREAKING**: Reimplementace Google Sign-In pro Android 14.
 - Odstranění nespolehlivého webového fallbacku na nativních platformách.
@@ -121,3 +125,4 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - **✅ Auth Refactor (v0.0.35) - IMPLEMENTOVÁNO**: Upgrade `androidxCredentials` na stabilní verzi `1.5.0` a implementace automatického fallbacku na legacy `GoogleSignInClient` pro zařízení se špatnou podporou Credential Manageru.
 - **✅ Notification Logic Refine (v0.0.33)**: Globální vynucení tichých hodin, škálování `onNewEvent` a inteligentní hlídání servisu po termínu (overdue) s cool-off periodou.
 - **✅ iOS & Mac Compatibility (v0.0.34)**: Sjednocení Bundle ID, integrace Firebase & APNs v nativním AppDelegate, přidání oprávnění pro polohu a push notifikace, oprava pádů StatusBaru na iOS, oprava visícího Google přihlášení na iOS (initializeAuth fix), optimalizace balíčků pro Mac/Windows.
+- **✅ Cascading Car Filters (v0.0.36) - IMPLEMENTOVÁNO**: Kaskádové filtrování (Značka → Model → Motorizace) v sekci `/cars` s využitím relační mapy na klientovi pro minimalizaci Firestore requestů.

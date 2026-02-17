@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import type { Car } from '../types';
@@ -26,11 +26,8 @@ export default function CarsPage() {
         engine: ''
     });
 
-    const [filterOptions, setFilterOptions] = useState<{ makes: string[], models: string[], engines: string[] }>({
-        makes: [],
-        models: [],
-        engines: []
-    });
+    // Relational filter map: { make: { model: [engines] } }
+    const [filterMap, setFilterMap] = useState<Record<string, Record<string, string[]>>>({});
 
     const dataService = Effect.runSync(
         Effect.gen(function* (_) {
@@ -38,16 +35,67 @@ export default function CarsPage() {
         }).pipe(Effect.provide(DataServiceLive))
     );
 
-    // Initial load of filter options
+    // Initial load of filter map
     useEffect(() => {
         if (!user) return;
 
         const loadOptions = async () => {
             const options = await Effect.runPromise(dataService.getFilterOptions());
-            setFilterOptions(options);
+            setFilterMap(options.filterMap);
         };
         loadOptions();
     }, [user]);
+
+    // Derive cascading filter options from the map
+    const availableMakes = useMemo(() =>
+        Object.keys(filterMap).sort(),
+        [filterMap]);
+
+    const availableModels = useMemo(() => {
+        if (filters.make) {
+            return Object.keys(filterMap[filters.make] || {}).sort();
+        }
+        // No make selected → all models across all makes
+        const allModels = new Set<string>();
+        for (const makeModels of Object.values(filterMap)) {
+            for (const model of Object.keys(makeModels)) {
+                allModels.add(model);
+            }
+        }
+        return Array.from(allModels).sort();
+    }, [filterMap, filters.make]);
+
+    const availableEngines = useMemo(() => {
+        const engines = new Set<string>();
+
+        if (filters.make && filters.model) {
+            // Both make and model selected → engines for that combo
+            const modelEngines = filterMap[filters.make]?.[filters.model] || [];
+            modelEngines.forEach(e => engines.add(e));
+        } else if (filters.make) {
+            // Only make selected → all engines across make's models
+            const makeModels = filterMap[filters.make] || {};
+            for (const modelEngines of Object.values(makeModels)) {
+                modelEngines.forEach(e => engines.add(e));
+            }
+        } else if (filters.model) {
+            // Only model selected → engines across all makes for this model
+            for (const makeModels of Object.values(filterMap)) {
+                if (makeModels[filters.model]) {
+                    makeModels[filters.model].forEach(e => engines.add(e));
+                }
+            }
+        } else {
+            // Nothing selected → all engines
+            for (const makeModels of Object.values(filterMap)) {
+                for (const modelEngines of Object.values(makeModels)) {
+                    modelEngines.forEach(e => engines.add(e));
+                }
+            }
+        }
+
+        return Array.from(engines).sort();
+    }, [filterMap, filters.make, filters.model]);
 
     // Load cars when filters change or on initial load
     useEffect(() => {
@@ -132,43 +180,24 @@ export default function CarsPage() {
                     <select
                         className="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-brand focus:border-brand block w-full p-2.5 outline-none font-medium"
                         value={filters.make}
-                        onChange={e => setFilters(prev => ({ ...prev, make: e.target.value, model: '' }))} // Reset model when make changes
+                        onChange={e => setFilters({ make: e.target.value, model: '', engine: '' })}
                     >
                         <option value="">Všechny značky</option>
-                        {filterOptions.makes.map(make => (
+                        {availableMakes.map(make => (
                             <option key={make} value={make}>{make}</option>
                         ))}
                     </select>
 
                     <select
-                        className="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-brand focus:border-brand block w-full p-2.5 outline-none font-medium"
+                        className="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-brand focus:border-brand block w-full p-2.5 outline-none font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                         value={filters.model}
-                        onChange={e => setFilters(prev => ({ ...prev, model: e.target.value }))}
+                        onChange={e => setFilters(prev => ({ ...prev, model: e.target.value, engine: '' }))}
                         disabled={!filters.make}
                     >
                         <option value="">Všechny modely</option>
-                        {filterOptions.models
-                            // Optimistically filter models client-side if we have a make selected, 
-                            // though strict server filtering will happen on fetch.
-                            // Since we fetch "all" options upfront, this simple filter helps UX.
-                            // However, we need to match the logic of "what models belong to this make".
-                            // The getFilterOptions returns ALL models. 
-                            // To properly filter models by make in the dropdown WITHOUT fetching again,
-                            // we would need a map of make->models. 
-                            // Current implementation of getFilterOptions just returns flat lists.
-                            // So here we show ALL models unless we improve getFilterOptions.
-                            // BUT, for now, let's keep it simple: show all, or if the user wants true dependent dropdowns,
-                            // we'd need to fetch filter options differently.
-                            // Given the prompt "make it possible to load all cars gradually", 
-                            // let's stick to the requested behavior. 
-                            // To improve UX, we can filter the models list based on the loaded cars IF we had them all,
-                            // but we don't. 
-                            // SO: We will show ALL models in the list (or we could improve getFilterOptions to return a tree).
-                            // For this iteration, let's show all models, but maybe filtered by what we know? 
-                            // No, showing all is safer than showing none.
-                            .map(model => (
-                                <option key={model} value={model}>{model}</option>
-                            ))}
+                        {availableModels.map(model => (
+                            <option key={model} value={model}>{model}</option>
+                        ))}
                     </select>
 
                     <select
@@ -177,7 +206,7 @@ export default function CarsPage() {
                         onChange={e => setFilters(prev => ({ ...prev, engine: e.target.value }))}
                     >
                         <option value="">Všechny motorizace</option>
-                        {filterOptions.engines.map(engine => (
+                        {availableEngines.map(engine => (
                             <option key={engine} value={engine}>{engine}</option>
                         ))}
                     </select>

@@ -47,7 +47,7 @@ export interface DataService {
         lastVisible?: any,
         filters?: { make?: string; model?: string; engine?: string }
     ) => Effect.Effect<{ cars: Car[], lastVisible: any }, DataError>;
-    readonly getFilterOptions: () => Effect.Effect<{ makes: string[], models: string[], engines: string[] }, DataError>;
+    readonly getFilterOptions: () => Effect.Effect<{ filterMap: Record<string, Record<string, string[]>> }, DataError>;
     readonly getCarById: (carId: string) => Effect.Effect<Car | undefined, DataError>;
 
     // Profile & Tracker Settings
@@ -159,21 +159,40 @@ export const DataServiceLive = Layer.succeed(
         }),
         getFilterOptions: () => Effect.tryPromise({
             try: async () => {
-                // Fetch a large batch to populate filters
+                // Fetch all cars to build relational filter map (make → model → engines[])
                 const q = query(
                     collection(db, "cars"),
                     orderBy("year", "desc"),
-                    limit(1000)
+                    limit(5000)
                 );
                 const snapshot = await getDocs(q);
-                const cars = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Car));
 
-                // Extract unique values
-                const makes = Array.from(new Set(cars.map(c => c.make).filter(Boolean))).sort();
-                const models = Array.from(new Set(cars.map(c => c.model).filter(Boolean))).sort();
-                const engines = Array.from(new Set(cars.map(c => c.engine).filter(Boolean))).sort();
+                // Build relational map: { make: { model: [engine1, engine2, ...] } }
+                const filterMap: Record<string, Record<string, string[]>> = {};
+                for (const doc of snapshot.docs) {
+                    const data = doc.data();
+                    const make = data.make as string;
+                    const model = data.model as string;
+                    const engine = data.engine as string;
+                    if (!make) continue;
 
-                return { makes, models, engines };
+                    if (!filterMap[make]) filterMap[make] = {};
+                    if (model) {
+                        if (!filterMap[make][model]) filterMap[make][model] = [];
+                        if (engine && !filterMap[make][model].includes(engine)) {
+                            filterMap[make][model].push(engine);
+                        }
+                    }
+                }
+
+                // Sort engines within each model
+                for (const make of Object.keys(filterMap)) {
+                    for (const model of Object.keys(filterMap[make])) {
+                        filterMap[make][model].sort();
+                    }
+                }
+
+                return { filterMap };
             },
             catch: (e) => new DataError("Failed to fetch filter options", e)
         }),
