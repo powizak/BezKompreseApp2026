@@ -126,3 +126,4 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - **✅ Notification Logic Refine (v0.0.33)**: Globální vynucení tichých hodin, škálování `onNewEvent` a inteligentní hlídání servisu po termínu (overdue) s cool-off periodou.
 - **✅ iOS & Mac Compatibility (v0.0.34)**: Sjednocení Bundle ID, integrace Firebase & APNs v nativním AppDelegate, přidání oprávnění pro polohu a push notifikace, oprava pádů StatusBaru na iOS, oprava visícího Google přihlášení na iOS (initializeAuth fix), optimalizace balíčků pro Mac/Windows.
 - **✅ Cascading Car Filters (v0.0.36) - IMPLEMENTOVÁNO**: Kaskádové filtrování (Značka → Model → Motorizace) v sekci `/cars` s využitím relační mapy na klientovi pro minimalizaci Firestore requestů.
+- **✅ Mobile Landscape Menu Fix (v0.0.37) - IMPLEMENTOVÁNO**: Povolení scrollování v postranním menu pro mobilní zařízení v režimu na šířku (landscape) pomocí `overflow-y-auto` a přidání vlastního tenkého scrollbaru.

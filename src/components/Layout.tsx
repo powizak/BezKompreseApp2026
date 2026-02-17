@@ -37,7 +37,7 @@ export default function Layout() {
           <img src="/logo.svg" alt="Bez Komprese" className="h-8" />
         </div>
 
-        <nav className="flex-1 px-4 space-y-2 mt-4">
+        <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto custom-scrollbar">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.path;
