@@ -1,5 +1,8 @@
 # Myšlenky pro budoucí funkce
 
+## Pokročilé filtrování v bazaru
+- vymyslet a přidat nějaké pokročilé filtrování v bazaru? dle čeho? až v případě, že bude velký zájem o bazar
+
 ## 1. Správa Vozidla a Utility (Drivvo/Fuelio style)
 #### ⛽ Rozšířené sledování Spotřeby (Fuel Tracking)
 Současný stav: Servisní knížka řeší opravy, seznam tankování pak spotřebu
@@ -15,7 +18,6 @@ Současný stav: Servisní knížka řeší opravy, seznam tankování pak spot�
 #### 🚀 Budoucí vylepšení:
 - Kalkulačka dojezdu: Odhad, kolik km ujede s plnou nádrží
 - Export dat do CSV/Excel
-- Srovnání s průměrnou spotřebou modelu (API?)
 - Mapa tankování: Vizualizace kde uživatel tankuje (frequence/levnost)
 - Podpora více typů paliva (LPG, CNG, elektrická, hybrid)
 
@@ -76,7 +78,7 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 
 ### 🚀 Vylepšení UX
 - Přidat značku, zda již někdo přečetl zprávu či nikoliv (pro toho, kdo si ji má přečíst - v seznamu zpráv)
-- Dodělat swipe na všech stránkách pro vrácení se zpět pro Android (některé Android to tak mohou mít nastavené)
+- Dodělat swipe na všech stránkách pro vrácení se zpět pro Android (některé Android to tak mohou mít nastavené - stejné jako v knownbugs)
 - ✅ **Přidat do footeru vedle "Not affilitated officially." verzi aplikace** - IMPLEMENTOVÁNO v0.0.31
 - ✅ **Přidat do "info" - celkový počet uživatelů / aut v aplikaci** - IMPLEMENTOVÁNO v0.0.31 
 

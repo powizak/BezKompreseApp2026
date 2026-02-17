@@ -6,6 +6,12 @@
 - některé stránky mají odlišné nadpisy - chceme sjednotit do stylu tracker či chats
 ![náhled nadpisu stránky /chats](image.png)
 
+## Navigace v mobilních zařízeních
+- na Android (možná i iOS) není funkční navigace pomocí navigačních tlačítek/gest
+
+## Nahrávání fotek nezobrazuje náhled
+- v případě přidávání fotek v bazaru (možná i v autech) se nezobrazuje náhled fotky po výběru fotky od uživatele
+
 
 ## 🔴 Firebase Storage Rules Missing
 
