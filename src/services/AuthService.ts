@@ -114,53 +114,54 @@ export const AuthServiceLive = Layer.succeed(
 
         // Use Native Plugin unless explicitly requested otherwise
         if (Capacitor.isNativePlatform() && mode !== 'web') {
-          try {
-            // Add timeout to prevent infinite hanging
-            const resultPromise = FirebaseAuthentication.signInWithGoogle();
-            const timeoutPromise = new Promise((_, reject) =>
-              setTimeout(() => reject(new Error("Přihlášení trvalo příliš dlouho. Zkontrolujte připojení k internetu.")), 15000)
+          // Strategy: Try Credential Manager first, then fallback to legacy GoogleSignInClient
+          const attemptNativeSignIn = async (useCredentialManager: boolean): Promise<any> => {
+            const withTimeout = (promise: Promise<any>, ms: number) =>
+              Promise.race([
+                promise,
+                new Promise((_, reject) =>
+                  setTimeout(() => reject(new Error("Přihlášení trvalo příliš dlouho. Zkontrolujte připojení k internetu.")), ms)
+                )
+              ]);
+
+            const result = await withTimeout(
+              FirebaseAuthentication.signInWithGoogle(useCredentialManager ? undefined : { useCredentialManager: false }),
+              15000
             );
 
-            const result = await Promise.race([resultPromise, timeoutPromise]) as any;
-
-            console.log("DEBUG: Native Login Result keys:", Object.keys(result || {}));
-            console.log("DEBUG: result.user:", result?.user ? "present" : "null");
-            console.log("DEBUG: result.credential:", result?.credential ? "present" : "null");
-
-            // With skipNativeAuth: true, result.user will be null
-            // We need to get idToken from result.credential and bridge manually
             const idToken = result?.credential?.idToken;
-
             if (!idToken) {
-              // No idToken means Google Sign-In was cancelled or failed
-              console.error("CRITICAL: No idToken in credential. Full result:", JSON.stringify(result));
               throw new Error("Přihlášení selhalo - nebyl získán přihlašovací token.");
             }
 
-            console.log("DEBUG: idToken received, attempting bridge sign-in...");
             const credential = GoogleAuthProvider.credential(idToken);
+            const cred = await signInWithCredential(auth, credential);
+            return cred.user;
+          };
+
+          try {
+            // 1. Try Credential Manager (modern, default)
+            console.log("[Auth] Trying Credential Manager sign-in...");
+            user = await attemptNativeSignIn(true);
+            console.log("[Auth] Credential Manager sign-in SUCCESS, uid:", user.uid);
+          } catch (credentialManagerError: any) {
+            console.warn("[Auth] Credential Manager failed:", credentialManagerError?.message || credentialManagerError);
+
             try {
-              const cred = await signInWithCredential(auth, credential);
-              user = cred.user;
-              console.log("DEBUG: Bridge sign-in SUCCESS, uid:", user.uid);
-            } catch (bridgeError: any) {
-              console.error("DEBUG: Bridge sign-in FAILED:", bridgeError?.message, bridgeError?.code);
-              throw bridgeError;
+              // 2. Fallback to legacy GoogleSignInClient (universal compatibility)
+              console.log("[Auth] Retrying with legacy GoogleSignIn...");
+              user = await attemptNativeSignIn(false);
+              console.log("[Auth] Legacy GoogleSignIn SUCCESS, uid:", user.uid);
+            } catch (legacyError: any) {
+              console.error("[Auth] Legacy GoogleSignIn also failed:", legacyError?.message || legacyError);
+
+              // Build actionable error message
+              const isEmpty = JSON.stringify(legacyError) === "{}" || !legacyError?.message;
+              if (isEmpty) {
+                throw new Error("Přihlášení selhalo. Zkontrolujte, že máte aktuální Google Play Services a zkuste to znovu.");
+              }
+              throw new Error(`Přihlášení selhalo: ${legacyError?.message || "Neznámá chyba"}`);
             }
-          } catch (nativeError: any) {
-            const errorDetails = {
-              message: nativeError?.message || "Unknown Native Error",
-              code: nativeError?.code,
-              raw: JSON.stringify(nativeError, Object.getOwnPropertyNames(nativeError))
-            };
-
-            console.warn("Native Google Sign-In failed:", errorDetails);
-
-            if (errorDetails.message === "Unknown Native Error" || JSON.stringify(nativeError) === "{}") {
-              throw new Error(`Native Auth Failed (Silent). CHECK SHA-1 FINGERPRINT in Firebase Console! Original: ${errorDetails.message}`);
-            }
-
-            throw new Error(`Native Auth Failed: ${errorDetails.message} (Code: ${errorDetails.code})`);
           }
         } else {
           // Web platform OR explicit 'web' mode requested

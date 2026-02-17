@@ -118,5 +118,6 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - Přidání Play Services metadata do Manifestu.
 - Detekce "Silent Failure" (prázdný error) s nápovědou pro kontrolu SHA-1.
 - Vylepšené zobrazení chyb v UI.
+- **✅ Auth Refactor (v0.0.35) - IMPLEMENTOVÁNO**: Upgrade `androidxCredentials` na stabilní verzi `1.5.0` a implementace automatického fallbacku na legacy `GoogleSignInClient` pro zařízení se špatnou podporou Credential Manageru.
 - **✅ Notification Logic Refine (v0.0.33)**: Globální vynucení tichých hodin, škálování `onNewEvent` a inteligentní hlídání servisu po termínu (overdue) s cool-off periodou.
 - **✅ iOS & Mac Compatibility (v0.0.34)**: Sjednocení Bundle ID, integrace Firebase & APNs v nativním AppDelegate, přidání oprávnění pro polohu a push notifikace, oprava pádů StatusBaru na iOS, oprava visícího Google přihlášení na iOS (initializeAuth fix), optimalizace balíčků pro Mac/Windows.
