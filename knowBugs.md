@@ -6,4 +6,18 @@
 - některé stránky mají odlišné nadpisy - chceme sjednotit do stylu tracker či chats
 ![náhled nadpisu stránky /chats](image.png)
 
-- nejsou dodělané typy notifikací pro Market v novém rozsahu
+
+## 🔴 Firebase Storage Rules Missing
+
+**Status**: Open  
+**Severity**: Critical  
+**Date**: 2026-02-17
+
+Firebase Storage nemá v repu soubor `storage.rules` a `firebase.json` neobsahuje sekci `"storage"`. To znamená, že pravidla pro Storage se nespravují přes deploy a jsou nastavena přímo v Firebase Console.
+
+**Dopad**: Internalizované profilové fotky (`users/{uid}/profile.webp`) musí mít pravidla nastavená ručně v Console. Pokud nejsou, ostatní uživatelé nevidí profilové fotky.
+
+**Řešení**: Vytvořit `storage.rules` s pravidly:
+- Read: všichni authenticated uživatelé
+- Write: pouze vlastník (`users/{userId}/*`)
+- Přidat `"storage": { "rules": "storage.rules" }` do `firebase.json`
