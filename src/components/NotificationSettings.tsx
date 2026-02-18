@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Effect } from 'effect';
-import { Bell, BellOff, AlertTriangle, Calendar, Users, MessageCircle, RefreshCw, Info, Moon, Layers, ExternalLink, Check, Car, Store, Award, UserPlus } from 'lucide-react';
+import { Bell, BellOff, AlertTriangle, Calendar, Users, MessageCircle, RefreshCw, Info, Moon, Layers, ExternalLink, Check, Car, Store, Award, UserPlus, Save } from 'lucide-react';
 import { NotificationService, NotificationServiceLive, type NotificationPermissionStatus } from '../services/NotificationService';
 import type { NotificationSettings, EventType } from '../types';
 import { EVENT_TYPE_LABELS } from '../types';
@@ -9,9 +9,11 @@ interface NotificationSettingsProps {
     settings: NotificationSettings;
     onChange: (settings: NotificationSettings) => void;
     userId: string;
+    onSave?: () => void;
+    saving?: boolean;
 }
 
-export default function NotificationSettingsSection({ settings, onChange, userId }: NotificationSettingsProps) {
+export default function NotificationSettingsSection({ settings, onChange, userId, onSave, saving }: NotificationSettingsProps) {
     const [permissionStatus, setPermissionStatus] = useState<NotificationPermissionStatus>('prompt');
     const [isRegistering, setIsRegistering] = useState(false);
     const [registrationSuccess, setRegistrationSuccess] = useState(false);
@@ -359,6 +361,18 @@ export default function NotificationSettingsSection({ settings, onChange, userId
                     <ExternalLink size={16} />
                     Otevřít nastavení systému
                 </button>
+            )}
+
+            {onSave && (
+                <div className="pt-6 border-t border-slate-100 flex justify-end">
+                    <button
+                        onClick={onSave}
+                        disabled={saving}
+                        className="bg-brand text-brand-contrast px-8 py-3 rounded-2xl font-black uppercase italic tracking-tighter shadow-lg shadow-brand/20 hover:bg-brand-dark transition-all flex items-center gap-2 disabled:opacity-50"
+                    >
+                        {saving ? 'Ukládám...' : <><Save size={18} /> Uložit nastavení</>}
+                    </button>
+                </div>
             )}
         </section>
     );

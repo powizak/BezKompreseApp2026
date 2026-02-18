@@ -130,3 +130,5 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - **✅ Cascading Car Filters (v0.0.36) - IMPLEMENTOVÁNO**: Kaskádové filtrování (Značka → Model → Motorizace) v sekci `/cars` s využitím relační mapy na klientovi pro minimalizaci Firestore requestů.
 - **✅ Mobile Landscape Menu Fix (v0.0.37) - IMPLEMENTOVÁNO**: Povolení scrollování v postranním menu pro mobilní zařízení v režimu na šířku (landscape) pomocí `overflow-y-auto` a přidání vlastního tenkého scrollbaru.
 - **✅ Profile Data Loading Fix (v0.0.38) - IMPLEMENTOVÁNO**: Oprava načítání kompletních dat v uživatelském profilu (přátelé, odznaky, nastavení) po refreshi stránky. Vynuceno čtení přímo ze serveru (`getDocFromServer`) a opravena logika synchronizace Auth stavu v `AuthService` pro prevenci "znečištění" lokální Firestore cache.
+- **✅ Profile Notification Settings Fix (v0.0.39) - IMPLEMENTOVÁNO**: Přidání tlačítka pro uložení nastavení do komponenty notifikací v profilu uživatele. Sjednocení UX s ostatními sekcemi nastavení.
+

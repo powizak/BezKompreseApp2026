@@ -542,6 +542,8 @@ export default function UserProfilePage() {
                             settings={notificationSettings}
                             onChange={setNotificationSettings}
                             userId={currentUser.uid}
+                            onSave={saveSettings}
+                            saving={saving}
                         />
 
                         {/* Logout Section */}
