@@ -59,8 +59,7 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - Prodej aut: V sekci "Garáž" možnost označit celé auto na prodej. 
 - Označení štítkem v seznamu aut (jako máme vlastněno)
 - Možno kontaktovat vlastníka auta / poptávajícího přímo z marketu - otevře chat s daným uživatelem / založí nový, pokud ještě spolu nekomunikovali
-- Přímo z inzeratu může vlastník označit auto jako "Prodané" - tedy vymaže inzerát a zároveň v garáži mu odznačí "Vlastněno"  
-- **Vizuální Oprava (v0.0.31)**: Oprava překrývání štítků "Na prodej" a statusů na kartách aut
+- Přímo z inzeratu může vlastník označit auto jako "Prodané" - tedy vymaže inzerát a zároveň v garáži mu odznačí "Vlastněno"
 
 #### ✅ Phase 2 - IMPLEMENTOVÁNO: 
 - je žádoucí mít možnost přidat inzerát na auto i jako samostatný - nejen určením auta "na prodej" v úpravě vozidla. S tím, že pak nebude vidět detail auta, ale bude se to chovat, jako obyčejný inzerát
@@ -79,8 +78,8 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 ### 🚀 Vylepšení UX
 - Přidat značku, zda již někdo přečetl zprávu či nikoliv (pro toho, kdo si ji má přečíst - v seznamu zpráv)
 - Dodělat swipe na všech stránkách pro vrácení se zpět pro Android (některé Android to tak mohou mít nastavené - stejné jako v knownbugs)
-- ✅ **Přidat do footeru vedle "Not affilitated officially." verzi aplikace** - IMPLEMENTOVÁNO v0.0.31
-- ✅ **Přidat do "info" - celkový počet uživatelů / aut v aplikaci** - IMPLEMENTOVÁNO v0.0.31 
+- ✅ **Přidat do footeru vedle "Not affilitated officially." verzi aplikace** - IMPLEMENTOVÁNO
+- ✅ **Přidat do "info" - celkový počet uživatelů / aut v aplikaci** - IMPLEMENTOVÁNO
 
 ### ✅ Gamifikace - IMPLEMENTOVÁNO (Fáze 0,1)
 #### ✅ Fáze 0 - IMPLEMENTOVÁNO
@@ -117,18 +116,6 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - Při překročení ~5000 aut vytvořit Cloud Function, která bude udržovat jeden `car-filter-index` dokument ve Firestore s relační mapou `{ make → { model → engines[] } }`.
 - Tím se redukuje počáteční načtení filtrů na 1 read místo N reads (všech aut).
 
-### ✅ Auth Refactor (v0.0.32) - IMPLEMENTOVÁNO
-- **BREAKING**: Reimplementace Google Sign-In pro Android 14.
-- Odstranění nespolehlivého webového fallbacku na nativních platformách.
-- Implementace 15s timeoutu pro nativní plugin (prevence zamrznutí).
-- Přidání Play Services metadata do Manifestu.
-- Detekce "Silent Failure" (prázdný error) s nápovědou pro kontrolu SHA-1.
-- Vylepšené zobrazení chyb v UI.
-- **✅ Auth Refactor (v0.0.35) - IMPLEMENTOVÁNO**: Upgrade `androidxCredentials` na stabilní verzi `1.5.0` a implementace automatického fallbacku na legacy `GoogleSignInClient` pro zařízení se špatnou podporou Credential Manageru.
-- **✅ Notification Logic Refine (v0.0.33)**: Globální vynucení tichých hodin, škálování `onNewEvent` a inteligentní hlídání servisu po termínu (overdue) s cool-off periodou.
-- **✅ iOS & Mac Compatibility (v0.0.34)**: Sjednocení Bundle ID, integrace Firebase & APNs v nativním AppDelegate, přidání oprávnění pro polohu a push notifikace, oprava pádů StatusBaru na iOS, oprava visícího Google přihlášení na iOS (initializeAuth fix), optimalizace balíčků pro Mac/Windows.
-- **✅ Cascading Car Filters (v0.0.36) - IMPLEMENTOVÁNO**: Kaskádové filtrování (Značka → Model → Motorizace) v sekci `/cars` s využitím relační mapy na klientovi pro minimalizaci Firestore requestů.
-- **✅ Mobile Landscape Menu Fix (v0.0.37) - IMPLEMENTOVÁNO**: Povolení scrollování v postranním menu pro mobilní zařízení v režimu na šířku (landscape) pomocí `overflow-y-auto` a přidání vlastního tenkého scrollbaru.
-- **✅ Profile Data Loading Fix (v0.0.38) - IMPLEMENTOVÁNO**: Oprava načítání kompletních dat v uživatelském profilu (přátelé, odznaky, nastavení) po refreshi stránky. Vynuceno čtení přímo ze serveru (`getDocFromServer`) a opravena logika synchronizace Auth stavu v `AuthService` pro prevenci "znečištění" lokální Firestore cache.
-- **✅ Profile Notification Settings Fix (v0.0.39) - IMPLEMENTOVÁNO**: Přidání tlačítka pro uložení nastavení do komponenty notifikací v profilu uživatele. Sjednocení UX s ostatními sekcemi nastavení.
+### 📄 Changelog
+- Kompletní historii změn najdete v souboru [changelog.md](changelog.md).
 

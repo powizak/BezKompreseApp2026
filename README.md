@@ -81,11 +81,14 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **🆕 iOS Launch Readiness**: Kompletní příprava pro iOS (Bundle ID, Firebase Auth, Push notifikace přes APNs, Geolocation permissions)
 
 
-### 💡 Myšlenky pro budoucí verze
+### � Changelog
+- V [changelog.md](docs/changelog.md) najdete historii změn v aplikaci.
+
+### �💡 Myšlenky pro budoucí verze
 - V [ideas.md](docs/ideas.md) najdete některé myšlenky pro budoucí verze aplikace, které můžete sami navrhovat.
 
 ### 🐛 Známé Chyby
-- V [knowBugs.md](knowBugs.md) najdete seznam známých chyb a technických problémů, na kterých pracujeme.
+- V [knownbugs.md](docs/knownbugs.md) najdete seznam známých chyb a technických problémů, na kterých pracujeme.
 - V [docs/firestore-indexes-guide.md](docs/firestore-indexes-guide.md) najdete postup pro nastavení databázových indexů.
 
 
@@ -103,7 +106,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 *   **Stylování:** Tailwind CSS
 *   **Backend:** Firebase (Auth, Firestore, Storage, Cloud Functions)
 *   **Mapy:** Leaflet + OpenStreetMap
-*   **Optimalizace:** Image caching (Cache-Control immutable, ImageLoader concurrency limit & circuit breaker, Prioritized loading for cars > avatars, Profile photo internalization with storage optimization & fallback strategy), Input sanitation (auto-trim), Fast Initial Auth emission (Stale-while-revalidate), Stable useEffect dependencies (Double-loading prevention), Unified Loading UX (Rotating Logo), Social Feed caching (10min limit), YouTube API optimization (using playlistItems for 100x quota saving), Advanced Code Splitting (Vite manualChunks), Reusable Event Form with runtime validation/cleaning (preventing Firestore invalid-argument errors), Visual layout stability & navigation fix (Users page), Efficient App Stats (using getCountFromServer for user/car counts), App Versioning in Footer (automated build-time display), Market Phase 2 (3-tab refactor, Standalone car ads, High-res photo support up to 25MB with client-side compression), v0.0.33 Notification Logic & Scalability (Quiet Hours enforcement across all functions, onNewEvent user filtering, Service overdue cool-off mechanism with 7-day retry), v0.0.34 iOS & Mac Compatibility (Unified Bundle ID cz.bezkomprese.app, Firebase/APNs integration in AppDelegate, Geolocation privacy descriptions, NativeSettings for iOS, Platform guards for StatusBar, fixed Google Sign-In bridge hanging on iOS, cross-platform npm install for Mac/Windows), **v0.0.35 Android Auth Final Fix (Upgraded androidxCredentials to stable v1.5.0, implemented automatic fallback from Credential Manager to legacy GoogleSignInClient for 100% device coverage on Android 14+)**, **v0.0.36 Cascading Car Filters** (Kaskádové filtrování značka → model → motorizace s jedním úvodním fetchem relační mapy pro maximální rychlost a minimální počet requestů), **v0.0.37 Mobile Landscape Menu Fix** (Oprava scrollování v menu při režimu na šířku na mobilních zařízeních s využitím overflow-y-auto a custom scrollbaru), **v0.0.38 Profile Data Loading Fix** (Oprava načítání kompletních dat uživatelského profilu po refreshi stránky – vynucení čtení přímo ze serveru a oprava synchronizace v AuthService), **v0.0.39 Profile Notification Settings Fix** (Přidání tlačítka pro uložení nastavení i do sekce notifikací v profilu pro sjednocení UX)
+*   **Optimalizace:** Image caching (Cache-Control immutable, ImageLoader concurrency limit & circuit breaker, Prioritized loading for cars > avatars, Profile photo internalization with storage optimization & fallback strategy), Input sanitation (auto-trim), Fast Initial Auth emission (Stale-while-revalidate), Stable useEffect dependencies (Double-loading prevention), Unified Loading UX (Rotating Logo), Social Feed caching (10min limit), YouTube API optimization (using playlistItems for 100x quota saving), Advanced Code Splitting (Vite manualChunks), Reusable Event Form with runtime validation/cleaning (preventing Firestore invalid-argument errors)
 
 
 ## Jak spustit projekt
