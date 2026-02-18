@@ -82,7 +82,8 @@ export type VehicleStatus =
   | 'racing'             // Závodní speciál
   | 'daily'              // Daily
   | 'work'               // Pracovní
-  | 'company';           // Služební
+  | 'company'            // Služební
+  | 'donor';             // Dárce orgánů
 
 export const VEHICLE_STATUS_CONFIG: Record<VehicleStatus, {
   label: string;
@@ -123,6 +124,10 @@ export const VEHICLE_STATUS_CONFIG: Record<VehicleStatus, {
   company: {
     label: 'Služební',
     color: { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200' }
+  },
+  donor: {
+    label: 'Dárce orgánů',
+    color: { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200' }
   }
 };
 

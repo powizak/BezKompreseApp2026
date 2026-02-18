@@ -336,7 +336,16 @@ export default function UserProfilePage() {
                         ) : (
                             <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl p-12 text-center text-slate-400">
                                 <CarIcon size={48} className="mx-auto mb-4 opacity-50" />
-                                <p className="font-bold">Garáž zeje prázdnotou</p>
+                                <p className="font-bold mb-4">Garáž zeje prázdnotou</p>
+                                {isMe && (
+                                    <Link
+                                        to="/garage"
+                                        className="inline-flex items-center gap-2 bg-brand text-brand-contrast px-6 py-3 rounded-2xl font-black uppercase italic tracking-tighter shadow-lg shadow-brand/20 hover:bg-brand-dark transition-all text-sm"
+                                    >
+                                        <CarIcon size={16} />
+                                        Přidat první auto
+                                    </Link>
+                                )}
                             </div>
                         )}
                     </div>

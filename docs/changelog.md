@@ -6,6 +6,8 @@ Všechny důležité změny v projektu jsou zaznamenány v tomto souboru.
 ### Přidáno
 - Vylepšení responzivity: oprava scrollování formulářů (tankování, bazar) při nízké výšce obrazovky (landscape na mobilu).
 - UX vylepšení: tlačítka akcí v historii tankování jsou nyní viditelná vždy (nejen po najetí myší).
+- Prázdná garáž na vlastním profilu nyní zobrazuje CTA tlačítko „Přidat první auto" s odkazem do `/garage`.
+- Nový štítek vozidla: **„Dárce orgánů"** (`donor`) — dostupný ve formuláři garáže a zobrazovaný jako rose badge na všech stránkách s auty.
 
 ## [0.0.39] - 2026-02-18
 ### Přidáno

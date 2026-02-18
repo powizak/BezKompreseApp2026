@@ -80,6 +80,10 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 ### 🚀 Vylepšení UX
 - Přidat značku, zda již někdo přečetl zprávu či nikoliv (pro toho, kdo si ji má přečíst - v seznamu zpráv)
 - Dodělat swipe na všech stránkách pro vrácení se zpět pro Android (některé Android to tak mohou mít nastavené - stejné jako v knownbugs)
+- Pro bazar udělat vlastní rychlý dialog bez nutnosti otevírat novou stránku daného inzerátu (bacha, máme 2 typy - auta z profilu + inzeráty samotné)
+- Při přidávání fotek zobrazit jejich náhled před uložením, aby se nestalo, že uživatel omylem nahraje jinou fotku
+- Ve feedu zobrazit u každého příspěvku možnost nejen prokliku, ale jen zkopírování odkazu
+
 - ✅ **Přidat do footeru vedle "Not affilitated officially." verzi aplikace** - IMPLEMENTOVÁNO
 - ✅ **Přidat do "info" - celkový počet uživatelů / aut v aplikaci** - IMPLEMENTOVÁNO
 
