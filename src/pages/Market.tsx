@@ -579,133 +579,135 @@ export default function Market() {
 
             {/* New Listing Modal */}
             {showForm && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-                    <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                        <div className="bg-slate-900 text-white p-4 flex justify-between items-center">
-                            <h3 className="font-bold text-lg flex items-center gap-2">
-                                <Plus size={18} />
-                                Nový inzerát
-                            </h3>
-                            <button onClick={resetForm} className="p-1 hover:bg-white/10 rounded-full transition-colors">
-                                <X size={24} />
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                            {error && (
-                                <div className="bg-red-50 text-red-600 p-3 rounded-xl flex items-center gap-2 text-sm">
-                                    <AlertCircle size={18} />
-                                    {error}
-                                </div>
-                            )}
-
-                            {/* Type */}
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">Typ inzerátu</label>
-                                <div className="grid grid-cols-2 gap-2">
-                                    {(Object.keys(LISTING_TYPE_LABELS) as ListingType[]).map(type => {
-                                        const colors = LISTING_TYPE_COLORS[type];
-                                        return (
-                                            <button
-                                                key={type}
-                                                type="button"
-                                                onClick={() => setFormData(prev => ({ ...prev, type }))}
-                                                className={`p-2 rounded-xl text-sm font-bold border-2 transition-all ${formData.type === type
-                                                    ? `${colors.bg} ${colors.text} border-current`
-                                                    : 'border-slate-200 text-slate-500 hover:border-slate-300'
-                                                    }`}
-                                            >
-                                                {LISTING_TYPE_LABELS[type]}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 overflow-y-auto">
+                    <div className="flex min-h-full items-start justify-center p-4 py-8">
+                        <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                            <div className="bg-slate-900 text-white p-4 flex justify-between items-center">
+                                <h3 className="font-bold text-lg flex items-center gap-2">
+                                    <Plus size={18} />
+                                    Nový inzerát
+                                </h3>
+                                <button onClick={resetForm} className="p-1 hover:bg-white/10 rounded-full transition-colors">
+                                    <X size={24} />
+                                </button>
                             </div>
 
-                            {/* Title */}
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Název</label>
-                                <input
-                                    type="text"
-                                    placeholder="např. Sháním rozvodový řemen pro 1.9 TDI"
-                                    value={formData.title}
-                                    onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                                    className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand focus:border-transparent outline-none"
-                                    required
-                                />
-                            </div>
-
-                            {/* Description */}
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Popis</label>
-                                <textarea
-                                    placeholder="Detaily, stav, požadavky..."
-                                    value={formData.description}
-                                    onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                                    rows={3}
-                                    className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand focus:border-transparent outline-none resize-none"
-                                    required
-                                />
-                            </div>
-
-                            {/* Price */}
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Orientační cena (Kč)</label>
-                                <input
-                                    type="number"
-                                    placeholder="např. 5000"
-                                    value={formData.price}
-                                    onChange={e => setFormData(prev => ({ ...prev, price: e.target.value }))}
-                                    className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand focus:border-transparent outline-none"
-                                />
-                            </div>
-
-                            {/* Image */}
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Ilustrační foto</label>
-                                {selectedFile ? (
-                                    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
-                                        <Camera size={20} className="text-brand" />
-                                        <span className="text-sm text-slate-600 flex-1 truncate">{selectedFile.name}</span>
-                                        <button type="button" onClick={() => setSelectedFile(null)} className="text-red-500 hover:text-red-600">
-                                            <X size={18} />
-                                        </button>
+                            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                                {error && (
+                                    <div className="bg-red-50 text-red-600 p-3 rounded-xl flex items-center gap-2 text-sm">
+                                        <AlertCircle size={18} />
+                                        {error}
                                     </div>
-                                ) : (
-                                    <button
-                                        type="button"
-                                        onClick={() => fileInputRef.current?.click()}
-                                        className="w-full p-4 border-2 border-dashed border-slate-300 rounded-xl text-slate-400 hover:border-brand hover:text-brand transition-all flex items-center justify-center gap-2"
-                                    >
-                                        <Camera size={20} />
-                                        Přidat obrázek
-                                    </button>
                                 )}
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    onChange={handleFileSelect}
-                                    className="hidden"
-                                    accept="image/png,image/jpeg,image/webp"
-                                />
-                            </div>
 
-                            <button
-                                type="submit"
-                                disabled={saving}
-                                className={`w-full font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all ${saving
-                                    ? 'bg-slate-400 text-white cursor-wait'
-                                    : 'bg-brand text-slate-900 hover:bg-brand-dark shadow-lg shadow-brand/20'
-                                    }`}
-                            >
-                                {saving ? 'Ukládám...' : (
-                                    <>
-                                        <Save size={18} />
-                                        Vytvořit inzerát
-                                    </>
-                                )}
-                            </button>
-                        </form>
+                                {/* Type */}
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">Typ inzerátu</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {(Object.keys(LISTING_TYPE_LABELS) as ListingType[]).map(type => {
+                                            const colors = LISTING_TYPE_COLORS[type];
+                                            return (
+                                                <button
+                                                    key={type}
+                                                    type="button"
+                                                    onClick={() => setFormData(prev => ({ ...prev, type }))}
+                                                    className={`p-2 rounded-xl text-sm font-bold border-2 transition-all ${formData.type === type
+                                                        ? `${colors.bg} ${colors.text} border-current`
+                                                        : 'border-slate-200 text-slate-500 hover:border-slate-300'
+                                                        }`}
+                                                >
+                                                    {LISTING_TYPE_LABELS[type]}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Title */}
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Název</label>
+                                    <input
+                                        type="text"
+                                        placeholder="např. Sháním rozvodový řemen pro 1.9 TDI"
+                                        value={formData.title}
+                                        onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                                        className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand focus:border-transparent outline-none"
+                                        required
+                                    />
+                                </div>
+
+                                {/* Description */}
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Popis</label>
+                                    <textarea
+                                        placeholder="Detaily, stav, požadavky..."
+                                        value={formData.description}
+                                        onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                                        rows={3}
+                                        className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand focus:border-transparent outline-none resize-none"
+                                        required
+                                    />
+                                </div>
+
+                                {/* Price */}
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Orientační cena (Kč)</label>
+                                    <input
+                                        type="number"
+                                        placeholder="např. 5000"
+                                        value={formData.price}
+                                        onChange={e => setFormData(prev => ({ ...prev, price: e.target.value }))}
+                                        className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-brand focus:border-transparent outline-none"
+                                    />
+                                </div>
+
+                                {/* Image */}
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Ilustrační foto</label>
+                                    {selectedFile ? (
+                                        <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                                            <Camera size={20} className="text-brand" />
+                                            <span className="text-sm text-slate-600 flex-1 truncate">{selectedFile.name}</span>
+                                            <button type="button" onClick={() => setSelectedFile(null)} className="text-red-500 hover:text-red-600">
+                                                <X size={18} />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className="w-full p-4 border-2 border-dashed border-slate-300 rounded-xl text-slate-400 hover:border-brand hover:text-brand transition-all flex items-center justify-center gap-2"
+                                        >
+                                            <Camera size={20} />
+                                            Přidat obrázek
+                                        </button>
+                                    )}
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        onChange={handleFileSelect}
+                                        className="hidden"
+                                        accept="image/png,image/jpeg,image/webp"
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={saving}
+                                    className={`w-full font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all ${saving
+                                        ? 'bg-slate-400 text-white cursor-wait'
+                                        : 'bg-brand text-slate-900 hover:bg-brand-dark shadow-lg shadow-brand/20'
+                                        }`}
+                                >
+                                    {saving ? 'Ukládám...' : (
+                                        <>
+                                            <Save size={18} />
+                                            Vytvořit inzerát
+                                        </>
+                                    )}
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             )}

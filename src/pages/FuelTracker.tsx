@@ -413,120 +413,122 @@ export default function FuelTracker() {
 
             {/* Form Modal */}
             {showForm && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-                    <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 my-8">
-                        <div className="bg-slate-900 text-white p-4 flex justify-between items-center sticky top-0 z-10">
-                            <h3 className="font-bold text-lg flex items-center gap-2">
-                                <Fuel size={18} />
-                                {editingRecord ? 'Upravit tankování' : 'Nové tankování'}
-                            </h3>
-                            <button onClick={resetForm} className="p-1 hover:bg-white/10 rounded-full transition-colors">
-                                <X size={24} />
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleSubmit} className="p-6">
-                            {error && (
-                                <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 flex items-start gap-3 border border-red-100">
-                                    <AlertCircle className="shrink-0 mt-0.5" size={20} />
-                                    <p className="text-sm">{error}</p>
-                                </div>
-                            )}
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Datum</label>
-                                    <input
-                                        type="date"
-                                        className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-brand transition-all"
-                                        value={formData.date}
-                                        onChange={e => setFormData({ ...formData, date: e.target.value })}
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Tachometr (km)</label>
-                                    <input
-                                        type="number"
-                                        placeholder="125400"
-                                        className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-brand transition-all"
-                                        value={formData.mileage}
-                                        onChange={e => setFormData({ ...formData, mileage: e.target.value })}
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Litrů</label>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        placeholder="45.50"
-                                        className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-brand transition-all"
-                                        value={formData.liters}
-                                        onChange={e => {
-                                            const liters = e.target.value;
-                                            const total = formData.pricePerLiter ? (parseFloat(liters) * parseFloat(formData.pricePerLiter)).toFixed(2) : formData.totalPrice;
-                                            setFormData({ ...formData, liters, totalPrice: total });
-                                        }}
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Cena za litr (Kč)</label>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        placeholder="36.90"
-                                        className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-brand transition-all"
-                                        value={formData.pricePerLiter}
-                                        onChange={e => {
-                                            const price = e.target.value;
-                                            const total = formData.liters ? (parseFloat(price) * parseFloat(formData.liters)).toFixed(2) : formData.totalPrice;
-                                            setFormData({ ...formData, pricePerLiter: price, totalPrice: total });
-                                        }}
-                                        required
-                                    />
-                                </div>
-                                <div className="sm:col-span-2">
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Celková cena (Kč)</label>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-brand transition-all font-bold"
-                                        value={formData.totalPrice}
-                                        onChange={e => setFormData({ ...formData, totalPrice: e.target.value })}
-                                        required
-                                    />
-                                </div>
-                                <div className="sm:col-span-2 flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                    <input
-                                        type="checkbox"
-                                        id="fullTank"
-                                        className="w-5 h-5 accent-brand"
-                                        checked={formData.fullTank}
-                                        onChange={e => setFormData({ ...formData, fullTank: e.target.checked })}
-                                    />
-                                    <label htmlFor="fullTank" className="text-sm font-bold text-slate-700 cursor-pointer">Plná nádrž (důležité pro výpočet spotřeby)</label>
-                                </div>
-                                <div className="sm:col-span-2">
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Čerpací stanice (volitelné)</label>
-                                    <input
-                                        placeholder="Benzina, Shell..."
-                                        className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-brand transition-all"
-                                        value={formData.station}
-                                        onChange={e => setFormData({ ...formData, station: e.target.value })}
-                                    />
-                                </div>
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 overflow-y-auto">
+                    <div className="flex min-h-full items-start justify-center p-4 py-8">
+                        <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                            <div className="bg-slate-900 text-white p-4 flex justify-between items-center">
+                                <h3 className="font-bold text-lg flex items-center gap-2">
+                                    <Fuel size={18} />
+                                    {editingRecord ? 'Upravit tankování' : 'Nové tankování'}
+                                </h3>
+                                <button onClick={resetForm} className="p-1 hover:bg-white/10 rounded-full transition-colors">
+                                    <X size={24} />
+                                </button>
                             </div>
 
-                            <button
-                                type="submit"
-                                disabled={uploading}
-                                className={`w-full text-slate-900 font-bold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02] active:scale-[0.98] ${uploading ? 'bg-slate-400 cursor-wait text-white' : 'bg-brand hover:bg-brand-dark shadow-brand/20'}`}
-                            >
-                                {uploading ? 'Ukládám...' : editingRecord ? 'Uložit změny' : 'Uložit tankování'}
-                            </button>
-                        </form>
+                            <form onSubmit={handleSubmit} className="p-6">
+                                {error && (
+                                    <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 flex items-start gap-3 border border-red-100">
+                                        <AlertCircle className="shrink-0 mt-0.5" size={20} />
+                                        <p className="text-sm">{error}</p>
+                                    </div>
+                                )}
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Datum</label>
+                                        <input
+                                            type="date"
+                                            className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-brand transition-all"
+                                            value={formData.date}
+                                            onChange={e => setFormData({ ...formData, date: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Tachometr (km)</label>
+                                        <input
+                                            type="number"
+                                            placeholder="125400"
+                                            className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-brand transition-all"
+                                            value={formData.mileage}
+                                            onChange={e => setFormData({ ...formData, mileage: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Litrů</label>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            placeholder="45.50"
+                                            className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-brand transition-all"
+                                            value={formData.liters}
+                                            onChange={e => {
+                                                const liters = e.target.value;
+                                                const total = formData.pricePerLiter ? (parseFloat(liters) * parseFloat(formData.pricePerLiter)).toFixed(2) : formData.totalPrice;
+                                                setFormData({ ...formData, liters, totalPrice: total });
+                                            }}
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Cena za litr (Kč)</label>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            placeholder="36.90"
+                                            className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-brand transition-all"
+                                            value={formData.pricePerLiter}
+                                            onChange={e => {
+                                                const price = e.target.value;
+                                                const total = formData.liters ? (parseFloat(price) * parseFloat(formData.liters)).toFixed(2) : formData.totalPrice;
+                                                setFormData({ ...formData, pricePerLiter: price, totalPrice: total });
+                                            }}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="sm:col-span-2">
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Celková cena (Kč)</label>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-brand transition-all font-bold"
+                                            value={formData.totalPrice}
+                                            onChange={e => setFormData({ ...formData, totalPrice: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="sm:col-span-2 flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                        <input
+                                            type="checkbox"
+                                            id="fullTank"
+                                            className="w-5 h-5 accent-brand"
+                                            checked={formData.fullTank}
+                                            onChange={e => setFormData({ ...formData, fullTank: e.target.checked })}
+                                        />
+                                        <label htmlFor="fullTank" className="text-sm font-bold text-slate-700 cursor-pointer">Plná nádrž (důležité pro výpočet spotřeby)</label>
+                                    </div>
+                                    <div className="sm:col-span-2">
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Čerpací stanice (volitelné)</label>
+                                        <input
+                                            placeholder="Benzina, Shell..."
+                                            className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-brand transition-all"
+                                            value={formData.station}
+                                            onChange={e => setFormData({ ...formData, station: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={uploading}
+                                    className={`w-full text-slate-900 font-bold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02] active:scale-[0.98] ${uploading ? 'bg-slate-400 cursor-wait text-white' : 'bg-brand hover:bg-brand-dark shadow-brand/20'}`}
+                                >
+                                    {uploading ? 'Ukládám...' : editingRecord ? 'Uložit změny' : 'Uložit tankování'}
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             )}
@@ -591,7 +593,7 @@ export default function FuelTracker() {
                                             )}
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="flex justify-end gap-2">
                                                 <button onClick={() => handleEdit(record)} className="p-2 text-slate-400 hover:text-slate-600 bg-white shadow-sm rounded-lg border border-slate-100">
                                                     <Pencil size={14} />
                                                 </button>

@@ -2,6 +2,11 @@
 
 Všechny důležité změny v projektu jsou zaznamenány v tomto souboru.
 
+## [0.0.40] - 2026-02-18
+### Přidáno
+- Vylepšení responzivity: oprava scrollování formulářů (tankování, bazar) při nízké výšce obrazovky (landscape na mobilu).
+- UX vylepšení: tlačítka akcí v historii tankování jsou nyní viditelná vždy (nejen po najetí myší).
+
 ## [0.0.39] - 2026-02-18
 ### Přidáno
 - Oprava výpočtu spotřeby paliva (akumulace litrů při částečných tankováních).
