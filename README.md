@@ -14,7 +14,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 
 ### 🚗 Moje Garáž
 - **Správa Vozidel**: Přidávání a editace vlastních aut s detailními informacemi
-- **Fotogalerie**: Až 4 fotky na auto s automatickou kompresí
+- **Fotogalerie**: Až 4 fotky na auto s automatickou kompresí (max 15 MB)
 - **Tuning & Úpravy**: Sledování všech modifikací a vylepšení
 - **Historie Vlastnictví**: Označení aut, která již nevlastníte
 - **🆕 Statusy Aut**: Barevné odznaky pro auta (daily, sezónní, v renovaci, atd.)
@@ -106,7 +106,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 *   **Stylování:** Tailwind CSS
 *   **Backend:** Firebase (Auth, Firestore, Storage, Cloud Functions)
 *   **Mapy:** Leaflet + OpenStreetMap
-*   **Optimalizace:** Image caching (Cache-Control immutable, ImageLoader concurrency limit & circuit breaker, Prioritized loading for cars > avatars, Profile photo internalization with storage optimization & fallback strategy), Input sanitation (auto-trim), Fast Initial Auth emission (Stale-while-revalidate), Stable useEffect dependencies (Double-loading prevention), Unified Loading UX (Rotating Logo), Social Feed caching (10min limit), YouTube API optimization (using playlistItems for 100x quota saving), Advanced Code Splitting (Vite manualChunks), Reusable Event Form with runtime validation/cleaning (preventing Firestore invalid-argument errors)
+*   **Optimalizace**: Image caching (Cache-Control immutable, ImageLoader concurrency limit & circuit breaker, Prioritized loading for cars > avatars, Profile photo internalization with storage optimization & fallback strategy), Unified 15MB Image Upload Pipeline (WebP conversion, quality 0.7), Input sanitation (auto-trim), Fast Initial Auth emission (Stale-while-revalidate), Stable useEffect dependencies (Double-loading prevention), Unified Loading UX (Rotating Logo), Social Feed caching (10min limit), YouTube API optimization (using playlistItems for 100x quota saving), Advanced Code Splitting (Vite manualChunks), Reusable Event Form with runtime validation/cleaning (preventing Firestore invalid-argument errors)
 
 
 ## Jak spustit projekt

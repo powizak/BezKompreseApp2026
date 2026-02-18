@@ -11,7 +11,7 @@ import ChatDrawer from '../components/ChatDrawer';
 import CachedImage from '../components/CachedImage';
 import LoadingState from '../components/LoadingState';
 import UserAvatar from '../components/UserAvatar';
-import { compressImage } from '../lib/imageOptimizer';
+
 import {
     Store, ShoppingBag, Search, Plus, X, MessageCircle, Tag,
     CarFront, Check, AlertCircle, Camera, Save, Trash2
@@ -171,8 +171,8 @@ export default function Market() {
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
-            if (file.size > 25 * 1024 * 1024) {
-                alert('Obrázek je příliš velký (max 25MB).');
+            if (file.size > 15 * 1024 * 1024) {
+                alert('Obrázek je příliš velký (max 15 MB).');
                 return;
             }
             setSelectedFile(file);
@@ -208,8 +208,7 @@ export default function Market() {
 
             // Upload image if selected
             if (selectedFile) {
-                const compressed = await compressImage(selectedFile);
-                const imageUrl = await Effect.runPromise(dataService.uploadListingImage(compressed, listingId));
+                const imageUrl = await Effect.runPromise(dataService.uploadListingImage(selectedFile, listingId));
                 await Effect.runPromise(dataService.updateMarketplaceListing(listingId, { imageUrl }));
             }
 
@@ -689,6 +688,7 @@ export default function Market() {
                                         className="hidden"
                                         accept="image/png,image/jpeg,image/webp"
                                     />
+                                    <p className="text-xs text-slate-400 mt-1.5">Max 15 MB. Foto bude automaticky převedeno do WebP.</p>
                                 </div>
 
                                 <button

@@ -1,13 +1,18 @@
 # Changelog
 
 Všechny důležité změny v projektu jsou zaznamenány v tomto souboru.
+## [0.0.41] - 2026-02-18
+### Přidáno
+- Sjednocení pravidel nahrávání fotek (limit 15 MB, jedna komprese, WebP 70 %) pro celou aplikaci (Garáž, Marketplace, Události).
+- Odstranění redundantní dvojí komprese v Marketplace (zrychlení nahrávání a zachování vyšší kvality).
+- Aktualizované UI popisky s informací o maximální velikosti fotky a automatické konverzi do WebP.
+- Prázdná garáž na vlastním profilu nyní zobrazuje CTA tlačítko „Přidat první auto" s odkazem do `/garage`.
+- Nový štítek vozidla: **„Dárce orgánů"** (`donor`) — dostupný ve formuláři garáže a zobrazovaný jako rose badge na všech stránkách s auty.
 
 ## [0.0.40] - 2026-02-18
 ### Přidáno
 - Vylepšení responzivity: oprava scrollování formulářů (tankování, bazar) při nízké výšce obrazovky (landscape na mobilu).
 - UX vylepšení: tlačítka akcí v historii tankování jsou nyní viditelná vždy (nejen po najetí myší).
-- Prázdná garáž na vlastním profilu nyní zobrazuje CTA tlačítko „Přidat první auto" s odkazem do `/garage`.
-- Nový štítek vozidla: **„Dárce orgánů"** (`donor`) — dostupný ve formuláři garáže a zobrazovaný jako rose badge na všech stránkách s auty.
 
 ## [0.0.39] - 2026-02-18
 ### Přidáno

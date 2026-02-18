@@ -199,6 +199,16 @@ export const processAndUploadImage = (
     basePath: string
 ): Effect.Effect<ImageVariants, ImageProcessingError> =>
     Effect.gen(function* (_) {
+        // Validate file size (centralized limit: 15 MB)
+        const MAX_FILE_SIZE = 15 * 1024 * 1024;
+        if (file.size > MAX_FILE_SIZE) {
+            yield* _(
+                Effect.fail(
+                    new ImageProcessingError("Soubor je příliš velký (max 15 MB).")
+                )
+            );
+        }
+
         // Validate file type
         if (!file.type.startsWith("image/")) {
             yield* _(

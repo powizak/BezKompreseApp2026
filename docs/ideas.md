@@ -70,7 +70,7 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
     - rozdělit na 3 záložky - neměnit UI - prostě přidat další přepínač, takto to vypadá super (nyní jsou prodej aut a poptávky), a to: prodej aut, poptávky (díly, auta, služby), nabídky (díly, auta, služby)
 - u poptávek a nabídek je potřeba přidat možnost filtrování podle kategorie (díly, auta, služby)
 - v případě, že je auto na prodej, zobrazí se popis inzerátu (je to již parametr auta) i na kartě vozidla (/car)
--  pro marketplace také nejspíše nefunguje úplně správně převod fotek - zůstala tam fotka "large.webp" s velikostí téměř 5MB -> zkontrolovat
+- **✅ Sjednocení nahrávání (Fáze 2.1) - IMPLEMENTOVÁNO**: Sjednocený limit 15MB, jedna komprese (WebP 70%), odstraněna duplicitní komprese v Marketplace.
 
 
 ### Rozšíření funkcí inzerce
