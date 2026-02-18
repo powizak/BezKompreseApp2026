@@ -118,11 +118,49 @@ export default function FuelTracker() {
         setError(null);
     };
 
-    const calculateConsumption = (current: any, previous: FuelRecord | undefined) => {
-        if (!previous || !current.fullTank || !previous.fullTank) return undefined;
-        const dist = current.mileage - previous.mileage;
-        if (dist <= 0) return undefined;
-        return (current.liters / dist) * 100;
+    /**
+     * Calculate consumption for a full-tank fill-up.
+     * Accumulates liters from ALL records since the previous full tank
+     * (including any partial fill-ups in between).
+     * Returns undefined if current fill is not a full tank.
+     */
+    const calculateConsumptionForRecord = (
+        currentMileage: number,
+        currentLiters: number,
+        isFullTank: boolean,
+        currentDate: string,
+        existingRecords: FuelRecord[],
+        editingId?: string
+    ): number | undefined => {
+        if (!isFullTank) return undefined;
+
+        // Sort all existing records chronologically (exclude the one being edited)
+        const sorted = [...existingRecords]
+            .filter(r => r.id !== editingId)
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+        // Find the previous full tank (the last fullTank=true record before currentDate)
+        const currentTime = new Date(currentDate).getTime();
+        const prevFullTankIdx = sorted.reduce((found, r, idx) =>
+            r.fullTank && new Date(r.date).getTime() < currentTime ? idx : found
+            , -1);
+
+        if (prevFullTankIdx === -1) return undefined; // No previous full tank — first reference point
+
+        const prevFullTank = sorted[prevFullTankIdx];
+        const kmDist = currentMileage - prevFullTank.mileage;
+        if (kmDist <= 0) return undefined;
+
+        // Sum liters from all records AFTER the previous full tank up to (not including) current
+        const accumulatedLiters = sorted
+            .filter(r =>
+                new Date(r.date).getTime() > new Date(prevFullTank.date).getTime()
+                && new Date(r.date).getTime() < currentTime
+            )
+            .reduce((sum, r) => sum + r.liters, 0);
+
+        const totalLiters = accumulatedLiters + currentLiters;
+        return (totalLiters / kmDist) * 100;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -138,12 +176,19 @@ export default function FuelTracker() {
             const totalPriceNum = parseFloat(formData.totalPrice);
             const pricePerLiterNum = parseFloat(formData.pricePerLiter);
 
-            // Find previous record for consumption calc
-            // Records are sorted by date desc
+            // Find previous record for distanceDelta (any record, not just full tanks)
             const sortedRecords = [...records].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
             const prevRecord = sortedRecords.filter(r => new Date(r.date).getTime() < new Date(formData.date).getTime()).pop();
 
-            const consumption = calculateConsumption({ mileage: mileageNum, liters: litersNum, fullTank: formData.fullTank }, prevRecord);
+            // Consumption accumulates liters from all records since the previous full tank
+            const consumption = calculateConsumptionForRecord(
+                mileageNum,
+                litersNum,
+                formData.fullTank,
+                formData.date,
+                records,
+                editingRecord?.id
+            );
             const distanceDelta = prevRecord ? mileageNum - prevRecord.mileage : undefined;
 
             const recordData: any = {
@@ -525,7 +570,15 @@ export default function FuelTracker() {
                                             {record.mileage.toLocaleString()} km
                                             {record.distanceDelta && <span className="block text-[10px] text-brand">+{record.distanceDelta} km</span>}
                                         </td>
-                                        <td className="px-6 py-4 font-bold text-slate-900">{record.liters.toFixed(2)} l</td>
+                                        <td className="px-6 py-4 font-bold text-slate-900">
+                                            <span className="flex items-center gap-1.5">
+                                                {record.liters.toFixed(2)} l
+                                                {record.fullTank
+                                                    ? <Fuel size={14} className="text-brand shrink-0" />
+                                                    : <Droplets size={14} className="text-slate-300 shrink-0" />
+                                                }
+                                            </span>
+                                        </td>
                                         <td className="px-6 py-4 text-slate-600">{record.pricePerLiter.toFixed(2)} Kč</td>
                                         <td className="px-6 py-4 font-black text-slate-900">{record.totalPrice.toLocaleString()} Kč</td>
                                         <td className="px-6 py-4">

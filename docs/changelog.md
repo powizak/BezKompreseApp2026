@@ -4,6 +4,9 @@ Všechny důležité změny v projektu jsou zaznamenány v tomto souboru.
 
 ## [0.0.39] - 2026-02-18
 ### Přidáno
+- Oprava výpočtu spotřeby paliva (akumulace litrů při částečných tankováních).
+- Přesnější výpočet průměrné spotřeby auta (metoda první/poslední plná nádrž).
+- Vizuální indikátory (ikony) plné/částečné nádrže v historii tankování.
 - Tlačítko pro uložení nastavení notifikací v profilu uživatele.
 - Sjednocení UX s ostatními sekcemi nastavení v profilu.
 

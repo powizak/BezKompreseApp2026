@@ -99,11 +99,25 @@ export function calculateVehicleStats(
         }
     });
 
-    // Calculate average consumption
-    const validConsumptions = fuelRecords.filter(r => r.consumption !== undefined && r.consumption !== null);
-    const avgConsumption = validConsumptions.length > 0
-        ? validConsumptions.reduce((sum, r) => sum + (r.consumption || 0), 0) / validConsumptions.length
-        : 0;
+    // Calculate average consumption using first-full-tank to last-full-tank method.
+    // The first full tank is the reference point — we don't know how many km were driven
+    // before it, so we exclude its liters from the sum and use its mileage as the baseline.
+    const sorted = [...fuelRecords].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const fullTanks = sorted.filter(r => r.fullTank);
+    let avgConsumption = 0;
+    if (fullTanks.length >= 2) {
+        const firstFull = fullTanks[0];
+        const lastFull = fullTanks[fullTanks.length - 1];
+        const kmSpan = lastFull.mileage - firstFull.mileage;
+        // Sum liters of all records AFTER the first full tank up to and including the last full tank
+        const litersAfterFirst = sorted
+            .filter(r => new Date(r.date).getTime() > new Date(firstFull.date).getTime()
+                && new Date(r.date).getTime() <= new Date(lastFull.date).getTime())
+            .reduce((sum, r) => sum + r.liters, 0);
+        if (kmSpan > 0 && litersAfterFirst > 0) {
+            avgConsumption = (litersAfterFirst / kmSpan) * 100;
+        }
+    }
 
     // Calculate consumption trend (compare last 3 vs previous 3 records)
     let consumptionTrend: 'up' | 'down' | 'stable' = 'stable';

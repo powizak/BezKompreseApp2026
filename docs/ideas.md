@@ -12,6 +12,8 @@ Současný stav: Servisní knížka řeší opravy, seznam tankování pak spot�
 - Graf: Vývoj spotřeby (line chart) za posledních 12 měsíců
 - Graf: Náklady palivo vs servis (stacked bar chart) za posledních 12 měsíců
 - Automatický odečet: Při zadání tankování se automaticky aktualizuje stav tachometru v autě
+- **Indikátory tankování**: Ikony plné/částečné nádrže v historii
+- **Korekce výpočtu**: Správná akumulace litrů přes částečná tankování a výpočet průměru z první/poslední plné nádrže
 - Zobrazení tachometru na kartě auta v garáži
 - **Status aut**: Sezónní, depozit, v renovaci, do šrotu, porucha, závodní speciál, daily, pracovní, služební
 
