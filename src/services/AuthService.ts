@@ -236,18 +236,25 @@ export const AuthServiceLive = Layer.succeed(
           };
           emit.single(initialProfile);
 
-          // 1. Ensure basic auth data is synced (fire-and-forget/background)
+          // 1. Ensure basic auth data is synced ONLY for new users.
+          // On every page refresh, onAuthStateChanged fires and we must NOT overwrite
+          // the Firestore document with just the basic Auth fields – that would pollute
+          // the local Firestore cache with an incomplete document (no friends/badges/settings),
+          // causing subsequent getDoc calls to return stale data.
           const userRef = doc(db, "users", firebaseUser.uid);
-          // We don't await this to avoid blocking the stream if possible, 
-          // but we need the doc to exist for onSnapshot. 
-          // setDoc is fast usually.
           try {
-            await setDoc(userRef, {
-              uid: firebaseUser.uid,
-              displayName: firebaseUser.displayName,
-              email: firebaseUser.email,
-              photoURL: firebaseUser.photoURL
-            }, { merge: true });
+            const { getDoc: _getDoc } = await import("firebase/firestore");
+            const snap = await _getDoc(userRef);
+            if (!snap.exists()) {
+              // New user – create the document with basic auth data
+              await setDoc(userRef, {
+                uid: firebaseUser.uid,
+                displayName: firebaseUser.displayName,
+                email: firebaseUser.email,
+                photoURL: firebaseUser.photoURL
+              }, { merge: true });
+            }
+            // Existing user – skip setDoc to avoid cache pollution
           } catch (e) {
             console.error("Failed to sync user doc", e);
           }

@@ -1,7 +1,7 @@
 import { Context, Effect, Layer } from "effect";
 import {
     collection, addDoc, getDocs, query, where, updateDoc, doc, limit, deleteDoc,
-    getDoc, onSnapshot, setDoc, serverTimestamp, Timestamp, orderBy, writeBatch
+    getDoc, getDocFromServer, onSnapshot, setDoc, serverTimestamp, Timestamp, orderBy, writeBatch
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import type { Car, AppEvent, SocialPost, UserProfile, ServiceRecord, FuelRecord, HelpBeacon, EventType, EventComment, MarketplaceListing, ImageVariants } from "../types";
@@ -491,7 +491,11 @@ export const DataServiceLive = Layer.succeed(
         getUserProfile: (userId) => Effect.tryPromise({
             try: async () => {
                 const userRef = doc(db, "users", userId);
-                const userSnap = await getDoc(userRef);
+                // Use getDocFromServer to bypass Firestore local cache.
+                // On page refresh, AuthService writes basic auth data via setDoc (merge:true),
+                // which pollutes the cache with an incomplete document. getDocFromServer
+                // always fetches the full document directly from Firestore.
+                const userSnap = await getDocFromServer(userRef);
 
                 if (!userSnap.exists()) {
                     return null;

@@ -57,8 +57,12 @@ export default function UserProfilePage() {
         }).pipe(Effect.provide(DataServiceLive))
     );
 
+    // Fetch profile data – depends only on [id], NOT on currentUser.
+    // Profile data (friends, badges, settings) is read directly from Firestore
+    // and does not require auth state to be fully resolved.
     useEffect(() => {
-        if (!id || !currentUser) return;
+        if (!id) return;
+        setLoading(true);
 
         const fetchData = async () => {
 
@@ -78,7 +82,7 @@ export default function UserProfilePage() {
 
                 // 2. Events
                 const eventResult = await Effect.runPromise(dataService.getUserEvents(id));
-                setEvents(eventResult.created); // Displaying created events for now
+                setEvents(eventResult.created);
 
                 // 3. Friends (Fetch details for each friend ID)
                 if (result.profile.friends && result.profile.friends.length > 0) {
@@ -93,15 +97,19 @@ export default function UserProfilePage() {
                 } else {
                     setFriends([]);
                 }
-                if (currentUser && id === currentUser.uid) {
-                    BadgeService.checkRetroactiveBadges(currentUser.uid).catch(console.error);
-                }
             }
             setLoading(false);
         };
 
         fetchData();
     }, [id]);
+
+    // Retroactive badge check – runs once currentUser is available for own profile
+    useEffect(() => {
+        if (currentUser && id && id === currentUser.uid) {
+            BadgeService.checkRetroactiveBadges(currentUser.uid).catch(console.error);
+        }
+    }, [id, currentUser?.uid]);
 
     useEffect(() => {
         if (currentUser && currentUser.friends && id) {
