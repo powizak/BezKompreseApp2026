@@ -83,6 +83,7 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - Pro bazar udělat vlastní rychlý dialog bez nutnosti otevírat novou stránku daného inzerátu (bacha, máme 2 typy - auta z profilu + inzeráty samotné)
 - Při přidávání fotek zobrazit jejich náhled před uložením, aby se nestalo, že uživatel omylem nahraje jinou fotku
 - Ve feedu zobrazit u každého příspěvku možnost nejen prokliku, ale jen zkopírování odkazu
+- Pro zadávání hodnoty u pole "engine" udělat buď kombinaci 2 polí (hodnota číselná + označení s např. pouze velkými písmeny) nebo našeptávač ze současných hodnot v DDL s možností přidání další varianty, která ještě neexistuje - současná data jsou trochu bordel - každý to zadává jinak (tečka, čárka, mezera, velikost písmen)
 
 - ✅ **Přidat do footeru vedle "Not affilitated officially." verzi aplikace** - IMPLEMENTOVÁNO
 - ✅ **Přidat do "info" - celkový počet uživatelů / aut v aplikaci** - IMPLEMENTOVÁNO
