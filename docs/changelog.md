@@ -1,6 +1,12 @@
 # Changelog
 
 Všechny důležité změny v projektu jsou zaznamenány v tomto souboru.
+## [0.0.42] - 2026-02-19
+### Opraveno
+- Robustní výpočet spotřeby paliva: Algoritmus nyní správně započítává všechna tankování i v případě více záznamů ve stejný den (včetně kombinace částečného a plného tankování).
+- Oprava řazení historie tankování: Záznamy ze stejného dne jsou nyní řazeny logicky podle nájezdu (novější nahoře).
+- Zpřesnění výpočtu průměrné spotřeby celého vozidla pro případy s vícenásobným tankováním ve stejný den.
+
 ## [0.0.41] - 2026-02-18
 ### Přidáno
 - Sjednocení pravidel nahrávání fotek (limit 15 MB, jedna komprese, WebP 70 %) pro celou aplikaci (Garáž, Marketplace, Události).
