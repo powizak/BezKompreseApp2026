@@ -125,41 +125,52 @@ export default function FuelTracker() {
      * Returns undefined if current fill is not a full tank.
      */
     const calculateConsumptionForRecord = (
-        currentMileage: number,
-        currentLiters: number,
-        isFullTank: boolean,
-        currentDate: string,
-        existingRecords: FuelRecord[],
-        editingId?: string
+        currentRecord: { date: string; mileage: number; liters: number; fullTank: boolean; id?: string },
+        existingRecords: FuelRecord[]
     ): number | undefined => {
-        if (!isFullTank) return undefined;
+        if (!currentRecord.fullTank) return undefined;
 
-        // Sort all existing records chronologically (exclude the one being edited)
-        const sorted = [...existingRecords]
-            .filter(r => r.id !== editingId)
-            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        // Create a virtual list of all records including the current one
+        const tempId = currentRecord.id || 'temp-id';
+        const allRecords = [
+            ...existingRecords.filter(r => r.id !== tempId),
+            { ...currentRecord, id: tempId } as FuelRecord // Cast as FuelRecord for sorting
+        ];
 
-        // Find the previous full tank (the last fullTank=true record before currentDate)
-        const currentTime = new Date(currentDate).getTime();
-        const prevFullTankIdx = sorted.reduce((found, r, idx) =>
-            r.fullTank && new Date(r.date).getTime() < currentTime ? idx : found
-            , -1);
+        // Robust Sort: Date ASC, then Mileage ASC
+        allRecords.sort((a, b) => {
+            const timeDiff = new Date(a.date).getTime() - new Date(b.date).getTime();
+            if (timeDiff !== 0) return timeDiff;
+            return a.mileage - b.mileage;
+        });
 
-        if (prevFullTankIdx === -1) return undefined; // No previous full tank — first reference point
+        const currentIdx = allRecords.findIndex(r => r.id === tempId);
+        if (currentIdx === -1) return undefined; // Should not happen
 
-        const prevFullTank = sorted[prevFullTankIdx];
-        const kmDist = currentMileage - prevFullTank.mileage;
+        // Find index of the previous FULL tank
+        let prevFullTankIdx = -1;
+        for (let i = currentIdx - 1; i >= 0; i--) {
+            if (allRecords[i].fullTank) {
+                prevFullTankIdx = i;
+                break;
+            }
+        }
+
+        if (prevFullTankIdx === -1) return undefined; // No previous full tank reference
+
+        const prevFullTank = allRecords[prevFullTankIdx];
+        const kmDist = currentRecord.mileage - prevFullTank.mileage;
+
         if (kmDist <= 0) return undefined;
 
-        // Sum liters from all records AFTER the previous full tank up to (not including) current
-        const accumulatedLiters = sorted
-            .filter(r =>
-                new Date(r.date).getTime() > new Date(prevFullTank.date).getTime()
-                && new Date(r.date).getTime() < currentTime
-            )
+        // Sum liters from all records betweeen prevFullTank and current (exclusive of both start and end, but we add current separately)
+        // Logic: Total Liters = (Liters of all partials/fulls BETWEEN prevFull and Current) + Current Liters
+        // NOTE: The previous full tank's liters are NOT included (they were for the distance BEFORE it).
+        const intermediateLiters = allRecords
+            .slice(prevFullTankIdx + 1, currentIdx)
             .reduce((sum, r) => sum + r.liters, 0);
 
-        const totalLiters = accumulatedLiters + currentLiters;
+        const totalLiters = intermediateLiters + currentRecord.liters;
         return (totalLiters / kmDist) * 100;
     };
 
@@ -176,19 +187,32 @@ export default function FuelTracker() {
             const totalPriceNum = parseFloat(formData.totalPrice);
             const pricePerLiterNum = parseFloat(formData.pricePerLiter);
 
-            // Find previous record for distanceDelta (any record, not just full tanks)
-            const sortedRecords = [...records].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-            const prevRecord = sortedRecords.filter(r => new Date(r.date).getTime() < new Date(formData.date).getTime()).pop();
+            // Create temp object for sorting/calculation
+            const tempRecord = {
+                id: editingRecord?.id, // undefined for new
+                date: new Date(formData.date).toISOString(),
+                mileage: mileageNum,
+                liters: litersNum,
+                fullTank: formData.fullTank
+            };
 
-            // Consumption accumulates liters from all records since the previous full tank
-            const consumption = calculateConsumptionForRecord(
-                mileageNum,
-                litersNum,
-                formData.fullTank,
-                formData.date,
-                records,
-                editingRecord?.id
-            );
+            // Calculate Consumption robustly
+            const consumption = calculateConsumptionForRecord(tempRecord, records);
+
+            // Find Previous Record for Distance Delta (Robust Sort)
+            // We need to place our temp record into the timeline to find what's immediately before it
+            const tempId = 'temp-calc-id';
+            const allRecordsForDelta = [
+                ...records.filter(r => r.id !== editingRecord?.id),
+                { ...tempRecord, id: tempId, fullTank: formData.fullTank } as FuelRecord // Mock full object
+            ].sort((a, b) => {
+                const timeDiff = new Date(a.date).getTime() - new Date(b.date).getTime();
+                if (timeDiff !== 0) return timeDiff;
+                return a.mileage - b.mileage;
+            });
+
+            const currentIdx = allRecordsForDelta.findIndex(r => r.id === tempId);
+            const prevRecord = currentIdx > 0 ? allRecordsForDelta[currentIdx - 1] : undefined;
             const distanceDelta = prevRecord ? mileageNum - prevRecord.mileage : undefined;
 
             const recordData: any = {

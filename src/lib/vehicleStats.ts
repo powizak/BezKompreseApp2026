@@ -102,7 +102,11 @@ export function calculateVehicleStats(
     // Calculate average consumption using first-full-tank to last-full-tank method.
     // The first full tank is the reference point — we don't know how many km were driven
     // before it, so we exclude its liters from the sum and use its mileage as the baseline.
-    const sorted = [...fuelRecords].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const sorted = [...fuelRecords].sort((a, b) => {
+        const timeDiff = new Date(a.date).getTime() - new Date(b.date).getTime();
+        if (timeDiff !== 0) return timeDiff;
+        return a.mileage - b.mileage;
+    });
     const fullTanks = sorted.filter(r => r.fullTank);
     let avgConsumption = 0;
     if (fullTanks.length >= 2) {
@@ -110,10 +114,14 @@ export function calculateVehicleStats(
         const lastFull = fullTanks[fullTanks.length - 1];
         const kmSpan = lastFull.mileage - firstFull.mileage;
         // Sum liters of all records AFTER the first full tank up to and including the last full tank
+        // We use index-based filtering on the sorted array which is safer than date comparisons for same-day records
+        const firstFullIdx = sorted.findIndex(r => r.id === firstFull.id);
+        const lastFullIdx = sorted.findIndex(r => r.id === lastFull.id);
+
         const litersAfterFirst = sorted
-            .filter(r => new Date(r.date).getTime() > new Date(firstFull.date).getTime()
-                && new Date(r.date).getTime() <= new Date(lastFull.date).getTime())
+            .slice(firstFullIdx + 1, lastFullIdx + 1)
             .reduce((sum, r) => sum + r.liters, 0);
+
         if (kmSpan > 0 && litersAfterFirst > 0) {
             avgConsumption = (litersAfterFirst / kmSpan) * 100;
         }
@@ -122,6 +130,7 @@ export function calculateVehicleStats(
     // Calculate consumption trend (compare last 3 vs previous 3 records)
     let consumptionTrend: 'up' | 'down' | 'stable' = 'stable';
     if (consumptions.length >= 6) {
+        // Sort consumptions by date desc
         consumptions.sort((a, b) => b.date.getTime() - a.date.getTime());
         const recent = consumptions.slice(0, 3).reduce((s, c) => s + c.value, 0) / 3;
         const older = consumptions.slice(3, 6).reduce((s, c) => s + c.value, 0) / 3;
