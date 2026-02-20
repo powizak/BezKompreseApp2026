@@ -1,6 +1,13 @@
 # Changelog
 
 Všechny důležité změny v projektu jsou zaznamenány v tomto souboru.
+## [0.0.43] - 2026-02-20
+### Přidáno
+- Optimalizace profilových fotek: nové nahrávané avatary jsou automaticky zmenšovány na ideální rozměr **130x130px** (WebP), což výrazně šetří datový přenos a úložný prostor.
+- Zjednodušení datového modelu: profilová fotka (`photoURL`) je nyní opět reprezentována jako jednoduchý řetězec, což zlepšuje stabilitu UI komponent.
+- Robustní fallback strategie: komponenta avatara nyní okamžitě a bezpečně využívá profilovou fotku z Google účtu, pokud uživatel nenahrál vlastní.
+- Registrace známé chyby: Dokumentování problému s vyhledáváním uživatelů podle jména v `knownbugs.md`.
+
 ## [0.0.42] - 2026-02-19
 ### Opraveno
 - Robustní výpočet spotřeby paliva: Algoritmus nyní správně započítává všechna tankování i v případě více záznamů ve stejný den (včetně kombinace částečného a plného tankování).

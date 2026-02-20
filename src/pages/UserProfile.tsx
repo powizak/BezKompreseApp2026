@@ -40,6 +40,9 @@ export default function UserProfilePage() {
     const [isFriend, setIsFriend] = useState(false);
     const [activeTab, setActiveTab] = useState<'garage' | 'events' | 'friends' | 'settings' | 'badges'>('garage');
     const [saving, setSaving] = useState(false);
+    const [editDisplayName, setEditDisplayName] = useState('');
+    const [photoFile, setPhotoFile] = useState<File | null>(null);
+    const [photoPreview, setPhotoPreview] = useState<string | null>(null);
     const [homeLocation, setHomeLocation] = useState<{ lat: number; lng: number } | undefined>(undefined);
     const [trackerSettings, setTrackerSettings] = useState<import('../types').TrackerSettings>({
         isEnabled: false,
@@ -70,6 +73,7 @@ export default function UserProfilePage() {
             const result = await Effect.runPromise(dataService.getUserProfile(id));
             if (result) {
                 setProfile(result.profile);
+                setEditDisplayName(result.profile.displayName || '');
                 setCars(result.cars);
                 setHomeLocation(result.profile.homeLocation);
                 if (result.profile.trackerSettings) {
@@ -142,7 +146,7 @@ export default function UserProfilePage() {
             const roomId = await Effect.runPromise(
                 dataService.getOrCreateChatRoom(
                     currentUser.uid, currentUser.displayName || 'Anonymous', currentUser.photoURL,
-                    id, profile.displayName || 'Uživatel', profile.photoURL || null
+                    id, profile.displayName || 'Uživatel', profile.photoURL
                 )
             );
             openChat(roomId, id, profile.displayName || 'Uživatel');
@@ -166,13 +170,26 @@ export default function UserProfilePage() {
             const updateData: any = {
                 trackerSettings,
                 shareFuelConsumption,
-                notificationSettings
+                notificationSettings,
+                displayName: editDisplayName.trim() || currentUser.displayName
             };
+
+            if (photoFile) {
+                const uploadedPhoto = await Effect.runPromise(dataService.uploadProfilePhoto(photoFile, currentUser.uid));
+                updateData.photoURL = uploadedPhoto;
+            }
+
             if (homeLocation !== undefined) {
                 updateData.homeLocation = homeLocation;
             }
 
             await Effect.runPromise(dataService.updateProfile(currentUser.uid, updateData));
+
+            setPhotoFile(null);
+            setPhotoPreview(null);
+            if (profile) {
+                setProfile({ ...profile, ...updateData });
+            }
             // alert('Nastavení úspěšně uloženo!');
         } catch (e) {
             console.error('Update failed:', e);
@@ -418,6 +435,68 @@ export default function UserProfilePage() {
                 {/* Settings Tab */}
                 {activeTab === 'settings' && isMe && (
                     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4">
+                        <section className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2 bg-brand/10 text-brand rounded-xl">
+                                    <User size={24} />
+                                </div>
+                                <div>
+                                    <h2 className="text-xl font-black italic uppercase tracking-tighter">Osobní údaje</h2>
+                                    <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Jméno a fotka</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Zobrazované jméno</label>
+                                    <input
+                                        type="text"
+                                        value={editDisplayName}
+                                        onChange={(e) => setEditDisplayName(e.target.value)}
+                                        placeholder="Přezdívka"
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand/20"
+                                    />
+                                </div>
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Profilová fotka</label>
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-slate-200 flex-shrink-0 bg-slate-100">
+                                            {photoPreview ? (
+                                                <img src={photoPreview} alt="Náhled" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <UserAvatar user={profile} size={64} className="w-full h-full" />
+                                            )}
+                                        </div>
+                                        <label className="flex-1 cursor-pointer bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-center text-sm font-bold text-slate-600 hover:bg-slate-100 transition-colors">
+                                            Nahrát novou fotku
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) {
+                                                        setPhotoFile(file);
+                                                        setPhotoPreview(URL.createObjectURL(file));
+                                                    }
+                                                }}
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="pt-6 border-t border-slate-100 flex justify-end">
+                                <button
+                                    onClick={saveSettings}
+                                    disabled={saving}
+                                    className="bg-brand text-brand-contrast px-8 py-3 rounded-2xl font-black uppercase italic tracking-tighter shadow-lg shadow-brand/20 hover:bg-brand-dark transition-all flex items-center gap-2 disabled:opacity-50"
+                                >
+                                    {saving ? 'Ukládám...' : <><Save size={18} /> Uložit nastavení</>}
+                                </button>
+                            </div>
+                        </section>
+
                         <section className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="p-2 bg-brand/10 text-brand rounded-xl">

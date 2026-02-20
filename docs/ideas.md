@@ -16,6 +16,7 @@ Současný stav: Servisní knížka řeší opravy, seznam tankování pak spot�
 - **Korekce výpočtu**: Správná akumulace litrů přes částečná tankování a výpočet průměru z první/poslední plné nádrže
 - Zobrazení tachometru na kartě auta v garáži
 - **Status aut**: Sezónní, depozit, v renovaci, do šrotu, porucha, závodní speciál, daily, pracovní, služební
+- **Zobrazení náhledu fotek**: Při přidávání profilové fotky se zobrazí náhled před uložením.
 
 #### 🚀 Budoucí vylepšení:
 - Kalkulačka dojezdu: Odhad, kolik km ujede s plnou nádrží
@@ -81,7 +82,6 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - Přidat značku, zda již někdo přečetl zprávu či nikoliv (pro toho, kdo si ji má přečíst - v seznamu zpráv)
 - Dodělat swipe na všech stránkách pro vrácení se zpět pro Android (některé Android to tak mohou mít nastavené - stejné jako v knownbugs)
 - Pro bazar udělat vlastní rychlý dialog bez nutnosti otevírat novou stránku daného inzerátu (bacha, máme 2 typy - auta z profilu + inzeráty samotné)
-- Při přidávání fotek zobrazit jejich náhled před uložením, aby se nestalo, že uživatel omylem nahraje jinou fotku
 - Ve feedu zobrazit u každého příspěvku možnost nejen prokliku, ale jen zkopírování odkazu
 - Pro zadávání hodnoty u pole "engine" udělat buď kombinaci 2 polí (hodnota číselná + označení s např. pouze velkými písmeny) nebo našeptávač ze současných hodnot v DDL s možností přidání další varianty, která ještě neexistuje - současná data jsou trochu bordel - každý to zadává jinak (tečka, čárka, mezera, velikost písmen)
 

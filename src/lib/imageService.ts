@@ -242,6 +242,42 @@ export const processAndUploadImage = (
     });
 
 /**
+ * Main function for Avatars: Process image to 100x100px and upload single variant
+ * 
+ * @param file - The image file to process
+ * @param basePath - Base storage path (e.g., "users/uid/avatar_1234567890")
+ * @returns Effect with a single string URL
+ */
+export const processAndUploadAvatar = (
+    file: File,
+    basePath: string
+): Effect.Effect<string, ImageProcessingError> =>
+    Effect.gen(function* (_) {
+        const MAX_FILE_SIZE = 15 * 1024 * 1024;
+        if (file.size > MAX_FILE_SIZE) {
+            yield* _(
+                Effect.fail(
+                    new ImageProcessingError("Soubor je příliš velký (max 15 MB).")
+                )
+            );
+        }
+
+        if (!file.type.startsWith("image/")) {
+            yield* _(
+                Effect.fail(
+                    new ImageProcessingError("Invalid file type. Only images are allowed.")
+                )
+            );
+        }
+
+        // Process to max 130px
+        const blob = yield* _(processImageVariant(file, 130));
+        const variantPath = `${basePath}/avatar.webp`;
+        const url = yield* _(uploadBlob(blob, variantPath));
+        return url;
+    });
+
+/**
  * Select the most appropriate variant based on display width
  * 
  * @param variants - ImageVariants object with all variant URLs

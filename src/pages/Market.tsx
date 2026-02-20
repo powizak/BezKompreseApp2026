@@ -196,8 +196,9 @@ export default function Market() {
             // Create listing first to get ID
             const listingId = await Effect.runPromise(dataService.addMarketplaceListing({
                 userId: user.uid,
-                userName: user.displayName || 'Uživatel',
+                userName: user.displayName || 'Anonymní uživatel',
                 userPhotoURL: user.photoURL || undefined,
+                isBKTeam: user.isBKTeam,
                 type: formData.type,
                 title: formData.title,
                 description: formData.description,

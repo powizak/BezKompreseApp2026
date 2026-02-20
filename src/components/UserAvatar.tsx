@@ -24,21 +24,23 @@ export default function UserAvatar({
     showBadge = true
 }: UserAvatarProps) {
     // Resolve data from user object or direct props
-    const finalPhotoURL = user?.photoURL ?? photoURL;
+    const finalPhotoURLString = user?.photoURL ?? photoURL;
     const fallbackPhotoURL = user?.fallbackPhotoURL ?? null; // Google account photo URL
     const finalDisplayName = user?.displayName ?? displayName ?? 'Uživatel';
     // Explicit isBKTeam prop takes precedence, otherwise check user object
     const finalIsBKTeam = isBKTeam ?? user?.isBKTeam ?? false;
 
+    const initialSrc = finalPhotoURLString || fallbackPhotoURL || null;
+
     // Track current image source with fallback support
-    const [currentSrc, setCurrentSrc] = useState<string | null>(finalPhotoURL ?? null);
+    const [currentSrc, setCurrentSrc] = useState<string | null>(initialSrc);
     const [hasTriedFallback, setHasTriedFallback] = useState(false);
 
     // Reset when primary URL changes
     useEffect(() => {
-        setCurrentSrc(finalPhotoURL ?? null);
+        setCurrentSrc(finalPhotoURLString || fallbackPhotoURL || null);
         setHasTriedFallback(false);
-    }, [finalPhotoURL]);
+    }, [finalPhotoURLString, fallbackPhotoURL]);
 
     const handleImageError = () => {
         // If main image fails and we haven't tried fallback yet, use Google URL

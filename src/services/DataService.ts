@@ -6,7 +6,7 @@ import {
 import { db } from "../config/firebase";
 import type { Car, AppEvent, SocialPost, UserProfile, ServiceRecord, FuelRecord, HelpBeacon, EventType, EventComment, MarketplaceListing, ImageVariants } from "../types";
 import type { PresenceInfo, Message, ChatRoom } from "../types/chat";
-import { processAndUploadImage } from "../lib/imageService";
+import { processAndUploadImage, processAndUploadAvatar } from "../lib/imageService";
 import { BadgeService } from "./BadgeService";
 
 export class DataError {
@@ -105,6 +105,7 @@ export interface DataService {
     readonly getCarsForSale: (limitCount?: number) => Effect.Effect<Car[], DataError>;
     readonly markCarAsSold: (carId: string) => Effect.Effect<void, DataError>;
     readonly uploadListingImage: (file: File, listingId: string) => Effect.Effect<ImageVariants, DataError>;
+    readonly uploadProfilePhoto: (file: File, userId: string) => Effect.Effect<string, DataError>;
 }
 
 export const DataService = Context.GenericTag<DataService>("DataService");
@@ -349,6 +350,13 @@ export const DataServiceLive = Layer.succeed(
             const basePath = `events/${eventId}/${Date.now()}`;
             const result = yield* _(processAndUploadImage(file, basePath).pipe(
                 Effect.mapError((e) => new DataError("Failed to upload event image", e))
+            ));
+            return result;
+        }),
+        uploadProfilePhoto: (file, userId) => Effect.gen(function* (_) {
+            const basePath = `users/${userId}/avatar_${Date.now()}`;
+            const result = yield* _(processAndUploadAvatar(file, basePath).pipe(
+                Effect.mapError((e) => new DataError("Failed to upload profile photo", e))
             ));
             return result;
         }),

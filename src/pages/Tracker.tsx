@@ -5,6 +5,7 @@ import L from 'leaflet';
 import { Geolocation } from '@capacitor/geolocation';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
+import { getImageUrl } from '../lib/imageService';
 import { useAuth } from '../contexts/AuthContext';
 import { useChat } from '../contexts/ChatContext';
 import { Navigation, MessageCircle, Shield, User, AlertTriangle, Wrench, Fuel, CircleSlash, HelpCircle, Phone, CheckCircle } from 'lucide-react';
@@ -345,7 +346,7 @@ export default function Tracker() {
             await Effect.runPromise(dataService.createHelpBeacon({
                 userId: user.uid,
                 displayName: user.displayName || 'Anonymous',
-                photoURL: user.photoURL,
+                photoURL: user.photoURL || null,
                 location: { lat: myLoc[0], lng: myLoc[1] },
                 beaconType,
                 description,
@@ -566,7 +567,7 @@ export default function Tracker() {
                                                     try {
                                                         const roomId = await Effect.runPromise(
                                                             dataService.getOrCreateChatRoom(
-                                                                user.uid, user.displayName || 'Anonymous', user.photoURL,
+                                                                user.uid, user.displayName || 'Anonymous', user.photoURL ? getImageUrl(user.photoURL) : null,
                                                                 p.uid, p.displayName, p.photoURL || null
                                                             )
                                                         );
@@ -612,15 +613,15 @@ export default function Tracker() {
                                     <div className="flex items-center gap-3 mb-3">
                                         <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-red-100">
                                             {beacon.photoURL ? (
-                                                <img 
-                                                    src={beacon.photoURL} 
-                                                    alt={beacon.displayName} 
-                                                    className="w-full h-full object-cover" 
-                                                    onError={(e) => { 
+                                                <img
+                                                    src={beacon.photoURL}
+                                                    alt={beacon.displayName}
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => {
                                                         const target = e.target as HTMLImageElement;
                                                         target.style.display = 'none';
                                                         target.nextElementSibling?.classList.remove('hidden');
-                                                    }} 
+                                                    }}
                                                 />
                                             ) : null}
                                             <div className="w-full h-full bg-red-50 flex items-center justify-center text-red-400 hidden">
