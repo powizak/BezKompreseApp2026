@@ -12,9 +12,6 @@
 ## Nahrávání fotek nezobrazuje náhled
 - v případě přidávání fotek v bazaru (možná i v autech) se nezobrazuje náhled fotky po výběru fotky od uživatele
 
-# Vyhledávání uživatelů nefunguje správně
-- hledá se pouze podle originálního google jména, potřeba rozšířit a upravit i na současné jméno, které si může uživatel změnit v profilu
-
 ## 🔴 Firebase Storage Rules Missing
 
 **Status**: Open  

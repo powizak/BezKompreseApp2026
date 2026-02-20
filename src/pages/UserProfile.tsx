@@ -166,12 +166,18 @@ export default function UserProfilePage() {
         );
 
         try {
+            const newDisplayName = editDisplayName.trim() || currentUser.displayName;
+            const { generateSearchKeys } = await import('../lib/stringUtils');
+            const searchKeys = generateSearchKeys([newDisplayName, profile?.originalName]);
+
             // Firestore doesn't accept 'undefined'. Strip it or use null.
             const updateData: any = {
                 trackerSettings,
                 shareFuelConsumption,
                 notificationSettings,
-                displayName: editDisplayName.trim() || currentUser.displayName
+                displayName: newDisplayName,
+                searchKey: newDisplayName ? newDisplayName.toLowerCase() : "", // Legacy
+                searchKeys
             };
 
             if (photoFile) {

@@ -520,11 +520,10 @@ export const DataServiceLive = Layer.succeed(
         }),
         searchUsers: (searchQuery) => Effect.tryPromise({
             try: async () => {
-                const normalizedQuery = searchQuery.toLowerCase();
+                const normalizedQuery = searchQuery.toLowerCase().trim();
                 const q = query(
                     collection(db, "users"),
-                    where("searchKey", ">=", normalizedQuery),
-                    where("searchKey", "<=", normalizedQuery + '\uf8ff'),
+                    where("searchKeys", "array-contains", normalizedQuery),
                     limit(20)
                 );
                 const snapshot = await getDocs(q);

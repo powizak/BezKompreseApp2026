@@ -28,6 +28,7 @@ export interface AuthService {
 export const AuthService = Context.GenericTag<AuthService>("AuthService");
 
 import { internalizeProfileImage } from "../lib/profileImageService";
+import { generateSearchKeys } from "../lib/stringUtils";
 
 // Helper to internalize profile image if needed
 const synchronizeProfileImage = async (user: any) => {
@@ -169,30 +170,59 @@ export const AuthServiceLive = Layer.succeed(
           user = result.user;
         }
 
-        // Basic Profile Update
-        const profile: Partial<UserProfile> = {
-          uid: user.uid,
-          displayName: user.displayName,
-          email: user.email,
-          photoURL: user.photoURL,
-          fallbackPhotoURL: user.providerData?.[0]?.photoURL || user.photoURL, // Store Google URL as backup
-        };
-
         // We write the *current* state first to ensure doc exists
         // We Use setDoc with merge: true to avoid overwriting existing fields like 'friends'
         // We also want to ensure 'createdAt' exists for badges
         const docRef = doc(db, "users", user.uid);
         const docSnap = await import("firebase/firestore").then(m => m.getDoc(docRef));
 
-        if (!docSnap.exists() || !docSnap.data().createdAt) {
-          // For new users or users without createdAt, set it.
-          // Try to use metadata from auth user
+        // Basic Profile Update
+        const profile: Partial<UserProfile> = {
+          uid: user.uid,
+          email: user.email,
+          photoURL: user.photoURL,
+          fallbackPhotoURL: user.providerData?.[0]?.photoURL || user.photoURL, // Store Google URL as backup
+        };
+
+        let currentDisplayName = user.displayName;
+        let originalName = user.displayName;
+
+        if (docSnap.exists()) {
+          const data = docSnap.data() as UserProfile;
+          if (!(data as any).createdAt) {
+            let createdAt = new Date().toISOString();
+            if (user.metadata && user.metadata.creationTime) {
+              createdAt = new Date(user.metadata.creationTime).toISOString();
+            }
+            (profile as any).createdAt = createdAt;
+          }
+
+          // Do NOT overwrite user-modified display name
+          if (data.displayName) {
+            currentDisplayName = data.displayName;
+          }
+          profile.displayName = currentDisplayName;
+
+          // Keep originalName if already set, or set it if new
+          if (data.originalName) {
+            originalName = data.originalName;
+          } else {
+            profile.originalName = originalName;
+          }
+        } else {
+          // New user
           let createdAt = new Date().toISOString();
           if (user.metadata && user.metadata.creationTime) {
             createdAt = new Date(user.metadata.creationTime).toISOString();
           }
           (profile as any).createdAt = createdAt;
+          profile.displayName = currentDisplayName;
+          profile.originalName = originalName;
         }
+
+        // Generate search keys
+        profile.searchKeys = generateSearchKeys([currentDisplayName, originalName]);
+        profile.searchKey = currentDisplayName ? currentDisplayName.toLowerCase() : ""; // Legacy
 
         await setDoc(docRef, profile, { merge: true });
 
@@ -250,6 +280,9 @@ export const AuthServiceLive = Layer.succeed(
               await setDoc(userRef, {
                 uid: firebaseUser.uid,
                 displayName: firebaseUser.displayName,
+                originalName: firebaseUser.displayName,
+                searchKeys: generateSearchKeys([firebaseUser.displayName]),
+                searchKey: firebaseUser.displayName ? firebaseUser.displayName.toLowerCase() : "",
                 email: firebaseUser.email,
                 photoURL: firebaseUser.photoURL
               }, { merge: true });

@@ -1,6 +1,12 @@
 # Changelog
 
 Všechny důležité změny v projektu jsou zaznamenány v tomto souboru.
+## [0.0.44] - 2026-02-20
+### Opraveno
+- **Fix vyhledávání uživatelů**: Kompletní reimplementace vyhledávání v komunitě. Uživatelé jsou nyní vyhledáváni pomocí `searchKeys` prefixů, což umožňuje hledání podle aktuálního jména v profilu i původního jména z Google účtu.
+- **Oprava persistence jména**: Vyřešen bug v `AuthService`, který při každém přihlášení přepsal vlastní přezdívku uživatele jeho původním Google jménem.
+- **Výkon**: Vyhledávání je nyní case-insensitive a podporuje hledání podle částí jmen (např. jen příjmení) s bleskovou odezvou Firestore.
+
 ## [0.0.43] - 2026-02-20
 ### Přidáno
 - Optimalizace profilových fotek: nové nahrávané avatary jsou automaticky zmenšovány na ideální rozměr **130x130px** (WebP), což výrazně šetří datový přenos a úložný prostor.

@@ -45,6 +45,27 @@ async function migrateUsers() {
             chunks.push(docs.slice(i, i + batchSize));
         }
 
+        function generateSearchKeys(strings: (string | null | undefined)[]): string[] {
+            const keys = new Set<string>();
+            strings.forEach(s => {
+                if (!s) return;
+                const normalized = s.toLowerCase().trim();
+                if (!normalized) return;
+                for (let i = 1; i <= normalized.length; i++) {
+                    keys.add(normalized.substring(0, i));
+                }
+                const parts = normalized.split(/\s+/);
+                if (parts.length > 1) {
+                    parts.forEach(part => {
+                        for (let i = 1; i <= part.length; i++) {
+                            keys.add(part.substring(0, i));
+                        }
+                    });
+                }
+            });
+            return Array.from(keys);
+        }
+
         for (const chunk of chunks) {
             const batch = db.batch();
 
@@ -56,9 +77,11 @@ async function migrateUsers() {
                 const friends = data.friends || [];
                 updates.friendsCount = friends.length;
 
-                // 2. searchKey
+                // 2. searchKeys
                 if (data.displayName) {
                     updates.searchKey = data.displayName.toLowerCase();
+                    const originalName = data.originalName || null;
+                    updates.searchKeys = generateSearchKeys([data.displayName, originalName]);
                 }
 
                 // 3. _random

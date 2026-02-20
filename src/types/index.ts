@@ -33,7 +33,9 @@ export interface UserProfile {
   fcmToken?: string; // FCM device token
   // Optimization fields
   friendsCount?: number;
-  searchKey?: string; // Lowercase display name for search
+  searchKey?: string; // Legacy: Lowercase display name for search
+  searchKeys?: string[]; // Array of prefixes for searching (includes parts of original and current name)
+  originalName?: string | null; // The original name from the auth provider (e.g. Google)
   _random?: number; // Random integer for random sorting
   isBKTeam?: boolean; // Member of Bez Komprese Team
   badges?: import('./badges').UserBadge[]; // Collected badges

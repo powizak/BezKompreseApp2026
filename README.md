@@ -42,7 +42,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 ### 👥 Komunita
 - **Profily Uživatelů**: Zobrazení garáže a aktivit ostatních členů (včetně možnosti **odhlášení** v nastavení)
 - **Seznam Uživatelů**: Procházení komunity s přehledem **TOP 5 nejoblíbenějších členů** (dle počtu přátel) a náhodný výběr dalších petrolheadů
-- **🆕 Efektivní Vyhledávání**: Optimalizované vyhledávání uživatelů s minimálním počtem requestů
+- **🆕 Efektivní Vyhledávání**: Optimalizované vyhledávání uživatelů (přes `prefix searchKeys`) s vyhledáváním dle současného i původního jména a bleskovým načítáním.
 - **Veřejné Garáže**: Inspirace od ostatních autíčkářů
 - **🆕 Systém Odznaků**: Sbírání unikátních ocenění za aktivitu (organizace akcí, přátelství, servis, nájezd, atd.) s automatickou deduplikací a retroaktivní kontrolou.
 - **🚀 Výkonné Procházení**: Serverové stránkování a filtrování všech aut pro bleskové načítání i při tisících vozidlech
@@ -106,7 +106,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 *   **Stylování:** Tailwind CSS
 *   **Backend:** Firebase (Auth, Firestore, Storage, Cloud Functions)
 *   **Mapy:** Leaflet + OpenStreetMap
-*   **Optimalizace**: Image caching (Cache-Control immutable, ImageLoader concurrency limit & circuit breaker, Prioritized loading for cars > avatars, Simplified profile photo pipeline (130x130px WebP) with robust Google fallback & internalization storage optimization), Unified 15MB Image Upload Pipeline (WebP conversion, quality 0.7), Input sanitation (auto-trim), Fast Initial Auth emission (Stale-while-revalidate), Stable useEffect dependencies (Double-loading prevention), Unified Loading UX (Rotating Logo), Social Feed caching (10min limit), YouTube API optimization (using playlistItems for 100x quota saving), Advanced Code Splitting (Vite manualChunks), Reusable Event Form with runtime validation/cleaning (preventing Firestore invalid-argument errors)
+*   **Optimalizace**: Image caching (Cache-Control immutable, ImageLoader concurrency limit & circuit breaker, Prioritized loading for cars > avatars, Simplified profile photo pipeline (130x130px WebP) with robust Google fallback & internalization storage optimization), Unified 15MB Image Upload Pipeline (WebP conversion, quality 0.7), Input sanitation (auto-trim), Fast Initial Auth emission (Stale-while-revalidate), Stable useEffect dependencies (Double-loading prevention), Unified Loading UX (Rotating Logo), Social Feed caching (10min limit), YouTube API optimization (using playlistItems for 100x quota saving), Advanced Code Splitting (Vite manualChunks), Reusable Event Form with runtime validation/cleaning (preventing Firestore invalid-argument errors), Multi-field Array Prefix Search (searchKeys utility for community search)
 
 
 ## Jak spustit projekt
