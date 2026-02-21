@@ -291,18 +291,29 @@ export default function Garage() {
 
   return (
     <div className="max-w-4xl mx-auto pb-20">
-      <div className="flex justify-between items-center mb-8 sticky top-0 bg-slate-50/95 backdrop-blur-sm py-4 z-10 px-1">
-        <div>
-          <h2 className="text-3xl font-black italic uppercase tracking-tighter text-slate-900">Moje Garáž</h2>
-          <p className="text-sm text-slate-500 font-medium">{cars.length} {cars.length === 1 ? 'vozidlo' : (cars.length >= 2 && cars.length <= 4 ? 'vozidla' : 'vozidel')}</p>
+      <div className="sticky top-0 bg-slate-50/95 backdrop-blur-sm py-4 z-10 px-1 mb-8">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-4">
+            <div className="bg-brand/10 p-3 rounded-2xl shrink-0">
+              <CarFront className="text-brand" size={28} strokeWidth={2.5} />
+            </div>
+            <div>
+              <h1 className="text-xl font-black italic uppercase tracking-tighter text-slate-900">
+                Moje Garáž
+              </h1>
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">
+                {cars.length} {cars.length === 1 ? 'vozidlo' : (cars.length >= 2 && cars.length <= 4 ? 'vozidla' : 'vozidel')}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => { resetForm(); setShowForm(true); }}
+            className="bg-brand text-slate-900 p-2 sm:p-3 px-4 sm:px-5 rounded-xl shadow-lg shadow-brand/20 hover:bg-brand-dark hover:shadow-brand/40 transition-all font-bold text-sm flex items-center gap-2 w-full sm:w-auto justify-center"
+          >
+            <Plus size={20} className="shrink-0" />
+            <span>Přidat auto</span>
+          </button>
         </div>
-        <button
-          onClick={() => { resetForm(); setShowForm(true); }}
-          className="bg-brand text-slate-900 p-3 px-5 rounded-xl shadow-lg shadow-brand/20 hover:bg-brand-dark hover:shadow-brand/40 transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2"
-        >
-          <Plus size={24} strokeWidth={2.5} />
-          <span className="font-bold hidden sm:inline">Přidat auto</span>
-        </button>
       </div>
 
       {/* Delete Confirmation Modal */}

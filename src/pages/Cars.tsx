@@ -163,10 +163,13 @@ export default function CarsPage() {
     return (
         <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 pb-12">
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-4">
+            <div className="flex items-center gap-4 bg-white p-4 rounded-3xl shadow-sm border border-slate-100">
+                <div className="p-2 bg-brand text-brand-contrast rounded-xl shadow-lg shadow-brand/20">
+                    <CarFront size={24} />
+                </div>
                 <div>
-                    <h1 className="text-4xl font-black italic uppercase tracking-tighter text-slate-900">Všechna Auta</h1>
-                    <p className="text-slate-500 font-medium">Procházejte garáže ostatních uživatelů</p>
+                    <h1 className="text-xl font-black italic uppercase tracking-tighter">Všechna Auta</h1>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Procházejte garáže ostatních uživatelů</p>
                 </div>
             </div>
 

@@ -277,14 +277,14 @@ export default function Market() {
     return (
         <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-4 rounded-3xl shadow-sm border border-slate-100">
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-brand text-brand-contrast rounded-2xl shadow-lg shadow-brand/20">
-                        <Store size={28} />
+                    <div className="p-2 bg-brand text-brand-contrast rounded-xl shadow-lg shadow-brand/20">
+                        <Store size={24} />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-black italic uppercase tracking-tighter text-slate-900">Bazar</h1>
-                        <p className="text-sm text-slate-500 font-medium">
+                        <h1 className="text-xl font-black italic uppercase tracking-tighter">Bazar</h1>
+                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
                             {activeTab === 'cars' ? `${unifiedCars.length} aut na prodej` : `${filteredListings.length} inzerátů`}
                         </p>
                     </div>
@@ -292,9 +292,9 @@ export default function Market() {
 
                 <button
                     onClick={() => setShowForm(true)}
-                    className="bg-brand text-slate-900 px-5 py-3 rounded-xl font-bold shadow-lg shadow-brand/20 hover:bg-brand-dark hover:shadow-brand/40 transition-all flex items-center gap-2"
+                    className="bg-brand text-slate-900 px-4 py-2 rounded-xl font-bold text-sm shadow-md shadow-brand/20 hover:bg-brand-dark hover:shadow-brand/40 transition-all flex items-center gap-2"
                 >
-                    <Plus size={20} />
+                    <Plus size={16} />
                     Nový inzerát
                 </button>
             </div>

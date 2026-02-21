@@ -1,6 +1,11 @@
 # Changelog
 
 Všechny důležité změny v projektu jsou zaznamenány v tomto souboru.
+## [0.0.45] - 2026-02-21
+### Přidáno
+- **Sjednocení designu hlaviček**: Všechny hlavní stránky (`/cars`, `/market`, `/service-book`, `/fuel-tracker`, `/events`, `/garage`) mají nyní sjednocený vizuální styl hlaviček (včetně ikony, konzistentní typografie a bílého kontejneru se stínem) pro lepší UX a profesionální vzhled aplikace.
+- **Integrace ovládacích prvků**: Tlačítka pro přidávání záznamů nebo přepínání zobrazení (např. seznam/mapa v `/events`) jsou nyní elegantně integrována přímo do bloku hlavičky.
+
 ## [0.0.44] - 2026-02-20
 ### Opraveno
 - **Fix vyhledávání uživatelů**: Kompletní reimplementace vyhledávání v komunitě. Uživatelé jsou nyní vyhledáváni pomocí `searchKeys` prefixů, což umožňuje hledání podle aktuálního jména v profilu i původního jména z Google účtu.

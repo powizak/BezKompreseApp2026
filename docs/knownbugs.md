@@ -3,9 +3,6 @@
 
  - uživatelé mohou ve starých verzích aplikace (Android) zadávat data s whitespace na konci -> kazí to filtrování -> nutno ještě jednou vyčistit scriptem
 
-- některé stránky mají odlišné nadpisy - chceme sjednotit do stylu tracker či chats
-![náhled nadpisu stránky /chats](image.png)
-
 ## Navigace v mobilních zařízeních
 - na Android (možná i iOS) není funkční navigace pomocí navigačních tlačítek/gest
 

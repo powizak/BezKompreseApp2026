@@ -17,6 +17,7 @@ Současný stav: Servisní knížka řeší opravy, seznam tankování pak spot�
 - Zobrazení tachometru na kartě auta v garáži
 - **Status aut**: Sezónní, depozit, v renovaci, do šrotu, porucha, závodní speciál, daily, pracovní, služební
 - **Zobrazení náhledu fotek**: Při přidávání profilové fotky se zobrazí náhled před uložením.
+- **Sjednocení designu hlaviček**: Sjednocený styl (bílá karta, ikona, typografie) pro všechny hlavní sekce aplikace.
 
 #### 🚀 Budoucí vylepšení:
 - Kalkulačka dojezdu: Odhad, kolik km ujede s plnou nádrží

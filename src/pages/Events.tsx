@@ -143,13 +143,22 @@ export default function Events() {
     return (
         <div>
             {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                <div>
-                    <h2 className="text-3xl font-black italic uppercase tracking-tighter mb-1">Kalendář akcí</h2>
-                    <p className="text-sm font-medium text-slate-500 uppercase tracking-wide">Srazy, vyjížďky a trackdays</p>
+            <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                <div className="flex items-center gap-4">
+                    <div className="bg-brand/10 p-3 rounded-2xl shrink-0">
+                        <Calendar className="text-brand" size={28} strokeWidth={2.5} />
+                    </div>
+                    <div>
+                        <h1 className="text-xl font-black italic uppercase tracking-tighter text-slate-900">
+                            Kalendář akcí
+                        </h1>
+                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">
+                            Srazy, vyjížďky a trackdays
+                        </p>
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 shrink-0">
                     <button
                         onClick={() => setViewMode('list')}
                         className={`p-2 rounded-lg transition-all flex items-center gap-2 text-sm font-bold ${viewMode === 'list' ? 'bg-white shadow-sm text-slate-900 ring-1 ring-slate-200' : 'text-slate-500 hover:text-slate-900'}`}

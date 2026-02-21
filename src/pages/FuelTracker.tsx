@@ -289,26 +289,34 @@ export default function FuelTracker() {
     return (
         <div className="max-w-5xl mx-auto pb-20">
             {/* Header */}
-            <div className="mb-8">
-                <Link to="/garage" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 mb-4 font-medium">
+            <div className="mb-6">
+                <Link to="/garage" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 font-medium">
                     <ArrowLeft size={20} />
                     Zpět do garáže
                 </Link>
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            </div>
+
+            <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                <div className="flex items-center gap-4">
+                    <div className="bg-brand/10 p-3 rounded-2xl shrink-0">
+                        <Fuel className="text-brand" size={28} strokeWidth={2.5} />
+                    </div>
                     <div>
-                        <h1 className="text-3xl font-black italic uppercase tracking-tighter text-slate-900 mb-1">
+                        <h1 className="text-xl font-black italic uppercase tracking-tighter text-slate-900">
                             Tankování a Spotřeba
                         </h1>
-                        <p className="text-lg font-bold text-slate-600">{car.name} - {car.make} {car.model}</p>
+                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">
+                            {car.name} - {car.make} {car.model}
+                        </p>
                     </div>
-                    <button
-                        onClick={() => { resetForm(); setShowForm(true); }}
-                        className="bg-brand text-slate-900 p-3 px-5 rounded-xl shadow-lg shadow-brand/20 hover:bg-brand-dark hover:shadow-brand/40 transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2"
-                    >
-                        <Fuel size={24} strokeWidth={2.5} />
-                        <span className="font-bold">Přidat tankování</span>
-                    </button>
                 </div>
+                <button
+                    onClick={() => { resetForm(); setShowForm(true); }}
+                    className="bg-brand text-slate-900 p-2 sm:p-3 px-4 sm:px-5 rounded-xl shadow-lg shadow-brand/20 hover:bg-brand-dark hover:shadow-brand/40 transition-all font-bold text-sm flex items-center gap-2 w-full sm:w-auto justify-center"
+                >
+                    <Fuel size={20} className="shrink-0" />
+                    <span>Přidat tankování</span>
+                </button>
             </div>
 
             {/* Stats Dashboard */}
