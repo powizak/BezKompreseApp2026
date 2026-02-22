@@ -225,6 +225,7 @@ export default function Chats() {
             {activeChat && (
                 <ChatDrawer
                     roomId={activeChat.roomId}
+                    recipientId={activeChat.recipientId}
                     recipientName={activeChat.recipientName}
                     onClose={closeChat}
                 />

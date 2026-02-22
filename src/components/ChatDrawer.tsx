@@ -5,13 +5,16 @@ import { useAuth } from '../contexts/AuthContext';
 import { Send, X, MessageSquare } from 'lucide-react';
 import type { Message } from '../types/chat';
 
+import { Link } from 'react-router-dom';
+
 interface ChatDrawerProps {
     roomId: string;
+    recipientId: string;
     recipientName: string;
     onClose: () => void;
 }
 
-export default function ChatDrawer({ roomId, recipientName, onClose }: ChatDrawerProps) {
+export default function ChatDrawer({ roomId, recipientId, recipientName, onClose }: ChatDrawerProps) {
     const { user } = useAuth();
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputText, setInputText] = useState('');
@@ -74,7 +77,9 @@ export default function ChatDrawer({ roomId, recipientName, onClose }: ChatDrawe
                 <div className="p-4 bg-brand text-brand-contrast flex justify-between items-center shadow-md rounded-t-3xl md:rounded-none">
                     <div className="flex items-center gap-3">
                         <MessageSquare size={20} />
-                        <h3 className="font-black uppercase italic tracking-tighter">{recipientName}</h3>
+                        <Link to={`/profile/${recipientId}`} className="hover:opacity-80 transition-opacity" onClick={onClose}>
+                            <h3 className="font-black uppercase italic tracking-tighter">{recipientName}</h3>
+                        </Link>
                     </div>
                     <button onClick={onClose} className="p-1 hover:bg-black/10 rounded-lg transition-colors">
                         <X size={24} />
