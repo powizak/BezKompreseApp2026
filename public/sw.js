@@ -1,10 +1,11 @@
 /**
- * Service Worker — Cache-first strategy for Firebase Storage images
+ * Service Worker
+ * 
+ * 1. Cache-first strategy for Firebase Storage images
+ * 2. FCM Push Notifications (web)
  * 
  * Intercepts fetch requests to firebasestorage.googleapis.com and
  * serves them from CacheStorage when available. Falls back to network.
- * 
- * This SW only handles image caching. All other requests pass through.
  */
 
 const CACHE_NAME = 'bk-images-v1';
@@ -102,3 +103,62 @@ async function trimCache(cache) {
         await cache.delete(keys[i]);
     }
 }
+
+// =============================================================================
+// FCM Push Notifications (web)
+// =============================================================================
+
+/**
+ * Handle incoming push messages from Firebase Cloud Messaging.
+ * The payload comes from Cloud Functions via admin.messaging().send().
+ */
+self.addEventListener('push', (event) => {
+    if (!event.data) return;
+
+    let data;
+    try {
+        data = event.data.json();
+    } catch (e) {
+        console.warn('[SW] Failed to parse push data:', e);
+        return;
+    }
+
+    // FCM wraps notifications in a `notification` key, data in `data`
+    const notification = data.notification || {};
+    const title = notification.title || 'Bez Komprese';
+    const options = {
+        body: notification.body || '',
+        icon: '/logo_120.webp',
+        badge: '/logo_120.webp',
+        data: data.data || {},
+        tag: data.data?.tag || 'default',
+    };
+
+    event.waitUntil(
+        self.registration.showNotification(title, options)
+    );
+});
+
+/**
+ * Handle notification click — open the app or focus existing tab
+ */
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+
+    const url = event.notification.data?.url || '/';
+
+    event.waitUntil(
+        self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+            // Focus existing tab if found
+            for (const client of clientList) {
+                if (client.url.includes(self.location.origin) && 'focus' in client) {
+                    client.navigate(url);
+                    return client.focus();
+                }
+            }
+            // Otherwise open new tab
+            return self.clients.openWindow(url);
+        })
+    );
+});
+

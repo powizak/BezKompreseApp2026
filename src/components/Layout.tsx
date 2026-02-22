@@ -9,12 +9,15 @@ import ChatDrawer from './ChatDrawer';
 import SupportSection from './SupportSection';
 import UserAvatar from './UserAvatar';
 import { useBackButton } from '../hooks/useBackButton';
+import { useNotificationPrompt } from '../hooks/useNotificationPrompt';
+import NotificationPromptDialog from './NotificationPromptDialog';
 
 export default function Layout() {
   useBackButton();
   const { pathname } = useLocation();
   const { user, logout } = useAuth();
   const { activeChat, closeChat, unreadMap, openChat } = useChat();
+  const { showPrompt, isProcessing, handleAccept, handleDismiss } = useNotificationPrompt(user);
 
   const unreadCount = Object.keys(unreadMap).length;
 
@@ -143,6 +146,15 @@ export default function Layout() {
       </nav>
 
       <CookieBanner />
+
+      {/* Notification Permission Prompt */}
+      {showPrompt && (
+        <NotificationPromptDialog
+          onAccept={handleAccept}
+          onDismiss={handleDismiss}
+          isProcessing={isProcessing}
+        />
+      )}
 
       {/* Global Chat Drawer */}
       {activeChat && (

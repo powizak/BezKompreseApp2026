@@ -6,6 +6,9 @@
 ## Nastavení notifikací
 - Pro zapnutí notifikací v nové verzi je vždy potřeba jít do nastavení v profilu a notifikace vypnout a zapnout - po prvním spuštění apliakce je žádoucí, aby si aplikace o daná oprávnění řekla sama (vždy, pokud je nemá povolené) a případně kontrolovala, zda je má povolené v případě změny v nastavení v aplikaci (to nyní funguje)
 
+## Verze apliakce pro telefony zobrazuje stále 1.0.0 
+- chceme synchronizovat zobrazení verze aplikace jak pro web, tak pro telefony
+
 ## Nahrávání fotek nezobrazuje náhled
 - v případě přidávání fotek v bazaru (možná i v autech) se nezobrazuje náhled fotky po výběru fotky od uživatele
 

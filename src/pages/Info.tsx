@@ -1,6 +1,7 @@
 import { ShoppingBag, Wrench, Camera, Youtube, Instagram, Facebook, Truck, Shield, FileText, Mail, Users, Car } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { getAppStats, type AppStats } from '../lib/appStats';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Info() {
   const sections = [
@@ -117,10 +118,16 @@ export default function Info() {
 }
 
 function StatsDisplay() {
+  const { user } = useAuth();
   const [stats, setStats] = useState<AppStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
     getAppStats()
       .then(data => {
         setStats(data);
@@ -130,7 +137,7 @@ function StatsDisplay() {
         console.error(err);
         setLoading(false);
       });
-  }, []);
+  }, [user]);
 
   if (loading || !stats) return null;
 

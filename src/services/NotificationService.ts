@@ -3,7 +3,8 @@ import { Capacitor } from "@capacitor/core";
 import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 import { NativeSettings, AndroidSettings, IOSSettings } from "capacitor-native-settings";
 import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../config/firebase";
+import { getMessaging, getToken } from "firebase/messaging";
+import { db, app } from "../config/firebase";
 import type { NotificationSettings } from "../types";
 import { DEFAULT_NOTIFICATION_SETTINGS } from "../types";
 
@@ -79,24 +80,41 @@ export const NotificationServiceLive = Layer.succeed(
                 let token: string;
 
                 if (Capacitor.isNativePlatform()) {
+                    // Native: use Capacitor Firebase Messaging plugin
                     const result = await FirebaseMessaging.getToken();
                     token = result.token;
                 } else {
-                    // Web - requires VAPID key from Firebase Console
-                    // For now, we'll use the native getToken which works in supported browsers
-                    const result = await FirebaseMessaging.getToken();
-                    token = result.token;
+                    // Web: use Firebase JS SDK with VAPID key + existing service worker
+                    const vapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY;
+                    if (!vapidKey) {
+                        console.warn('[NotificationService] VITE_FIREBASE_VAPID_KEY not set. Skipping web push registration.');
+                        return '';
+                    }
+
+                    const messaging = getMessaging(app);
+                    const swRegistration = await navigator.serviceWorker.getRegistration('/sw.js');
+                    token = await getToken(messaging, {
+                        vapidKey,
+                        serviceWorkerRegistration: swRegistration
+                    });
+                }
+
+                if (!token) {
+                    console.warn('[NotificationService] Empty FCM token received.');
+                    return '';
                 }
 
                 // Save token to user's Firestore document
                 const userRef = doc(db, "users", userId);
                 await updateDoc(userRef, { fcmToken: token });
 
-                // Set up token refresh listener
-                FirebaseMessaging.addListener("tokenReceived", async (event) => {
-                    console.log("FCM Token refreshed:", event.token);
-                    await updateDoc(userRef, { fcmToken: event.token });
-                });
+                // Set up token refresh listener (native only — web handled by SW)
+                if (Capacitor.isNativePlatform()) {
+                    FirebaseMessaging.addListener("tokenReceived", async (event) => {
+                        console.log("FCM Token refreshed:", event.token);
+                        await updateDoc(userRef, { fcmToken: event.token });
+                    });
+                }
 
                 return token;
             },

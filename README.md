@@ -77,6 +77,8 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **🆕 Bazar a Marketplace**: Prodej aut přímo z garáže a inzerce poptávek po dílech či servisu
 - **Tiché hodiny**: Nastavitelný čas, kdy notifikace nepřijdou (globální vynucení pro všechny typy kromě SOS)
 - **Nativní nastavení**: Přímý odkaz do systémového nastavení notifikací (v Android aplikaci)
+- **🆕 Proaktivní žádosti**: Inteligentní systém primer dialogů před OS promptem pro vyšší konverzi souhlasů
+- **🆕 Web Push podpora**: Kompletní zprovoznění notifikací pro prohlížeče (VAPID + Service Worker)
 - **🚀 Optimalizace**: Serverové filtrování příjemců (onNewEvent) pro úsporu Firestore čtení při velkém počtu uživatelů
 - **🆕 iOS Launch Readiness**: Kompletní příprava pro iOS (Bundle ID, Firebase Auth, Push notifikace přes APNs, Geolocation permissions)
 

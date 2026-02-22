@@ -1,18 +1,27 @@
 # Changelog
 
 Všechny důležité změny v projektu jsou zaznamenány v tomto souboru.
+## [next] / [_2026_02_22] for Android app - 2026-02-22 
+### Přidáno
+- **Proaktivní notifikace**: Implementován primer dialog (představení benefitů) před samotnou systémovou žádostí o oprávnění k notifikacím.
+- **Web Push podpora**: Kompletní zprovoznění notifikací v prohlížeči pomocí VAPID klíče a Service Workeru.
+- **Automatická registrace**: Zařízení se nyní po přihlášení a udělení souhlasu automaticky zaregistruje k odběru push zpráv (FCM).
+- **Silent Refresh**: Aplikace při každém návratu do popředí (App Resume) tiše ověří a případně obnoví notifikační token.
+
+### Opraveno
+- **Fix Info statistik**: Statistiky počtu uživatelů a aut se již nesnaží načítat, pokud uživatel není přihlášen (řešení chyby oprávnění ve Firestore).
+- **Stabilita registrace**: Opraven pád registrace zařízení na webu, který způsoboval nedostupný VAPID klíč.
 
 ## [0.0.48] - 2026-02-22
-### Opraveno
-- **Fix mazání statusu vozidla**: Opravena chyba, kdy při volbě "Bez statusu" v garáži zůstával původní status. Implementována podpora pro `deleteField()` ve Firestore, která nyní korektně odstraňuje status z databáze.
-
-## [0.0.47] - 2026-02-22
 ### Přidáno
-- **Vylepšené tankování (Křížové výpočty)**: Implementována inteligentní logika pro automatický dopočet polí (Litrů, Ceny za litr, Celkové ceny). Stačí zadat jakékoliv dvě hodnoty a třetí se dopočítá, přičemž systém si pamatuje pořadí editace pro maximální intuitivnost.
-- **Volitelný tachometr**: Stav tachometru je nyní povinný pouze u plného tankování (klíčové pro spotřebu). Částečná tankování (např. do kanystru) lze zadat i bez kilometrů.
-- **Robustní statistiky**: Výpočty spotřeby a řazení záznamů byly upraveny tak, aby korektně pracovaly i se záznamy bez vyplněného tachometru (předcházení chybám typu `NaN`).
-- **Ochrana dat**: Automatická aktualizace stavu tachometru vozidla se provede pouze při zadání platné (vyšší) hodnoty, čímž se eliminují nechtěné smazání nájezdu u auta.
-- **Oprava závislostí**: Přidána chybějící závislost `react-is` řešící pád buildu u některých verzí Vite.
+- **Vylepšené tankování (Křížové výpočty)**: Implementována inteligentní logika pro automatický dopočet polí (Litrů, Ceny za litr, Celkové ceny).
+- **Volitelný tachometr**: Stav tachometru je nyní povinný pouze u plného tankování.
+- **Robustní statistiky**: Výpočty spotřeby a řazení záznamů byly upraveny tak, aby korektně pracovaly i se záznamy bez vyplněného tachometru.
+- **Ochrana dat**: Automatická aktualizace stavu tachometru vozidla se provede pouze při zadání platné (vyšší) hodnoty.
+- **Oprava závislostí**: Přidána chybějící závislost `react-is`.
+
+### Opraveno
+- **Fix mazání statusu vozidla**: Opravena chyba, kdy při volbě "Bez statusu" v garáži zůstával původní status.
 
 ## [0.0.46] - 2026-02-22
 ### Přidáno
