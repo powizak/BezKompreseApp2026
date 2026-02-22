@@ -44,7 +44,8 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Seznam Uživatelů**: Procházení komunity s přehledem **TOP 5 nejoblíbenějších členů** (dle počtu přátel) a náhodný výběr dalších petrolheadů
 - **🆕 Efektivní Vyhledávání**: Optimalizované vyhledávání uživatelů (přes `prefix searchKeys`) s vyhledáváním dle současného i původního jména a bleskovým načítáním.
 - **Veřejné Garáže**: Inspirace od ostatních autíčkářů
-- **🆕 Systém Odznaků**: Sbírání unikátních ocenění za aktivitu (organizace akcí, přátelství, servis, nájezd, atd.) s automatickou deduplikací a retroaktivní kontrolou.
+- **🆕 Systém Odznaků**: Komplexní systém sbírání unikátních odznaků za aktivitu (BK Team Badge, High Miler, Wrench Wizard a.j.) s transakčním připisováním a retroaktivní kontrolou.
+- **🆕 Pokročilé Statistiky**: Rychlý přehled celkového počtu zaregistrovaných uživatelů a spravovaných vozidel napříč aplikací (v sekci Info).
 - **🚀 Výkonné Procházení**: Serverové stránkování a filtrování všech aut pro bleskové načítání i při tisících vozidlech
 
 ### 📍 Live Tracker (NOVÉ!)
@@ -65,6 +66,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **🆕 Samostatné Inzeráty**: Možnost prodat auto i bez nutnosti mít ho v aplikaci v garáži
 - **🆕 Detail Inzerátu**: Nová detailní stránka pro každý inzerát s velkou galerií a sdílením
 - **🆕 Navigace**: Chytré přesměrování (samostatný inzerát vs detail auta v garáži)
+- **🆕 Workflow Prodeje**: Možnost označit stávající auto z garáže jako "Prodané" – aplikace jej archivuje pod kapotu a současně stáhne aktivní inzerát i prodávaný status.
 - **Vizuální Opravy**: Sjednocené a vrstvené štítky u inzerátů (předcházení překryvu)
 
 ### 🔔 Push Notifikace (NOVÉ!)
@@ -82,11 +84,15 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **🚀 Optimalizace**: Serverové filtrování příjemců (onNewEvent) pro úsporu Firestore čtení při velkém počtu uživatelů
 - **🆕 iOS Launch Readiness**: Kompletní příprava pro iOS (Bundle ID, Firebase Auth, Push notifikace přes APNs, Geolocation permissions)
 
+### 🎨 Design a Uživatelský Zážitek (UX)
+- **Sjednocené UI**: Sjednocený, elegantní vizuální styl hlaviček na všech hlavních stránkách (Garáž, Bazar, Servisní knížka, Lidé, Akce, apod.).
+- **Náhledy Profilovek**: Okamžitý vizuální náhled vybrané profilové fotky ještě před jejím finálním odesláním a ořezem.
+- **Gesta na mobilech**: Plná podpora přirozených navigačních gest (natívní swipe-back na platformě iOS, inteligentní handling tlačítka zpět na OS Android).
 
-### � Changelog
+### 📋 Changelog
 - V [changelog.md](docs/changelog.md) najdete historii změn v aplikaci.
 
-### �💡 Myšlenky pro budoucí verze
+### 💡 Myšlenky pro budoucí verze
 - V [ideas.md](docs/ideas.md) najdete některé myšlenky pro budoucí verze aplikace, které můžete sami navrhovat.
 
 ### 🐛 Známé Chyby
