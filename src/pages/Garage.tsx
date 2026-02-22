@@ -255,7 +255,7 @@ export default function Garage() {
         photos: finalPhotos,
         isOwned: formData.isOwned,
         reminders: formData.reminders,
-        status: formData.status || undefined,
+        status: formData.status || null,
         forSale: formData.forSale,
         salePrice: formData.salePrice ? parseInt(formData.salePrice) : undefined,
         saleDescription: formData.saleDescription ? formData.saleDescription.trim() : undefined
@@ -264,7 +264,7 @@ export default function Garage() {
 
 
       if (editingCar) {
-        await Effect.runPromise(dataService.updateCar(editingCar.id, carData));
+        await Effect.runPromise(dataService.updateCar(editingCar.id, carData as any));
       } else {
         await Effect.runPromise(dataService.addCar(carData as any));
       }

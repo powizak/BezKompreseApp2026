@@ -2,6 +2,10 @@
 
 Všechny důležité změny v projektu jsou zaznamenány v tomto souboru.
 
+## [0.0.48] - 2026-02-22
+### Opraveno
+- **Fix mazání statusu vozidla**: Opravena chyba, kdy při volbě "Bez statusu" v garáži zůstával původní status. Implementována podpora pro `deleteField()` ve Firestore, která nyní korektně odstraňuje status z databáze.
+
 ## [0.0.47] - 2026-02-22
 ### Přidáno
 - **Vylepšené tankování (Křížové výpočty)**: Implementována inteligentní logika pro automatický dopočet polí (Litrů, Ceny za litr, Celkové ceny). Stačí zadat jakékoliv dvě hodnoty a třetí se dopočítá, přičemž systém si pamatuje pořadí editace pro maximální intuitivnost.
@@ -9,6 +13,7 @@ Všechny důležité změny v projektu jsou zaznamenány v tomto souboru.
 - **Robustní statistiky**: Výpočty spotřeby a řazení záznamů byly upraveny tak, aby korektně pracovaly i se záznamy bez vyplněného tachometru (předcházení chybám typu `NaN`).
 - **Ochrana dat**: Automatická aktualizace stavu tachometru vozidla se provede pouze při zadání platné (vyšší) hodnoty, čímž se eliminují nechtěné smazání nájezdu u auta.
 - **Oprava závislostí**: Přidána chybějící závislost `react-is` řešící pád buildu u některých verzí Vite.
+
 ## [0.0.46] - 2026-02-22
 ### Přidáno
 - **Mobilní navigace (Android & iOS)**: Kompletní podpora pro hardware tlačítko zpět na Androidu a nativní swipe-back gesto na iOS.

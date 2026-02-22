@@ -1,7 +1,7 @@
 import { Context, Effect, Layer } from "effect";
 import {
     collection, addDoc, getDocs, query, where, updateDoc, doc, limit, deleteDoc,
-    getDoc, getDocFromServer, onSnapshot, setDoc, serverTimestamp, Timestamp, orderBy, writeBatch
+    getDoc, getDocFromServer, onSnapshot, setDoc, serverTimestamp, Timestamp, orderBy, writeBatch, deleteField
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import type { Car, AppEvent, SocialPost, UserProfile, ServiceRecord, FuelRecord, HelpBeacon, EventType, EventComment, MarketplaceListing, ImageVariants } from "../types";
@@ -232,11 +232,14 @@ export const DataServiceLive = Layer.succeed(
         }),
         updateCar: (carId, data) => Effect.tryPromise({
             try: async () => {
-                // Filter out undefined values
+                // Filter out undefined values, but allow null for explicit field deletion
                 const cleanData = Object.fromEntries(
                     Object.entries(data)
                         .filter(([_, v]) => v !== undefined && v !== "")
-                        .map(([k, v]) => [k, typeof v === 'string' ? v.trim() : v])
+                        .map(([k, v]) => {
+                            if (v === null) return [k, deleteField()];
+                            return [k, typeof v === 'string' ? v.trim() : v];
+                        })
                 );
                 const carRef = doc(db, "cars", carId);
                 await updateDoc(carRef, cleanData);
