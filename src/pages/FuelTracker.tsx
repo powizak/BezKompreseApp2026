@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
@@ -119,11 +119,80 @@ export default function FuelTracker() {
         }
     };
 
+    const lastEditedRef = useRef<('liters' | 'pricePerLiter' | 'totalPrice')[]>([]);
+
+    const updateLastEdited = (field: 'liters' | 'pricePerLiter' | 'totalPrice') => {
+        lastEditedRef.current = [field, ...lastEditedRef.current.filter(f => f !== field)].slice(0, 3);
+    };
+
     const resetForm = () => {
         setFormData(initialFormState);
         setEditingRecord(null);
         setShowForm(false);
         setError(null);
+        lastEditedRef.current = [];
+    };
+
+    const handleLitersChange = (val: string) => {
+        updateLastEdited('liters');
+        const newFormData = { ...formData, liters: val };
+        const v = parseFloat(val);
+        if (isNaN(v) || v <= 0) { setFormData(newFormData); return; }
+
+        const fixedField = lastEditedRef.current[1];
+        const p = parseFloat(formData.pricePerLiter);
+        const t = parseFloat(formData.totalPrice);
+
+        if (fixedField === 'totalPrice') {
+            if (!isNaN(t) && t > 0) newFormData.pricePerLiter = (t / v).toFixed(2);
+        } else {
+            // Default to calculate Total Price
+            if (!isNaN(p) && p > 0) newFormData.totalPrice = (v * p).toFixed(2);
+            else if (!isNaN(t) && t > 0) newFormData.pricePerLiter = (t / v).toFixed(2);
+        }
+        setFormData(newFormData);
+    };
+
+    const handlePriceChange = (val: string) => {
+        updateLastEdited('pricePerLiter');
+        const newFormData = { ...formData, pricePerLiter: val };
+        const v = parseFloat(val);
+        if (isNaN(v) || v <= 0) { setFormData(newFormData); return; }
+
+        const fixedField = lastEditedRef.current[1];
+        const l = parseFloat(formData.liters);
+        const t = parseFloat(formData.totalPrice);
+
+        if (fixedField === 'totalPrice') {
+            if (!isNaN(t) && t > 0) newFormData.liters = (t / v).toFixed(2);
+        } else {
+            // Default to calculate Total Price
+            if (!isNaN(l) && l > 0) newFormData.totalPrice = (l * v).toFixed(2);
+            else if (!isNaN(t) && t > 0) newFormData.liters = (t / v).toFixed(2);
+        }
+        setFormData(newFormData);
+    };
+
+    const handleTotalChange = (val: string) => {
+        updateLastEdited('totalPrice');
+        const newFormData = { ...formData, totalPrice: val };
+        const v = parseFloat(val);
+        if (isNaN(v) || v <= 0) { setFormData(newFormData); return; }
+
+        const fixedField = lastEditedRef.current[1];
+        const l = parseFloat(formData.liters);
+        const p = parseFloat(formData.pricePerLiter);
+
+        if (fixedField === 'pricePerLiter') {
+            if (!isNaN(p) && p > 0) newFormData.liters = (v / p).toFixed(2);
+        } else if (fixedField === 'liters') {
+            if (!isNaN(l) && l > 0) newFormData.pricePerLiter = (v / l).toFixed(2);
+        } else {
+            // Priority: if no clear memory, keep liters fixed as it's the physical quantity pumped
+            if (!isNaN(l) && l > 0) newFormData.pricePerLiter = (v / l).toFixed(2);
+            else if (!isNaN(p) && p > 0) newFormData.liters = (v / p).toFixed(2);
+        }
+        setFormData(newFormData);
     };
 
     /**
@@ -149,7 +218,7 @@ export default function FuelTracker() {
         allRecords.sort((a, b) => {
             const timeDiff = new Date(a.date).getTime() - new Date(b.date).getTime();
             if (timeDiff !== 0) return timeDiff;
-            return a.mileage - b.mileage;
+            return (a.mileage || 0) - (b.mileage || 0);
         });
 
         const currentIdx = allRecords.findIndex(r => r.id === tempId);
@@ -190,7 +259,7 @@ export default function FuelTracker() {
         setError(null);
 
         try {
-            const mileageNum = parseInt(formData.mileage);
+            const mileageNum = parseInt(formData.mileage) || 0;
             const litersNum = parseFloat(formData.liters);
             const totalPriceNum = parseFloat(formData.totalPrice);
             const pricePerLiterNum = parseFloat(formData.pricePerLiter);
@@ -216,12 +285,14 @@ export default function FuelTracker() {
             ].sort((a, b) => {
                 const timeDiff = new Date(a.date).getTime() - new Date(b.date).getTime();
                 if (timeDiff !== 0) return timeDiff;
-                return a.mileage - b.mileage;
+                return (a.mileage || 0) - (b.mileage || 0);
             });
 
             const currentIdx = allRecordsForDelta.findIndex(r => r.id === tempId);
             const prevRecord = currentIdx > 0 ? allRecordsForDelta[currentIdx - 1] : undefined;
-            const distanceDelta = prevRecord ? mileageNum - prevRecord.mileage : undefined;
+            const distanceDelta = (prevRecord && mileageNum > 0 && prevRecord.mileage > 0)
+                ? mileageNum - prevRecord.mileage
+                : undefined;
 
             const recordData: any = {
                 carId,
@@ -245,10 +316,12 @@ export default function FuelTracker() {
             }
 
             // Auto-sync odometer to car
-            await Effect.runPromise(dataService.updateCar(carId, {
-                currentMileage: mileageNum,
-                lastMileageUpdate: new Date().toISOString()
-            }));
+            if (mileageNum > (car?.currentMileage || 0)) {
+                await Effect.runPromise(dataService.updateCar(carId, {
+                    currentMileage: mileageNum,
+                    lastMileageUpdate: new Date().toISOString()
+                }));
+            }
 
             resetForm();
             fetchData();
@@ -486,14 +559,16 @@ export default function FuelTracker() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Tachometr (km)</label>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">
+                                            Tachometr (km) {formData.fullTank ? '*' : '(volitelné)'}
+                                        </label>
                                         <input
                                             type="number"
                                             placeholder="125400"
                                             className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-brand transition-all"
                                             value={formData.mileage}
                                             onChange={e => setFormData({ ...formData, mileage: e.target.value })}
-                                            required
+                                            required={formData.fullTank}
                                         />
                                     </div>
                                     <div>
@@ -504,11 +579,7 @@ export default function FuelTracker() {
                                             placeholder="45.50"
                                             className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-brand transition-all"
                                             value={formData.liters}
-                                            onChange={e => {
-                                                const liters = e.target.value;
-                                                const total = formData.pricePerLiter ? (parseFloat(liters) * parseFloat(formData.pricePerLiter)).toFixed(2) : formData.totalPrice;
-                                                setFormData({ ...formData, liters, totalPrice: total });
-                                            }}
+                                            onChange={e => handleLitersChange(e.target.value)}
                                             required
                                         />
                                     </div>
@@ -520,11 +591,7 @@ export default function FuelTracker() {
                                             placeholder="36.90"
                                             className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-brand transition-all"
                                             value={formData.pricePerLiter}
-                                            onChange={e => {
-                                                const price = e.target.value;
-                                                const total = formData.liters ? (parseFloat(price) * parseFloat(formData.liters)).toFixed(2) : formData.totalPrice;
-                                                setFormData({ ...formData, pricePerLiter: price, totalPrice: total });
-                                            }}
+                                            onChange={e => handlePriceChange(e.target.value)}
                                             required
                                         />
                                     </div>
@@ -535,7 +602,7 @@ export default function FuelTracker() {
                                             step="0.01"
                                             className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-brand transition-all font-bold"
                                             value={formData.totalPrice}
-                                            onChange={e => setFormData({ ...formData, totalPrice: e.target.value })}
+                                            onChange={e => handleTotalChange(e.target.value)}
                                             required
                                         />
                                     </div>

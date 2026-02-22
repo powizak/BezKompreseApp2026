@@ -105,7 +105,7 @@ export function calculateVehicleStats(
     const sorted = [...fuelRecords].sort((a, b) => {
         const timeDiff = new Date(a.date).getTime() - new Date(b.date).getTime();
         if (timeDiff !== 0) return timeDiff;
-        return a.mileage - b.mileage;
+        return (a.mileage || 0) - (b.mileage || 0);
     });
     const fullTanks = sorted.filter(r => r.fullTank);
     let avgConsumption = 0;

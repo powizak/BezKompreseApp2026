@@ -20,7 +20,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **🆕 Statusy Aut**: Barevné odznaky pro auta (daily, sezónní, v renovaci, atd.)
 - **🆕 Servisní Knížka**: Kompletní digitální evidence servisu
 - **🆕 Digitální Kaslík**: Sledování platnosti STK, lékárničky, dálniční známky a pojištění (upozornění předem)
-- **🆕 Tankování a Statistiky**: Grafy spotřeby, náklady palivo vs servis, cena za km, automatická synchronizace tachometru
+- **🆕 Tankování a Statistiky**: Inteligentní křížový výpočet hodnot (litry/cena), grafy spotřeby, náklady palivo vs servis, cena za km, automatická synchronizace tachometru (volitelné u částečného tankování)
 
 ### 🔧 Servisní Knížka (NOVÉ!)
 - **Digitální Evidence**: Sledování všech servisních zásahů a oprav
