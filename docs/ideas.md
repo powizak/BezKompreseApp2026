@@ -1,140 +1,69 @@
 # Myšlenky pro budoucí funkce
 
-## Pokročilé filtrování v bazaru
-- vymyslet a přidat nějaké pokročilé filtrování v bazaru? dle čeho? až v případě, že bude velký zájem o bazar
+Tento soubor obsahuje nápady na rozvoj aplikace. Je rozdělen do sekce **TODO** (plánováno/ve frontě) a **IMPLEMENTOVÁNO** (již historicky nasazeno do kódu).
 
-## 1. Správa Vozidla a Utility (Drivvo/Fuelio style)
-#### ⛽ Rozšířené sledování Spotřeby (Fuel Tracking)
-Současný stav: Servisní knížka řeší opravy, seznam tankování pak spotřebu
+---
 
-### Zadávání tankování vyfocením účtenky
-- Využít AI k načtení dat z účtenky a automatickému doplnění dat do formuláře tankování
+## 📝 TODO (Nápady k realizaci)
 
-#### ✅ IMPLEMENTOVÁNO: 
-- Statistiky: průměrná spotřeba, trend spotřeby (nahoru/dolů/stabilní), cena za km
-- Graf: Vývoj spotřeby (line chart) za posledních 12 měsíců
-- Graf: Náklady palivo vs servis (stacked bar chart) za posledních 12 měsíců
-- Automatický odečet: Při zadání tankování se automaticky aktualizuje stav tachometru v autě
-- **Indikátory tankování**: Ikony plné/částečné nádrže v historii
-- **Korekce výpočtu**: Správná akumulace litrů přes částečná tankování a výpočet průměru z první/poslední plné nádrže
-- Zobrazení tachometru na kartě auta v garáži
-- **Status aut**: Sezónní, depozit, v renovaci, do šrotu, porucha, závodní speciál, daily, pracovní, služební
-- **Zobrazení náhledu fotek**: Při přidávání profilové fotky se zobrazí náhled před uložením.
-- **Sjednocení designu hlaviček**: Sjednocený styl (bílá karta, ikona, typografie) pro všechny hlavní sekce aplikace.
+### 🚗 Správa Vozidla a Utility
+- **Zadávání tankování fotkou**: Využít AI k načtení dat z účtenky a automatickému doplnění do formuláře tankování.
+- **Kalkulačka dojezdu**: Odhad, kolik km ujede s plnou nádrží.
+- **Export dat**: Podpora exportu statistik do CSV/Excel.
+- **Mapa tankování**: Vizualizace, kde uživatel tankuje (frekvence, levnost).
+- **Další typy paliva**: Podpora pro LPG, CNG, elektrická a hybridní auta.
+- **Vylepšení pole motorizace**: U pole "engine" zavést buď kombinaci 2 polí (číslo + velká písmena), nebo našeptávač existujících hodnot pro sjednocení zadaných dat uživateli.
 
-#### 🚀 Budoucí vylepšení:
-- Kalkulačka dojezdu: Odhad, kolik km ujede s plnou nádrží
-- Export dat do CSV/Excel
-- Mapa tankování: Vizualizace kde uživatel tankuje (frequence/levnost)
-- Podpora více typů paliva (LPG, CNG, elektrická, hybrid)
+### 👥 Komunita a Sociální Funkce
+- **Organizované Vyjížďky a Trasy**: Sdílení tras (GPX import/export).
+- **Konvoj Mód**: Vylepšení Trackeru pro konkrétní akci – zobrazení pořadí aut v koloně, upozornění "ztratili jsme se", pokud se někdo odpojí.
+- **Hodnocení silnic**: Možnost označit úseky mapy jako "skvělá okreska" nebo "samá díra".
+- **Tracker na pozadí**: Možnost povolit běh aplikace na pozadí, tracker bude vysílat lokaci i při zamčeném telefonu (bude vyžadovat aktivní notifikaci systému).
+- **Stav přečtení v chatu**: Přidat indikátor u zprávy, zda ji druhá strana již přečetla.
+- **Otestování UI chatu (Mobil)**: Zkontrolovat na menších mobilech chování klávesnice.
+- **Kopírování odkazů ve feedu**: U příspěvků na titulní straně přidat možnost klasického zkopírování odkazu (mimo aktivní proklik).
+- **Gamifikace (další fáze)**:
+  - Fáze 2: Sběr speciálních BezKomprese "známek" za aktivitu -> výměna za dárky (slevy, samolepky).
+  - Fáze 3: "Fight" aut formou kartiček na základě statistik aut a soutěže na nejlepší tuning, fotku, video atd.
 
-## 2. Komunitní a Sociální Funkce (Roadstr style)
-Současný stav: Tracker ukazuje polohu, ale neumožňuje koordinaci. Návrh:
+### 🏪 Bazar a Marketplace
+- **Pokročilé filtrování**: Přidat filtry vlastností, pokud bude bazar aktivně využíván.
+- **Ověřené inzeráty (Bez Komprese Tag)**: Získání certifikátu na základě zjištění přes automobilové zdroje (VIN apod.) nebo přímo osobní prohlídky v servisu.
+- **TOPování inzerátů**: Za drobný poplatek možnost být prvních 7 dní na předních příčkách v dané prodejní kategorii.
+- **Rychlý popup dialog pro Bazar**: Otevírání malého náhledu bez nutnosti prokliku (pozor: musí umět renderovat jak auta z profilu, tak i raw samostatné inzeráty).
 
-### ✅ Help Beacon - IMPLEMENTOVÁNO
-### ✅ Digitální Kaslík (Reminder Status) - IMPLEMENTOVÁNO
-Uživatel v nouzi (porucha, prázdná nádrž) může vyslat signál.
-- 🆘 S.O.S. Tlačítko (Community Assist) - plovoucí tlačítko na mapě
-- Uživatelům v okolí (do 50 km) se zobrazí beacon na mapě
-- Možnost definovat typ problému (porucha, prázdná nádrž, nehoda, defekt, jiné)
-- Možnost přidat popis situace
-- Možnost označit událost různými stavy (aktivní, pomoc na cestě, vyřešeno)
-- Ikonky pro různé typy problémů
-- Tlačítko "Jedu pomoct!" pro ostatní uživatele
-- Pulsující červený marker na mapě pro aktivní beacony
+### 🔧 Technická Vylepšení
+- **OBD-II Integrace**: Spárovat aplikaci přes Bluetooth s OBD-II modulem a nacpat rovnou chybové kódy (DTC) do konceptu záznamu v Servisní knížce.
+- **PWA a Offline Mode**: Offline synchronizace Servisní knížky (pro použití uvnitř nezasíťované garáže) a lepší cachování map do Trackeru pro místa bez signálu.
+- **Car Filter Index**: Vytvořit Cloud Function pro index, pokud počet uživatelských aut vzroste nad 5000, minimalizace Firestore requestů pomocí stromové mapy.
 
-### 🚗 Organizované Vyjížďky a Trasy (Group Rides)
-- Sdílení tras: Uživatelé mohou vytvořit a nasdílet trasu vyjížďky (GPX import/export).
-- Konvoj Mód: Vylepšení Trackeru pro konkrétní akci – vidíte pořadí aut v koloně, upozornění "ztratili jsme se" pokud se někdo odpojí.
-Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" nebo "samá díra".
+---
 
-## Povolení běhu na pozadí
-- Uživatel by měl mít možnost povolit běh na pozadí, aby se tracker mohl používat i při vypnuté obrazovce (nutno asi mít nějakou aktivní notifikaci - je to přes nějaký TYP notifikace, KJS mi o tom říkal)
+## ✅ IMPLEMENTOVÁNO
 
-### ✅ Databáze trackdays - IMPLEMENTOVÁNO (typ akce)
-- v ČR není aktuálně žádná funkční
-- Další typ akce, které jsou již momentálně definované
-- Možno filtrovat přímo na mapě či v seznamu
-- Rozšířené informace o akci (cena, kapacita, odkaz na registraci)
-- **✅ Úprava a mazání akcí**: Možnost pro organizátora spravovat své akce (pouze budoucí).
+### 🚗 Správa Vozidla a Utility
+- **Tankování a spotřeba**: Dopočet hodnot a křížový výpočet litrů a ceny s pamětí pro úpravy. Volitelné kilometry s ošetřením nulových tachometrů. Zvládnutí částečného tankování.
+- **Statistiky**: Výpočty průměru spotřeby z první a poslední plné nádrže, trend spotřeby, spočtená částka za kilometr.
+- **Grafy v profilu**: Vývoj spotřeby měsíčně a srovnání nákladů na servis vs. palivo.
+- **Tachometr z tankování**: Automatická aktualizace u vozidla v garáži a zobrazení kilometrů přímo na hlavní kartě auta.
+- **Indikátory tankování**: Zobrazení ikonek (plná vs. částečná nádrž) u každého výpočtu.
+- **Statusy vozidel**: (Sezónní, depozit, v renovaci, porucha, závodní speciál, daily atd.). Zobrazeno jako badge.
+- **Obrázky & UX**: Náhled nahraných profilovek před potvrzením. Sjednocený vizuální styl hlaviček.
 
-### ✅ Chat s uživateli - IMPLEMENTOVÁNO
-- Uživatel může vyvolat stránku chatu, a tedy vidět své předchozí konverzace a vytvořit novou s ostatními uživateli
-- Propojit rychlý chat s historií chatů (uchovávaných maximálně měsíc)
-- Přidat notifikace na nové zprávy v chatu
+### 👥 Komunita a Sociální Funkce
+- **Chat s uživateli**: Live chat v celé aplikaci, vyvolání chat panelu pro komunikaci s majiteli z marketplace, udržování měsíční historie a navigační proklik z hlavičky na profil společníka. Upozornění systémovými Push notifikacemi.
+- **Help Beacon (SOS)**: Community assist – lokalizace do 50 km s plovoucím SOS tlačítkem, detailní statusy krize, a akční tlačítka.
+- **Digitální Kaslík (Reminder Status)**: Automatické hlídání platností např. STK a dálniční známky před limitem.
+- **Databáze Akcí a Trackdays**: Oficiální a vlastní akce (např. Minisraz, Vyjížďka). Tvorba a mazání ze strany komunity. Filtrování kalendáře.
+- **Mobilní gesta**: Nativní swipe (iOS) a Android HW Back button k opuštění pohledu před zavřením programu.
+- **Footer a Info**: Verzionování a rychlý odpočet zaregistrovaných aut/uživatelů pro informovanost aplikace.
+- **Gamifikace Fáze 0 a 1**: Komplexní systém udělení odznaků (BK Team Badge, High Miler, aj.) opatřený transakčním lockem a retroaktivní deduplikací ocenění přes user profil.
 
-### ✅ Bazar a Marketplace - IMPLEMENTOVÁNO
-- Udělat vlastní stránku "Market" s dvěma záložkami - Prodej, Poptávka
-- Poptávka: "Sháním X", ilustrační foto, dodatečné informace, požadovaná cena.
-- Prodej aut: V sekci "Garáž" možnost označit celé auto na prodej. 
-- Označení štítkem v seznamu aut (jako máme vlastněno)
-- Možno kontaktovat vlastníka auta / poptávajícího přímo z marketu - otevře chat s daným uživatelem / založí nový, pokud ještě spolu nekomunikovali
-- Přímo z inzeratu může vlastník označit auto jako "Prodané" - tedy vymaže inzerát a zároveň v garáži mu odznačí "Vlastněno"
+### 🏪 Bazar
+- **Marketplace**: Založen bazar rozdělený na Prodej aut, Poptávky a Nabídky s dalším filtrováním podle kategorie zboží a auto-vyhledáváním hesel.
+- **Inzeráty a Garáž**: Plná svoboda (prodat konkrétní vozidlo přímo z profilové garáže) versus zřídit stand-alone off-app vložení poptávky nebo prodeje.
+- **Workflow prodeje**: Označení existujícího vozidla jako "prodaného" jej přeřadí pod kapotu, a zároveň schová případný bazarový inzerát. Vlastnosti inzerátu propisovány i do car profilu při prodávání auta z garáže.
 
-#### ✅ Phase 2 - IMPLEMENTOVÁNO: 
-- je žádoucí mít možnost přidat inzerát na auto i jako samostatný - nejen určením auta "na prodej" v úpravě vozidla. S tím, že pak nebude vidět detail auta, ale bude se to chovat, jako obyčejný inzerát
-- zároveň je potřeba přidat možnost si zobrazit detail inzerátu (nejen pokud se jedná o auta z garáže, ale jakýkoliv typ inzerátu (stále platí, že auto z garáže přejde na kartu daného vozidla))
-- podívat se také na kategorie bazaru - nyní jsou auta, poptávky a v poptávkách je pak i prodej dílů 
-    - rozdělit na 3 záložky - neměnit UI - prostě přidat další přepínač, takto to vypadá super (nyní jsou prodej aut a poptávky), a to: prodej aut, poptávky (díly, auta, služby), nabídky (díly, auta, služby)
-- u poptávek a nabídek je potřeba přidat možnost filtrování podle kategorie (díly, auta, služby)
-- v případě, že je auto na prodej, zobrazí se popis inzerátu (je to již parametr auta) i na kartě vozidla (/car)
-- **✅ Sjednocení nahrávání (Fáze 2.1) - IMPLEMENTOVÁNO**: Sjednocený limit 15MB, jedna komprese (WebP 70%), odstraněna duplicitní komprese v Marketplace.
-
-
-### Rozšíření funkcí inzerce
-- Ověření Bez Komprese - možnost si zažádat o certifikát např. na základě VIN
-- Možnost si zažádat o certifikát na základě prohlídky v servisu Bez Komprese
-- TOPování inzerátů - za drobný poplatek budeš týden na prvních místech v dané kategorii
-
-### 🚀 Vylepšení UX
-- Přidat značku, zda již někdo přečetl zprávu či nikoliv (pro toho, kdo si ji má přečíst - v seznamu zpráv)
-- ✅ Dodělat swipe na všech stránkách pro vrácení se zpět pro Android (některé Android to tak mohou mít nastavené - stejné jako v knownbugs) - IMPLEMENTOVÁNO
-- Pro bazar udělat vlastní rychlý dialog bez nutnosti otevírat novou stránku daného inzerátu (bacha, máme 2 typy - auta z profilu + inzeráty samotné)
-- Ve feedu zobrazit u každého příspěvku možnost nejen prokliku, ale jen zkopírování odkazu
-- (možná nekdy) Pro zadávání hodnoty u pole "engine" udělat buď kombinaci 2 polí (hodnota číselná + označení s např. pouze velkými písmeny) nebo našeptávač ze současných hodnot v DDL s možností přidání další varianty, která ještě neexistuje - současná data jsou trochu bordel - každý to zadává jinak (tečka, čárka, mezera, velikost písmen)
-- ✅ Proklik ze zprávy na profil uživatele není dostupný - je potřeba dodělat - IMPLEMENTOVÁNO
-- Projít a otestovat chatování - je možné, že okno pro chat nemá na telefonu správný layout (není celé viditelné, případně zakrývá klávesnice)
-- ✅ **Dopočet hodnot u tankování**: Křížový výpočet mezi litry, cenou za litr a celkovou cenou s pamětí pro poslední editovaná pole. - IMPLEMENTOVÁNO
-- ✅ **Volitelné kilometry u tankování**: Kilometry jsou povinné pouze pro plnou nádrž, ošetřeny výpočty spotřeby a řazení pro případy bez zadaného tachometru. - IMPLEMENTOVÁNO
-
-- ✅ **Přidat do footeru vedle "Not affilitated officially." verzi aplikace** - IMPLEMENTOVÁNO
-- ✅ **Přidat do "info" - celkový počet uživatelů / aut v aplikaci** - IMPLEMENTOVÁNO
-
-### ✅ Gamifikace - IMPLEMENTOVÁNO (Fáze 0,1)
-#### ✅ Fáze 0 - IMPLEMENTOVÁNO
-- ** BK Team Badge - IMPLEMENTOVÁNO**: Speciální odznak pro členy týmu na jejich profilech. 
-#### ✅ Fáze 1 - IMPLEMENTOVÁNO
-- **Odznaky (Badges)**: "High Miler", "Wrench Wizard", "Early Adopter", "Socialite", "Organizer" atd.
-- **Technologie**: Transakční udělování (prevence race conditions), automatická deduplikace, retroaktivní kontroly při načtení profilu.
-- **UI**: Karta "Odznaky" na profilu, detailní modály, počítadlo unikátních odznaků.
-- Levely podle najetých km a podle počtu záznamů, účasti na srazech atd.
-- Pro všechny, co se podíleli na testování dát odznak "Testovací jezdec" 
-- Odznaky možno "vystavit" 3 na profilu
-- Uživatel (i ostatní) uvidí všechny své odznaky na další kartě na svém profilu (jako je karta nastavení) s tím, že uživatel samotný uvidí i další, které existují zašedlé, když je ještě nemá
-- Na každý odznak bude možno kliknout (vyjede pop-up, jako máme např. přidávání záznamů tankování, jen bez možnosti úprav) s tím, že se zobrazí informace o daném odznaku - název, popis, za co byl udělen, kdy byl udělen
-##### Vytvořit databázi odznaků
-
-
-#### Fáze 2
-- Sbírání BezKomprese známeček -> možnost si vybrat za známky "dárek" -> sleva na eshop nebo samolepka atd. 
-
-#### Fáze 3
-- Fight kartiček ve stylu "Kdo má lepší auto" - na základě statistik aut
-- Soutěže - nejlepší tuning, nejlepší fotka, nejlepší video, nejlepší úprava, nejvíce najetých kilometrů atd. 
-
-## 3. Technická Vylepšení (Technical)
-### 🩺 OBD-II Integrace (Budoucí rozvoj)
-- Možnost spárovat s Bluetooth OBD-II adaptérem (např. přes Web Bluetooth API, pokud to prohlížeč dovolí, nebo manuální import).
-- Automatické načtení chybových kódů (DTC) do "Servisní knížky" jako koncept záznamu.
-
-### 📱 PWA a Offline Mode
-- Vylepšit cachování map pro "Tracker" v místech bez signálu (časté na okreskách).
-- Synchronizace servisní knížky (offline-first), aby šlo zapisovat i v garáži bez Wi-Fi.  
-
-### 🗂️ Car Filter Index (10k+ aut)
-- Při překročení ~5000 aut vytvořit Cloud Function, která bude udržovat jeden `car-filter-index` dokument ve Firestore s relační mapou `{ make → { model → engines[] } }`.
-- Tím se redukuje počáteční načtení filtrů na 1 read místo N reads (všech aut).
-
-### 📄 Changelog
-- Kompletní historii změn najdete v souboru [changelog.md](changelog.md).
-
+### 🔧 Technická Vylepšení
+- Sjednoceno ukládání fotek, komprese formátu za letu do WebP se 70% redukcí velikosti a limit formátem napříč webem až do objemu max 15MB upload (šetřeno UI storage v Firebase).
+- Historie dokumentace se separovala a loguje se přímo do souboru `changelog.md` pro zmenšení duplicitních nápadních tabulek.
