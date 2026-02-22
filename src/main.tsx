@@ -5,6 +5,7 @@ import './index.css'
 import 'leaflet/dist/leaflet.css'; // Leaflet styles
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
+import { CapacitorSwipeBackPlugin } from '@notnotsamuel/capacitor-swipe-back';
 
 // Initialize Capacitor plugins
 if (Capacitor.isNativePlatform()) {
@@ -12,6 +13,8 @@ if (Capacitor.isNativePlatform()) {
   // setBackgroundColor is Android-only — iOS uses UIViewControllerBasedStatusBarAppearance
   if (Capacitor.getPlatform() === 'android') {
     StatusBar.setBackgroundColor({ color: '#111111' });
+  } else if (Capacitor.getPlatform() === 'ios') {
+    CapacitorSwipeBackPlugin.enable();
   }
 }
 

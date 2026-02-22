@@ -1,6 +1,13 @@
 # Changelog
 
 Všechny důležité změny v projektu jsou zaznamenány v tomto souboru.
+## [0.0.46] - 2026-02-22
+### Přidáno
+- **Mobilní navigace (Android & iOS)**: Kompletní podpora pro hardware tlačítko zpět na Androidu a nativní swipe-back gesto na iOS.
+- **Inteligentní tlačítko zpět**: Na Androidu stisknutí "Zpět" nyní logicky naviguje v historii aplikace (zavření aplikace proběhne pouze na hlavní domovské stránce `/`).
+- **iOS Swipe Gesto**: Aktivována nativní podpora swajpnutí z levého okraje pro návrat zpět v historii, sjednocující chování aplikace se standardy platformy Apple.
+- **Stabilizace**: Oprava chování, kdy tlačítko zpět na Androidu předčasně ukončovalo celou aplikaci.
+
 ## [0.0.45] - 2026-02-21
 ### Přidáno
 - **Sjednocení designu hlaviček**: Všechny hlavní stránky (`/cars`, `/market`, `/service-book`, `/fuel-tracker`, `/events`, `/garage`) mají nyní sjednocený vizuální styl hlaviček (včetně ikony, konzistentní typografie a bílého kontejneru se stínem) pro lepší UX a profesionální vzhled aplikace.

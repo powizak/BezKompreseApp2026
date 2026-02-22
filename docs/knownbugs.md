@@ -3,8 +3,6 @@
 
  - uživatelé mohou ve starých verzích aplikace (Android) zadávat data s whitespace na konci -> kazí to filtrování -> nutno ještě jednou vyčistit scriptem
 
-## Navigace v mobilních zařízeních
-- na Android (možná i iOS) není funkční navigace pomocí navigačních tlačítek/gest
 
 ## Nahrávání fotek nezobrazuje náhled
 - v případě přidávání fotek v bazaru (možná i v autech) se nezobrazuje náhled fotky po výběru fotky od uživatele

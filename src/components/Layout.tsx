@@ -8,8 +8,10 @@ import CookieBanner from './CookieBanner';
 import ChatDrawer from './ChatDrawer';
 import SupportSection from './SupportSection';
 import UserAvatar from './UserAvatar';
+import { useBackButton } from '../hooks/useBackButton';
 
 export default function Layout() {
+  useBackButton();
   const { pathname } = useLocation();
   const { user, logout } = useAuth();
   const { activeChat, closeChat, unreadMap, openChat } = useChat();
