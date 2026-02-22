@@ -92,6 +92,8 @@ Hodnocení silnic: Uživatelé mohou označit úseky jako "skvělá okreska" neb
 - Pro bazar udělat vlastní rychlý dialog bez nutnosti otevírat novou stránku daného inzerátu (bacha, máme 2 typy - auta z profilu + inzeráty samotné)
 - Ve feedu zobrazit u každého příspěvku možnost nejen prokliku, ale jen zkopírování odkazu
 - Pro zadávání hodnoty u pole "engine" udělat buď kombinaci 2 polí (hodnota číselná + označení s např. pouze velkými písmeny) nebo našeptávač ze současných hodnot v DDL s možností přidání další varianty, která ještě neexistuje - současná data jsou trochu bordel - každý to zadává jinak (tečka, čárka, mezera, velikost písmen)
+- Proklik ze zprávy na profil uživatele není dostupný - je potřeba dodělat
+- Projít a otestovat chatování - je možné, že okno pro chat nemá na telefonu správný layout (není celé viditelné, případně zakrývá klávesnice)
 - ✅ **Dopočet hodnot u tankování**: Křížový výpočet mezi litry, cenou za litr a celkovou cenou s pamětí pro poslední editovaná pole. - IMPLEMENTOVÁNO
 - ✅ **Volitelné kilometry u tankování**: Kilometry jsou povinné pouze pro plnou nádrž, ošetřeny výpočty spotřeby a řazení pro případy bez zadaného tachometru. - IMPLEMENTOVÁNO
 

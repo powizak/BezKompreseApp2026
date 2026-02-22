@@ -1,7 +1,7 @@
 # Changelog
 
 Všechny důležité změny v projektu jsou zaznamenány v tomto souboru.
-## [next] / [_2026_02_22] for Android app - 2026-02-22 
+## [0.0.49] / [_2026_02_22] for Android app - 2026-02-22 
 ### Přidáno
 - **Proaktivní notifikace**: Implementován primer dialog (představení benefitů) před samotnou systémovou žádostí o oprávnění k notifikacím.
 - **Web Push podpora**: Kompletní zprovoznění notifikací v prohlížeči pomocí VAPID klíče a Service Workeru.
