@@ -19,6 +19,7 @@ Tento soubor obsahuje nápady na rozvoj aplikace. Je rozdělen do sekce **TODO**
 - **Konvoj Mód**: Vylepšení Trackeru pro konkrétní akci – zobrazení pořadí aut v koloně, upozornění "ztratili jsme se", pokud se někdo odpojí.
 - **Hodnocení silnic**: Možnost označit úseky mapy jako "skvělá okreska" nebo "samá díra".
 - **Tracker na pozadí**: Možnost povolit běh aplikace na pozadí, tracker bude vysílat lokaci i při zamčeném telefonu (bude vyžadovat aktivní notifikaci systému).
+- **Tracker + notifikace na kolemjedoucí**: Možno si v nastavení zapnout, na kolik kilometrů se mi má zobrazovat, že je někdo v mém okolí, kdo má taky zapnutý tracker. Aplikace by pak v daném okruhu vysílala notifikace na kolemjedoucí. V nastavení by šlo nastavit, jaký okruh se má sledovat. 
 - **Stav přečtení v chatu**: Přidat indikátor u zprávy, zda ji druhá strana již přečetla.
 - **Otestování UI chatu (Mobil)**: Zkontrolovat na menších mobilech chování klávesnice.
 
@@ -56,7 +57,7 @@ Tento soubor obsahuje nápady na rozvoj aplikace. Je rozdělen do sekce **TODO**
 - **Help Beacon (SOS)**: Community assist – lokalizace do 50 km s plovoucím SOS tlačítkem, detailní statusy krize, a akční tlačítka.
 - **Digitální Kaslík (Reminder Status)**: Automatické hlídání platností např. STK a dálniční známky před limitem.
 - **Databáze Akcí a Trackdays**: Oficiální a vlastní akce (např. Minisraz, Vyjížďka). Tvorba a mazání ze strany komunity. Filtrování kalendáře.
-- **Mobilní gesta**: Nativní swipe (iOS) a Android HW Back button k opuštění pohledu před zavřením programu.
+- **Mobilní gesta**: Nativní swipe (iOS) a Android HW Back button k opuštění pohledu či bezpečnému zavření overlay chatu před zavřením programu.
 - **Footer a Info**: Verzionování a rychlý odpočet zaregistrovaných aut/uživatelů pro informovanost aplikace.
 - **Gamifikace Fáze 0 a 1**: Komplexní systém udělení odznaků (BK Team Badge, High Miler, aj.) opatřený transakčním lockem a retroaktivní deduplikací ocenění přes user profil.
 

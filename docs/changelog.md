@@ -1,6 +1,11 @@
 # Changelog
 
 Všechny důležité změny v projektu jsou zaznamenány v tomto souboru.
+
+## [0.0.51] / [_2026_02_24] for Android app - 2026-02-24
+### Přidáno
+- **Chat Navigace**: Možnost bezpečně zavřít překryvné okno (Overlay) chatu pomocí hardwarového tlačítka "zpět" na Androidu nebo nativního swipe-back gesta na iOS, aniž by došlo k nežádoucí běžné navigaci v aplikaci.
+
 ## [0.0.50] / [_2026_02_23v2] for Android app - 2026-02-23
 ### Přidáno
 - **Chat**: Přidána možnost prokliknout se z hlavičky okna chatu přímo na detailní profil uživatele.
