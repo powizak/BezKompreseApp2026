@@ -91,7 +91,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **Gesta na mobilech**: Plná podpora přirozených navigačních gest (natívní swipe-back na platformě iOS, inteligentní handling tlačítka zpět na OS Android).
 
 ### 📋 Changelog
-- V [changelog.md](docs/changelog.md) najdete historii změn v aplikaci.
+- V [changelog.md](docs/changelog.md) najdete historii změn v aplikaci, včetně nedávných updatů NPM balíčků a bezpečnostních oprav.
 
 ### 💡 Myšlenky pro budoucí verze
 - V [ideas.md](docs/ideas.md) najdete některé myšlenky pro budoucí verze aplikace, které můžete sami navrhovat.

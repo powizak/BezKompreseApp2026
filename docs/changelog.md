@@ -5,6 +5,7 @@ Všechny důležité změny v projektu jsou zaznamenány v tomto souboru.
 ### Přidáno
 - **Chat**: Přidána možnost prokliknout se z hlavičky okna chatu přímo na detailní profil uživatele.
 - **Sdílení**: Možnost zkopírovat odkaz nebo použít nativní sdílení u každého příspěvku na hlavní stránce.
+- **Zabezpečení a stabilita:** Aktualizace NPM závislostí na bezpečnější minor/patch verze (včetně Capacitor 8.1.0, Firebase, Vite a React) a oprava zranitelností hlášených bezpečnostním auditem. Ponechána stabilní verze Tailwind CSS V3 pro zachování integrity UI.
 
 ## [0.0.49] / [_2026_02_22] for Android app - 2026-02-22 
 ### Přidáno
