@@ -21,7 +21,7 @@ Tento soubor obsahuje nápady na rozvoj aplikace. Je rozdělen do sekce **TODO**
 - **Tracker na pozadí**: Možnost povolit běh aplikace na pozadí, tracker bude vysílat lokaci i při zamčeném telefonu (bude vyžadovat aktivní notifikaci systému).
 - **Stav přečtení v chatu**: Přidat indikátor u zprávy, zda ji druhá strana již přečetla.
 - **Otestování UI chatu (Mobil)**: Zkontrolovat na menších mobilech chování klávesnice.
-- **Kopírování odkazů ve feedu**: U příspěvků na titulní straně přidat možnost klasického zkopírování odkazu (mimo aktivní proklik).
+
 - **Gamifikace (další fáze)**:
   - Fáze 2: Sběr speciálních BezKomprese "známek" za aktivitu -> výměna za dárky (slevy, samolepky).
   - Fáze 3: "Fight" aut formou kartiček na základě statistik aut a soutěže na nejlepší tuning, fotku, video atd.
@@ -51,6 +51,7 @@ Tento soubor obsahuje nápady na rozvoj aplikace. Je rozdělen do sekce **TODO**
 - **Obrázky & UX**: Náhled nahraných profilovek před potvrzením. Sjednocený vizuální styl hlaviček.
 
 ### 👥 Komunita a Sociální Funkce
+- **Kopírování a sdílení**: U příspěvků na titulní straně a v bazaru přidána možnost nativního sdílení (Android/iOS) nebo zkopírování odkazu do schránky (Web).
 - **Chat s uživateli**: Live chat v celé aplikaci, vyvolání chat panelu pro komunikaci s majiteli z marketplace, udržování měsíční historie a navigační proklik z hlavičky na profil společníka. Upozornění systémovými Push notifikacemi.
 - **Help Beacon (SOS)**: Community assist – lokalizace do 50 km s plovoucím SOS tlačítkem, detailní statusy krize, a akční tlačítka.
 - **Digitální Kaslík (Reminder Status)**: Automatické hlídání platností např. STK a dálniční známky před limitem.

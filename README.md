@@ -11,6 +11,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 ### 🏠 Domovská Stránka
 - **Sociální Feed**: Automatické načítání nejnovějších příspěvků z YouTube, Instagramu a Facebooku
 - **Přehledné Karty**: Zobrazení videí, reelů a postů s náhledem a statistikami
+- **🆕 Sdílení**: Možnost zkopírovat odkaz nebo použít nativní sdílení u každého příspěvku
 
 ### 🚗 Moje Garáž
 - **Správa Vozidel**: Přidávání a editace vlastních aut s detailními informacemi
@@ -64,7 +65,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **🆕 Tří-tabový layout**: Přenastavení bazaru na sekce "Prodej aut", "Poptávky" a "Nabídky" pro lepší přehlednost
 - **🆕 Unified Grid**: Sjednocené zobrazení aut z garáže i samostatných inzerátů v jednom feedu
 - **🆕 Samostatné Inzeráty**: Možnost prodat auto i bez nutnosti mít ho v aplikaci v garáži
-- **🆕 Detail Inzerátu**: Nová detailní stránka pro každý inzerát s velkou galerií a sdílením
+- **🆕 Detail Inzerátu**: Nová detailní stránka pro každý inzerát s velkou galerií a **nativním sdílením přes systémové rozhraní**
 - **🆕 Navigace**: Chytré přesměrování (samostatný inzerát vs detail auta v garáži)
 - **🆕 Workflow Prodeje**: Možnost označit stávající auto z garáže jako "Prodané" – aplikace jej archivuje pod kapotu a současně stáhne aktivní inzerát i prodávaný status.
 - **Vizuální Opravy**: Sjednocené a vrstvené štítky u inzerátů (předcházení překryvu)
@@ -114,7 +115,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 *   **Stylování:** Tailwind CSS
 *   **Backend:** Firebase (Auth, Firestore, Storage, Cloud Functions)
 *   **Mapy:** Leaflet + OpenStreetMap
-*   **Optimalizace**: Mobilní navigace (Hardware tlačítko zpět pro Android, nativní swipe-back gesto pro iOS), Image caching (Cache-Control immutable, ImageLoader concurrency limit & circuit breaker, Prioritized loading for cars > avatars, Simplified profile photo pipeline (130x130px WebP) with robust Google fallback & internalization storage optimization), Unified 15MB Image Upload Pipeline (WebP conversion, quality 0.7), Unified visual style for all main page headers, Input sanitation (auto-trim), Fast Initial Auth emission (Stale-while-revalidate), Stable useEffect dependencies (Double-loading prevention), Unified Loading UX (Rotating Logo), Social Feed caching (10min limit), YouTube API optimization (using playlistItems for 100x quota saving), Advanced Code Splitting (Vite manualChunks), Reusable Event Form with runtime validation/cleaning (preventing Firestore invalid-argument errors), Multi-field Array Prefix Search (searchKeys utility for community search)
+*   **Optimalizace**: Mobilní navigace (Hardware tlačítko zpět pro Android, nativní swipe-back gesto pro iOS), Image caching (Cache-Control immutable, ImageLoader concurrency limit & circuit breaker, Prioritized loading for cars > avatars, Simplified profile photo pipeline (130x130px WebP) with robust Google fallback & internalization storage optimization), Unified 15MB Image Upload Pipeline (WebP conversion, quality 0.7), Unified visual style for all main page headers, Input sanitation (auto-trim), Fast Initial Auth emission (Stale-while-revalidate), Stable useEffect dependencies (Double-loading prevention), Unified Loading UX (Rotating Logo), Social Feed caching (10min limit), YouTube API optimization (using playlistItems for 100x quota saving), Advanced Code Splitting (Vite manualChunks), Reusable Event Form with runtime validation/cleaning (preventing Firestore invalid-argument errors), Multi-field Array Prefix Search (searchKeys utility for community search), **Native Sharing API integration (@capacitor/share)**
 
 
 ## Jak spustit projekt
@@ -188,4 +189,4 @@ Zdrojový kód je zveřejněn za účelem transparentnosti a umožnění komunit
 - **✅ Povoleno:** Prohlížení kódu, učení se z něj, navrhování změn a oprav (Fork + Pull Request) do tohoto repozitáře.
 - **❌ Zakázáno:** Redistribuce, prodej, nebo provozování upravených kopií aplikace pod vlastním jménem bez výslovného souhlasu autora.
 
-Tento projekt je vytvořen pro primárně pro fanoušky kanálu Bez Komprese, avšak budeme rádi za použití kýmkoliv dalším.
+Tento projekt je vytvořen pro primárně pro fanoušky kanálu Bez Komprese, avšak budeme rádi za použití aplikace kýmkoliv dalším.

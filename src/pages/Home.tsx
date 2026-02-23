@@ -2,9 +2,10 @@ import { useEffect, useState, useMemo } from 'react';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import type { SocialPost, SocialPlatform } from '../types';
-import { Play, Instagram, Facebook, Youtube, Image, Film, ArrowRight } from 'lucide-react';
+import { Play, Instagram, Facebook, Youtube, Image, Film, ArrowRight, Share2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { cs } from 'date-fns/locale';
+import { Share } from '@capacitor/share';
 import CachedImage from '../components/CachedImage';
 import LoadingState from '../components/LoadingState';
 
@@ -14,6 +15,30 @@ export default function Home() {
   const [feed, setFeed] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+
+  const handleShare = async (e: React.MouseEvent, post: SocialPost) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    try {
+      const canShare = await Share.canShare();
+      if (canShare.value) {
+        await Share.share({
+          title: post.title,
+          text: post.title,
+          url: post.url,
+          dialogTitle: 'Sdílet novinku'
+        });
+      } else {
+        throw new Error('Share API not available');
+      }
+    } catch (err) {
+      console.log('Falling back to clipboard', err);
+      // Fallback for desktop: copy to clipboard
+      navigator.clipboard.writeText(post.url);
+      alert('Odkaz zkopírován do schránky!');
+    }
+  };
 
   useEffect(() => {
     const dataService = Effect.runSync(
@@ -132,7 +157,15 @@ export default function Home() {
                 <div className="flex items-center gap-4 text-xs text-slate-500 font-bold uppercase tracking-wide">
                   {post.views && <span>{post.views.toLocaleString()} zhlédnutí</span>}
                   {post.likes && <span>{post.likes.toLocaleString()} likes</span>}
-                  <span className="ml-auto flex items-center gap-1 text-slate-900 group-hover:text-brand transition-colors">
+
+                  <button
+                    onClick={(e) => handleShare(e, post)}
+                    className="ml-auto flex items-center gap-1.5 p-2 rounded-lg text-slate-400 hover:text-brand hover:bg-brand/10 transition-colors"
+                  >
+                    <Share2 size={16} />
+                  </button>
+
+                  <span className="flex items-center gap-1 text-slate-900 group-hover:text-brand transition-colors">
                     Otevřít <ArrowRight size={14} />
                   </span>
                 </div>

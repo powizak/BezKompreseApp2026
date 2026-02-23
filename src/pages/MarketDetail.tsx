@@ -13,6 +13,7 @@ import ChatDrawer from '../components/ChatDrawer';
 import { ArrowLeft, MessageCircle, Calendar, Tag, Share2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { cs } from 'date-fns/locale';
+import { Share } from '@capacitor/share';
 
 export default function MarketDetail() {
     const { id } = useParams<{ id: string }>();
@@ -79,17 +80,20 @@ export default function MarketDetail() {
     };
 
     const handleShare = async () => {
-        if (navigator.share) {
-            try {
-                await navigator.share({
+        try {
+            const canShare = await Share.canShare();
+            if (canShare.value) {
+                await Share.share({
                     title: listing?.title || 'Inzerát na Bez Komprese',
                     text: listing?.description,
                     url: window.location.href,
+                    dialogTitle: 'Sdílet inzerát'
                 });
-            } catch (err) {
-                console.error('Share failed', err);
+            } else {
+                throw new Error('Share API not available');
             }
-        } else {
+        } catch (err) {
+            console.log('Falling back to clipboard', err);
             // Fallback for desktop: copy to clipboard
             navigator.clipboard.writeText(window.location.href);
             alert('Odkaz zkopírován do schránky!');
