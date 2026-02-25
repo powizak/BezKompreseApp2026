@@ -373,6 +373,10 @@ export interface NotificationSettings {
   badgeNotifications: boolean;     // New badge earned
   eventParticipation: boolean;     // Someone joins/leaves my event (for organizers)
 
+  // Proximity alerts
+  proximityAlerts: boolean;        // Notify when another tracked user is nearby
+  proximityRadiusKm: number;       // Radius for proximity alert in km
+
   // Digest mode (group notifications)
   digestMode: boolean;
 }
@@ -391,5 +395,7 @@ export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
   marketplaceNotifications: true,
   badgeNotifications: true,
   eventParticipation: true,
+  proximityAlerts: true,
+  proximityRadiusKm: 20,
   digestMode: false
 };

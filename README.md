@@ -51,6 +51,8 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 
 ### 📍 Live Tracker (NOVÉ!)
 - **Real-time Mapa**: Zobrazení polohy ostatních uživatelů v reálném čase (**hybridní podpora pro Safari/Chrome na iOS**)
+- **Běh na pozadí**: Foreground Sledování polohy s permanentní notifikací i při zamknutém telefonu (při uděleném povolení Vždy).
+- **Proximity Alerts**: Lokální klientské notifikace na okolní uživatele podle nastavitelného rádiusu (1-100 km) k zabránění spamování.
 - **Privacy Zóny**: Automatické skrytí polohy v blízkosti domova
 - **Statusy**: Nastavení statusu (Dáme pokec?, Závod?, Projížďka?, atd.)
 - **🆘 Help Beacon**: S.O.S. systém pro nouzové situace

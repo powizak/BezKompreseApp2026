@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Effect } from 'effect';
-import { Bell, BellOff, AlertTriangle, Calendar, Users, MessageCircle, RefreshCw, Info, Moon, Layers, ExternalLink, Check, Car, Store, Award, UserPlus, Save } from 'lucide-react';
+import { Bell, BellOff, AlertTriangle, Calendar, Users, MessageCircle, RefreshCw, Info, Moon, Layers, ExternalLink, Check, Car, Store, Award, UserPlus, Save, Navigation } from 'lucide-react';
 import { NotificationService, NotificationServiceLive, type NotificationPermissionStatus } from '../services/NotificationService';
 import type { NotificationSettings, EventType } from '../types';
 import { EVENT_TYPE_LABELS } from '../types';
@@ -249,6 +249,78 @@ export default function NotificationSettingsSection({ settings, onChange, userId
                     onToggle={() => onChange({ ...settings, eventParticipation: !settings.eventParticipation })}
                     disabled={!settings.enabled}
                 />
+
+                {/* Tracker Proximity Alerts */}
+                <div className={`p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-3 ${!settings.enabled ? 'opacity-60' : ''}`}>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-gradient-to-br from-brand to-brand-dark text-white rounded-xl shadow-lg shadow-brand/20">
+                                <Navigation size={18} />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-slate-900">Okolní uživatelé</h3>
+                                <p className="text-xs text-slate-500">Live Tracker notifikace o okolí</p>
+                            </div>
+                        </div>
+                        <Toggle
+                            enabled={settings.proximityAlerts ?? true}
+                            onToggle={() => onChange({ ...settings, proximityAlerts: !(settings.proximityAlerts ?? true) })}
+                            disabled={!settings.enabled}
+                        />
+                    </div>
+
+                    {(settings.proximityAlerts ?? true) && settings.enabled && (
+                        <div className="pt-3 border-t border-slate-200 mt-2 space-y-4">
+                            <div className="flex justify-between items-center px-1">
+                                <span className="text-xs font-bold text-slate-500">Okruh sledování</span>
+                                <span className="text-sm font-black text-brand italic tracking-tighter">
+                                    {(settings.proximityRadiusKm ?? 20)} km
+                                </span>
+                            </div>
+                            <input
+                                type="range"
+                                min="1"
+                                max="100"
+                                step="1"
+                                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand"
+                                value={settings.proximityRadiusKm ?? 20}
+                                onChange={(e) => onChange({ ...settings, proximityRadiusKm: parseInt(e.target.value) })}
+                            />
+                            <div className="flex justify-between px-1 text-[10px] font-bold text-slate-400">
+                                <span>1 km</span>
+                                <span>100 km</span>
+                            </div>
+                            <div className="bg-brand/5 p-3 rounded-xl flex items-start gap-2 border border-brand/10">
+                                <Info size={14} className="text-brand shrink-0 mt-0.5" />
+                                <p className="text-xs text-brand/80 font-medium">
+                                    Pokud budeš mít zapnutý Tracker i na pozadí, aplikace tě automaticky lokální notifikací upozorní, když se k tobě v tomto okruhu přiblíží jiný uživatel.
+                                </p>
+                            </div>
+
+                            <div className="bg-amber-50 p-3 rounded-xl flex items-start gap-2 border border-amber-100 mt-2">
+                                <AlertTriangle size={14} className="text-amber-500 shrink-0 mt-0.5" />
+                                <div className="space-y-2">
+                                    <p className="text-[11px] text-amber-800 font-medium leading-tight">
+                                        Aby tě Tracker upozornil i při zhasnutém displeji, ujisti se, že máš přístup k poloze na <strong className="bg-amber-100 px-1 py-0.5 rounded">Vždy povolit</strong> v nastavení telefonu.
+                                    </p>
+                                    <button
+                                        onClick={() => {
+                                            import("capacitor-native-settings").then(({ NativeSettings, AndroidSettings, IOSSettings }) => {
+                                                NativeSettings.open({
+                                                    optionAndroid: AndroidSettings.ApplicationDetails,
+                                                    optionIOS: IOSSettings.App
+                                                }).catch(console.error);
+                                            });
+                                        }}
+                                        className="text-[10px] font-black uppercase tracking-wider text-amber-700 hover:text-amber-900 flex items-center gap-1"
+                                    >
+                                        Otevřít nastavení aplikace
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
 
                 {/* New Events with Type Selection */}
                 <div className={`p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-3 ${!settings.enabled ? 'opacity-60' : ''}`}>

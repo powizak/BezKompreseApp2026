@@ -15,10 +15,6 @@ Tento soubor obsahuje nápady na rozvoj aplikace. Je rozdělen do sekce **TODO**
 - **Vylepšení pole motorizace**: U pole "engine" zavést buď kombinaci 2 polí (číslo + velká písmena), nebo našeptávač existujících hodnot pro sjednocení zadaných dat uživateli.
 
 ### 👥 Komunita a Sociální Funkce
-- **Rozšířená žádost o notifikace**: [HOTOVO] - Implementován Onboarding Wizard po prvním spuštění.
-- **Onboarding Wizard**: [HOTOVO] - Třístupňový průvodce (Welcome, Tracker/SOS, Notifikace) pro nové uživatele.
-- **Tracker na pozadí**: Možnost povolit běh aplikace na pozadí, tracker bude vysílat lokaci i při zamčeném telefonu (bude vyžadovat aktivní notifikaci systému) - v podstatě jako v Need For Speed a dalších online hrách.
-- **Tracker + notifikace na kolemjedoucí**: Možno si v nastavení zapnout, na kolik kilometrů se mi má zobrazovat, že je někdo v mém okolí, kdo má taky zapnutý tracker. Aplikace by pak v daném okruhu vysílala notifikace na kolemjedoucí. V nastavení by šlo nastavit, jaký okruh se má sledovat. 
 - **Stav přečtení v chatu**: Přidat indikátor u zprávy, zda ji druhá strana již přečetla.
 - **Konvoj Mód**: Vylepšení Trackeru pro konkrétní akci – zobrazení pořadí aut v koloně, upozornění "ztratili jsme se", pokud se někdo odpojí.
 - **Organizované Vyjížďky a Trasy**: Sdílení tras (GPX import/export).
@@ -53,6 +49,9 @@ Tento soubor obsahuje nápady na rozvoj aplikace. Je rozdělen do sekce **TODO**
 - **Obrázky & UX**: Náhled nahraných profilovek před potvrzením. Sjednocený vizuální styl hlaviček.
 
 ### 👥 Komunita a Sociální Funkce
+- **Onboarding Wizard**: Třístupňový průvodce (Welcome, Tracker/SOS, Notifikace) pro nové uživatele.
+- **Tracker na pozadí**: Běh Live Trackeru na pozadí (Foreground Service napříč mobilem a Local notifications) i při zamknutém displeji.
+- **Proximity Alerts**: Lokální notifikace na kolemjedoucí uživatele v libovolně nastavitelném rádiusu (1-100 km).
 - **Kopírování a sdílení**: U příspěvků na titulní straně a v bazaru přidána možnost nativního sdílení (Android/iOS) nebo zkopírování odkazu do schránky (Web).
 - **Chat s uživateli**: Live chat v celé aplikaci, vyvolání chat panelu pro komunikaci s majiteli z marketplace, udržování měsíční historie a navigační proklik z hlavičky na profil společníka. Upozornění systémovými Push notifikacemi.
 - **Help Beacon (SOS)**: Community assist – lokalizace do 50 km s plovoucím SOS tlačítkem, detailní statusy krize, a akční tlačítka.

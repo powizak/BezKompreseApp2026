@@ -2,13 +2,16 @@ import { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import L from 'leaflet';
-import { Geolocation } from '@capacitor/geolocation';
+import { registerPlugin } from '@capacitor/core';
+import type { BackgroundGeolocationPlugin } from '@capacitor-community/background-geolocation';
+const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>('BackgroundGeolocation');
+import { LocalNotifications } from '@capacitor/local-notifications';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { getImageUrl } from '../lib/imageService';
 import { useAuth } from '../contexts/AuthContext';
 import { useChat } from '../contexts/ChatContext';
-import { Navigation, MessageCircle, Shield, User, AlertTriangle, Wrench, Fuel, CircleSlash, HelpCircle, Phone, CheckCircle } from 'lucide-react';
+import { Navigation, MessageCircle, Shield, User, AlertTriangle, Wrench, Fuel, CircleSlash, HelpCircle, Phone, CheckCircle, X } from 'lucide-react';
 import type { PresenceInfo } from '../types/chat';
 import type { HelpBeacon, BeaconType } from '../types';
 import LoginRequired from '../components/LoginRequired';
@@ -31,15 +34,20 @@ const isNativePlatform = Capacitor.isNativePlatform();
 async function checkLocationPermission(): Promise<boolean> {
     if (isNativePlatform) {
         try {
-            const result = await Geolocation.checkPermissions();
-            return result.location === 'granted';
+            // First check local notifications permission since we might use them
+            await LocalNotifications.requestPermissions();
+
+            // BackgroundGeolocation requests permission on addWatcher automatically,
+            // but we can check if it's already running or fail gracefully later.
+            // There's no separate checkPermissions method exposed in the community plugin
+            // standard API, so we assume true to proceed with watcher initiation block,
+            // which will handle the native prompt.
+            return true;
         } catch (e) {
             console.error('Error checking permissions:', e);
             return false;
         }
     } else {
-        // In web browser, we can't pre-check permissions reliably
-        // Just check if geolocation API is available
         return 'geolocation' in navigator;
     }
 }
@@ -47,15 +55,13 @@ async function checkLocationPermission(): Promise<boolean> {
 async function requestLocationPermission(): Promise<boolean> {
     if (isNativePlatform) {
         try {
-            const result = await Geolocation.requestPermissions();
-            return result.location === 'granted';
+            // Permission is handled by addWatcher
+            return true;
         } catch (e) {
             console.error('Error requesting permissions:', e);
             return false;
         }
     } else {
-        // In web browsers, permission is requested when watchPosition is called
-        // Just check if the API is available
         return 'geolocation' in navigator;
     }
 }
@@ -65,20 +71,40 @@ async function watchPosition(
     errorCallback: (error: any) => void
 ): Promise<string | number> {
     if (isNativePlatform) {
-        // Use Capacitor's watchPosition for native
-        const watchId = await Geolocation.watchPosition(
-            { enableHighAccuracy: true },
-            (pos, err) => {
-                if (err) {
-                    errorCallback(err);
-                    return;
+        try {
+            const watcher_id = await BackgroundGeolocation.addWatcher(
+                {
+                    // Option config for BackgroundGeolocation
+                    backgroundMessage: "Sledujeme tvou polohu a upozorníme tě na ostatní uživatele.",
+                    backgroundTitle: "Live Tracker aktivní",
+                    requestPermissions: true,
+                    stale: false,
+                    distanceFilter: 10 // meters before update
+                },
+                (location, error) => {
+                    if (error) {
+                        if (error.code === "NOT_AUTHORIZED") {
+                            errorCallback({ code: 1, message: "Permission Denied" });
+                        } else {
+                            errorCallback(error);
+                        }
+                        return;
+                    }
+                    if (location) {
+                        callback({
+                            coords: {
+                                latitude: location.latitude,
+                                longitude: location.longitude
+                            }
+                        });
+                    }
                 }
-                if (pos) {
-                    callback(pos);
-                }
-            }
-        );
-        return watchId;
+            );
+            return watcher_id;
+        } catch (e) {
+            errorCallback(e);
+            return 'error_id';
+        }
     } else {
         // Use browser's geolocation API for web
         return navigator.geolocation.watchPosition(
@@ -91,7 +117,7 @@ async function watchPosition(
 
 function clearWatch(watchId: string | number) {
     if (isNativePlatform && typeof watchId === 'string') {
-        Geolocation.clearWatch({ id: watchId });
+        BackgroundGeolocation.removeWatcher({ id: watchId });
     } else if (!isNativePlatform && typeof watchId === 'number') {
         navigator.geolocation.clearWatch(watchId);
     }
@@ -165,6 +191,21 @@ export default function Tracker() {
     const [trackingEnabled, setTrackingEnabled] = useState(false);
     const [chatLoading, setChatLoading] = useState(false);
     const [isAutoFollow, setIsAutoFollow] = useState(true);
+    const [showBgPrompt, setShowBgPrompt] = useState(false);
+
+    useEffect(() => {
+        const dismissed = localStorage.getItem('bgLocationPromptDismissed');
+        if (trackingEnabled && !dismissed) {
+            setShowBgPrompt(true);
+        } else if (!trackingEnabled) {
+            setShowBgPrompt(false);
+        }
+    }, [trackingEnabled]);
+
+    const dismissBgPrompt = () => {
+        localStorage.setItem('bgLocationPromptDismissed', 'true');
+        setShowBgPrompt(false);
+    };
 
     // Help Beacon state
     const [beacons, setBeacons] = useState<HelpBeacon[]>([]);
@@ -262,6 +303,9 @@ export default function Tracker() {
         user?.homeLocation
     ]);
 
+    // Keep track of notified users per session to prevent spam
+    const notifiedUsers = useRef<Set<string>>(new Set());
+
     const startTracking = async () => {
         try {
             // Permission is already checked and granted by the button handlers
@@ -303,6 +347,43 @@ export default function Tracker() {
                         })).catch(err => {
                             console.error("Failed to update presence:", err);
                         });
+
+                        // Check for proximity alerts
+                        if (user.notificationSettings?.proximityAlerts) {
+                            const radiusKm = user.notificationSettings?.proximityRadiusKm || 20;
+                            const radiusMeters = radiusKm * 1000;
+
+                            // Need to access current state of others
+                            setOthers(currentOthers => {
+                                currentOthers.forEach(p => {
+                                    // Don't notify for myself, no location, or already notified this session
+                                    if (p.uid === user.uid || !p.location || notifiedUsers.current.has(p.uid)) return;
+
+                                    const dist = calculateDistance(latitude, longitude, p.location.lat, p.location.lng);
+                                    if (dist <= radiusMeters) {
+                                        // Proximity trigger!
+                                        notifiedUsers.current.add(p.uid);
+
+                                        // Schedule local notification
+                                        LocalNotifications.schedule({
+                                            notifications: [
+                                                {
+                                                    title: "Někdo je blízko!",
+                                                    body: `${p.displayName} je v tvé oblasti (${Math.round(dist / 1000)} km daleko). Styl: ${p.status || 'Jen tak'}`,
+                                                    id: new Date().getTime(),
+                                                    schedule: { at: new Date(Date.now() + 1000) },
+                                                    sound: undefined,
+                                                    attachments: undefined,
+                                                    actionTypeId: "",
+                                                    extra: null
+                                                }
+                                            ]
+                                        }).catch(err => console.error("Error scheduling local notification:", err));
+                                    }
+                                });
+                                return currentOthers;
+                            });
+                        }
                     } else if (user) {
                         // If invisible or near home, ensure we are removed from map
                         Effect.runPromise(dataService.removePresence(user.uid));
@@ -475,6 +556,50 @@ export default function Tracker() {
             </div>
 
             <div className="flex-1 rounded-3xl overflow-hidden border-4 border-white shadow-2xl relative z-0">
+                {showBgPrompt && (
+                    <div className="absolute top-4 left-4 right-4 z-[1000] bg-gradient-to-br from-slate-900 to-slate-800 text-white p-5 rounded-3xl shadow-2xl border border-slate-700 animate-in slide-in-from-top fade-in duration-500">
+                        <button
+                            onClick={dismissBgPrompt}
+                            className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
+                        >
+                            <X size={18} />
+                        </button>
+                        <div className="flex items-start gap-4">
+                            <div className="p-2.5 bg-amber-500/20 text-amber-500 rounded-xl shrink-0 mt-1">
+                                <AlertTriangle size={24} />
+                            </div>
+                            <div className="space-y-2 pr-4">
+                                <h3 className="font-black italic uppercase tracking-tighter text-lg leading-tight text-white mb-1">Běh na pozadí</h3>
+                                <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                                    Aby tě aplikace správně upozornila na ostatní zhasnutém displeji, ujisti se, že v nastavení telefonu máš povolený přístup k poloze na <strong className="text-white bg-white/10 px-1 py-0.5 rounded">Vždy povolit</strong>.
+                                </p>
+                                <div className="flex flex-wrap gap-2 pt-3">
+                                    <button
+                                        onClick={() => {
+                                            import("capacitor-native-settings").then(({ NativeSettings, AndroidSettings, IOSSettings }) => {
+                                                NativeSettings.open({
+                                                    optionAndroid: AndroidSettings.ApplicationDetails,
+                                                    optionIOS: IOSSettings.App
+                                                }).catch(console.error);
+                                            });
+                                            dismissBgPrompt();
+                                        }}
+                                        className="bg-brand text-brand-contrast px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-brand-dark transition-all shadow-lg shadow-brand/20"
+                                    >
+                                        Zkontrolovat
+                                    </button>
+                                    <button
+                                        onClick={dismissBgPrompt}
+                                        className="bg-slate-700/50 text-slate-300 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-slate-700 transition-all border border-slate-600/50"
+                                    >
+                                        Už mám
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <MapContainer
                     center={[49.8175, 15.4730]}
                     zoom={7}
