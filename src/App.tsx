@@ -22,36 +22,39 @@ import Market from './pages/Market';
 import MarketDetail from './pages/MarketDetail';
 import { CookieConsentProvider } from './contexts/CookieConsentContext';
 import { ChatProvider } from './contexts/ChatContext';
+import { TrackerProvider } from './contexts/TrackerContext';
 
 function App() {
   return (
     <AuthProvider>
       <CookieConsentProvider>
         <ChatProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route element={<Layout />}>
-                <Route path="/" element={<Home />} />
-                <Route path="/cars" element={<CarsPage />} />
-                <Route path="/garage" element={<Garage />} />
-                <Route path="/garage/:carId/service" element={<ServiceBook />} />
-                <Route path="/garage/:carId/fuel" element={<FuelTracker />} />
-                <Route path="/events" element={<Events />} />
-                <Route path="/events/:id" element={<EventDetail />} />
-                <Route path="/users" element={<UsersPage />} />
-                <Route path="/profile/:id" element={<UserProfile />} />
-                <Route path="/car/:id" element={<CarDetail />} />
-                <Route path="/chats" element={<Chats />} />
-                <Route path="/market" element={<Market />} />
-                <Route path="/market/:id" element={<MarketDetail />} />
-                <Route path="/info" element={<Info />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="/tos" element={<TermsOfService />} />
-                <Route path="/tracker" element={<Tracker />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
+          <TrackerProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route element={<Layout />}>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/cars" element={<CarsPage />} />
+                  <Route path="/garage" element={<Garage />} />
+                  <Route path="/garage/:carId/service" element={<ServiceBook />} />
+                  <Route path="/garage/:carId/fuel" element={<FuelTracker />} />
+                  <Route path="/events" element={<Events />} />
+                  <Route path="/events/:id" element={<EventDetail />} />
+                  <Route path="/users" element={<UsersPage />} />
+                  <Route path="/profile/:id" element={<UserProfile />} />
+                  <Route path="/car/:id" element={<CarDetail />} />
+                  <Route path="/chats" element={<Chats />} />
+                  <Route path="/market" element={<Market />} />
+                  <Route path="/market/:id" element={<MarketDetail />} />
+                  <Route path="/info" element={<Info />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/privacy" element={<PrivacyPolicy />} />
+                  <Route path="/tos" element={<TermsOfService />} />
+                  <Route path="/tracker" element={<Tracker />} />
+                </Route>
+              </Routes>
+            </BrowserRouter>
+          </TrackerProvider>
         </ChatProvider>
       </CookieConsentProvider>
     </AuthProvider>

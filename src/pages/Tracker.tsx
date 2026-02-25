@@ -1,24 +1,18 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import L from 'leaflet';
-import { registerPlugin } from '@capacitor/core';
-import type { BackgroundGeolocationPlugin } from '@capacitor-community/background-geolocation';
-const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>('BackgroundGeolocation');
-import { LocalNotifications } from '@capacitor/local-notifications';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
+import { useTracker, checkLocationPermission, requestLocationPermission, calculateDistance } from '../contexts/TrackerContext';
 import { getImageUrl } from '../lib/imageService';
 import { useAuth } from '../contexts/AuthContext';
 import { useChat } from '../contexts/ChatContext';
 import { Navigation, MessageCircle, Shield, User, AlertTriangle, Wrench, Fuel, CircleSlash, HelpCircle, Phone, CheckCircle, X } from 'lucide-react';
-import type { PresenceInfo } from '../types/chat';
 import type { HelpBeacon, BeaconType } from '../types';
 import LoginRequired from '../components/LoginRequired';
 import HelpBeaconModal from '../components/HelpBeaconModal';
 import 'leaflet/dist/leaflet.css';
-import { Capacitor } from '@capacitor/core';
-
 // Fix Leaflet icon issue
 // @ts-ignore
 delete L.Icon.Default.prototype._getIconUrl;
@@ -27,116 +21,6 @@ L.Icon.Default.mergeOptions({
     iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
-
-// Geolocation wrapper that works in both native and web environments
-const isNativePlatform = Capacitor.isNativePlatform();
-
-async function checkLocationPermission(): Promise<boolean> {
-    if (isNativePlatform) {
-        try {
-            // First check local notifications permission since we might use them
-            await LocalNotifications.requestPermissions();
-
-            // BackgroundGeolocation requests permission on addWatcher automatically,
-            // but we can check if it's already running or fail gracefully later.
-            // There's no separate checkPermissions method exposed in the community plugin
-            // standard API, so we assume true to proceed with watcher initiation block,
-            // which will handle the native prompt.
-            return true;
-        } catch (e) {
-            console.error('Error checking permissions:', e);
-            return false;
-        }
-    } else {
-        return 'geolocation' in navigator;
-    }
-}
-
-async function requestLocationPermission(): Promise<boolean> {
-    if (isNativePlatform) {
-        try {
-            // Permission is handled by addWatcher
-            return true;
-        } catch (e) {
-            console.error('Error requesting permissions:', e);
-            return false;
-        }
-    } else {
-        return 'geolocation' in navigator;
-    }
-}
-
-async function watchPosition(
-    callback: (position: { coords: { latitude: number; longitude: number } }) => void,
-    errorCallback: (error: any) => void
-): Promise<string | number> {
-    if (isNativePlatform) {
-        try {
-            const watcher_id = await BackgroundGeolocation.addWatcher(
-                {
-                    // Option config for BackgroundGeolocation
-                    backgroundMessage: "Sledujeme tvou polohu a upozorníme tě na ostatní uživatele.",
-                    backgroundTitle: "Live Tracker aktivní",
-                    requestPermissions: true,
-                    stale: false,
-                    distanceFilter: 10 // meters before update
-                },
-                (location, error) => {
-                    if (error) {
-                        if (error.code === "NOT_AUTHORIZED") {
-                            errorCallback({ code: 1, message: "Permission Denied" });
-                        } else {
-                            errorCallback(error);
-                        }
-                        return;
-                    }
-                    if (location) {
-                        callback({
-                            coords: {
-                                latitude: location.latitude,
-                                longitude: location.longitude
-                            }
-                        });
-                    }
-                }
-            );
-            return watcher_id;
-        } catch (e) {
-            errorCallback(e);
-            return 'error_id';
-        }
-    } else {
-        // Use browser's geolocation API for web
-        return navigator.geolocation.watchPosition(
-            (position) => callback(position),
-            (error) => errorCallback(error),
-            { enableHighAccuracy: true, maximumAge: 0 }
-        );
-    }
-}
-
-function clearWatch(watchId: string | number) {
-    if (isNativePlatform && typeof watchId === 'string') {
-        BackgroundGeolocation.removeWatcher({ id: watchId });
-    } else if (!isNativePlatform && typeof watchId === 'number') {
-        navigator.geolocation.clearWatch(watchId);
-    }
-}
-
-function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
-    const R = 6371e3; // meters
-    const φ1 = lat1 * Math.PI / 180;
-    const φ2 = lat2 * Math.PI / 180;
-    const Δφ = (lat2 - lat1) * Math.PI / 180;
-    const Δλ = (lon2 - lon1) * Math.PI / 180;
-
-    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-        Math.cos(φ1) * Math.cos(φ2) *
-        Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c; // in meters
-}
 
 function MapUpdater({ center, isAutoFollow, onAutoFollowChange }: {
     center: [number, number];
@@ -185,10 +69,7 @@ const createClusterCustomIcon = function (cluster: any) {
 export default function Tracker() {
     const { user } = useAuth();
     const { openChat } = useChat();
-    const [others, setOthers] = useState<PresenceInfo[]>([]);
-    const [myLoc, setMyLoc] = useState<[number, number] | null>(null);
-    const [isNearHome, setIsNearHome] = useState(false);
-    const [trackingEnabled, setTrackingEnabled] = useState(false);
+    const { trackingEnabled, setTrackingEnabled, myLoc, others, isNearHome } = useTracker();
     const [chatLoading, setChatLoading] = useState(false);
     const [isAutoFollow, setIsAutoFollow] = useState(true);
     const [showBgPrompt, setShowBgPrompt] = useState(false);
@@ -213,41 +94,11 @@ export default function Tracker() {
     const [sosLoading, setSOSLoading] = useState(false);
     const [myBeacon, setMyBeacon] = useState<HelpBeacon | null>(null);
 
-    const watchId = useRef<string | number | null>(null);
-
     const dataService = Effect.runSync(
         Effect.gen(function* (_) {
             return yield* _(DataService);
         }).pipe(Effect.provide(DataServiceLive))
     );
-
-    useEffect(() => {
-        // Subscribe to others' presence
-        const presenceEffect = dataService.getPresenceStream();
-        const stream = Effect.runSync(presenceEffect);
-        const reader = stream.getReader();
-
-        let isActive = true;
-        const read = async () => {
-            while (isActive) {
-                const { value, done } = await reader.read();
-                if (done) break;
-                if (value) {
-                    // Filter out self and users without location
-                    setOthers(value.filter(p => p.uid !== user?.uid && p.location !== null));
-                }
-            }
-        };
-        read();
-
-        return () => {
-            isActive = false;
-            reader.cancel();
-            if (user?.uid) {
-                Effect.runPromise(dataService.removePresence(user.uid));
-            }
-        };
-    }, [user?.uid]);
 
     // Subscribe to active help beacons
     useEffect(() => {
@@ -286,137 +137,6 @@ export default function Tracker() {
             reader.cancel();
         };
     }, [user?.uid, myLoc]);
-
-    useEffect(() => {
-        if (trackingEnabled) {
-            startTracking();
-        } else {
-            stopTracking();
-        }
-        return () => stopTracking();
-    }, [
-        trackingEnabled,
-        user?.trackerSettings?.isEnabled,
-        user?.trackerSettings?.status,
-        user?.trackerSettings?.allowContact,
-        user?.trackerSettings?.privacyRadius,
-        user?.homeLocation
-    ]);
-
-    // Keep track of notified users per session to prevent spam
-    const notifiedUsers = useRef<Set<string>>(new Set());
-
-    const startTracking = async () => {
-        try {
-            // Permission is already checked and granted by the button handlers
-            // This just starts the actual tracking
-
-            // Clear existing watch if any to avoid duplicates
-            if (watchId.current !== null) {
-                clearWatch(watchId.current);
-            }
-
-            const id = await watchPosition(
-                (pos) => {
-                    const { latitude, longitude } = pos.coords;
-                    setMyLoc([latitude, longitude]);
-
-                    let tooClose = false;
-                    if (user?.homeLocation) {
-                        const dist = calculateDistance(
-                            latitude, longitude,
-                            user.homeLocation.lat, user.homeLocation.lng
-                        );
-                        tooClose = dist < (user.trackerSettings?.privacyRadius || 500);
-                        setIsNearHome(tooClose);
-                    }
-
-                    const isVisible = user?.trackerSettings?.isEnabled ?? false;
-
-                    // Update presence only if visible and not near home
-                    if (user && isVisible && !tooClose) {
-                        Effect.runPromise(dataService.updatePresence({
-                            uid: user.uid,
-                            displayName: user.displayName || 'Anonymous',
-                            photoURL: user.photoURL || '',
-                            fallbackPhotoURL: user.fallbackPhotoURL || null,
-                            status: user.trackerSettings?.status || 'Jen tak',
-                            location: { lat: latitude, lng: longitude },
-                            lastActive: new Date(),
-                            allowContact: user.trackerSettings?.allowContact || false
-                        })).catch(err => {
-                            console.error("Failed to update presence:", err);
-                        });
-
-                        // Check for proximity alerts
-                        if (user.notificationSettings?.proximityAlerts) {
-                            const radiusKm = user.notificationSettings?.proximityRadiusKm || 20;
-                            const radiusMeters = radiusKm * 1000;
-
-                            // Need to access current state of others
-                            setOthers(currentOthers => {
-                                currentOthers.forEach(p => {
-                                    // Don't notify for myself, no location, or already notified this session
-                                    if (p.uid === user.uid || !p.location || notifiedUsers.current.has(p.uid)) return;
-
-                                    const dist = calculateDistance(latitude, longitude, p.location.lat, p.location.lng);
-                                    if (dist <= radiusMeters) {
-                                        // Proximity trigger!
-                                        notifiedUsers.current.add(p.uid);
-
-                                        // Schedule local notification
-                                        LocalNotifications.schedule({
-                                            notifications: [
-                                                {
-                                                    title: "Někdo je blízko!",
-                                                    body: `${p.displayName} je v tvé oblasti (${Math.round(dist / 1000)} km daleko). Styl: ${p.status || 'Jen tak'}`,
-                                                    id: new Date().getTime(),
-                                                    schedule: { at: new Date(Date.now() + 1000) },
-                                                    sound: undefined,
-                                                    attachments: undefined,
-                                                    actionTypeId: "",
-                                                    extra: null
-                                                }
-                                            ]
-                                        }).catch(err => console.error("Error scheduling local notification:", err));
-                                    }
-                                });
-                                return currentOthers;
-                            });
-                        }
-                    } else if (user) {
-                        // If invisible or near home, ensure we are removed from map
-                        Effect.runPromise(dataService.removePresence(user.uid));
-                    }
-                },
-                (err) => {
-                    console.error("Tracking error:", err);
-                    // Only disable tracking if permission was denied (code 1)
-                    // Other errors (timeout, position unavailable) should not stop tracking
-                    if (err.code === 1) {
-                        alert('Přístup k poloze byl zamítnut. Tracker byl vypnut.');
-                        setTrackingEnabled(false);
-                    }
-                }
-            );
-
-            watchId.current = id;
-        } catch (e) {
-            console.error("Error starting tracking", e);
-            // If tracking fails, disable it
-            setTrackingEnabled(false);
-        }
-    };
-
-    const stopTracking = () => {
-        if (watchId.current !== null) {
-            clearWatch(watchId.current);
-            watchId.current = null;
-        }
-        if (user?.uid) {
-            Effect.runPromise(dataService.removePresence(user.uid));
-        }
-    };
 
     // S.O.S. Beacon handlers
     const handleSOSSubmit = async (beaconType: BeaconType, description?: string) => {
