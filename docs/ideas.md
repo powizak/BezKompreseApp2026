@@ -7,35 +7,36 @@ Tento soubor obsahuje nápady na rozvoj aplikace. Je rozdělen do sekce **TODO**
 ## 📝 TODO (Nápady k realizaci)
 
 ### 🚗 Správa Vozidla a Utility
+- **Předpokládaný servis**: Na základě dat z tankování a servisní knížky předpokládat, kdy bude potřeba další servis a ukazovat to uživateli v aplikaci a pokud to bude mít zapnuté jako notifikaci, pak upozornit notifikací na blížící se nutnost servisu.
 - **Zadávání tankování fotkou**: Využít AI k načtení dat z účtenky a automatickému doplnění do formuláře tankování.
-- **Kalkulačka dojezdu**: Odhad, kolik km ujede s plnou nádrží.
 - **Export dat**: Podpora exportu statistik do CSV/Excel.
 - **Mapa tankování**: Vizualizace, kde uživatel tankuje (frekvence, levnost).
 - **Další typy paliva**: Podpora pro LPG, CNG, elektrická a hybridní auta.
 - **Vylepšení pole motorizace**: U pole "engine" zavést buď kombinaci 2 polí (číslo + velká písmena), nebo našeptávač existujících hodnot pro sjednocení zadaných dat uživateli.
 
 ### 👥 Komunita a Sociální Funkce
-- **Organizované Vyjížďky a Trasy**: Sdílení tras (GPX import/export).
-- **Konvoj Mód**: Vylepšení Trackeru pro konkrétní akci – zobrazení pořadí aut v koloně, upozornění "ztratili jsme se", pokud se někdo odpojí.
-- **Hodnocení silnic**: Možnost označit úseky mapy jako "skvělá okreska" nebo "samá díra".
-- **Tracker na pozadí**: Možnost povolit běh aplikace na pozadí, tracker bude vysílat lokaci i při zamčeném telefonu (bude vyžadovat aktivní notifikaci systému).
+- **Rozšířená žádost o notifikace**: [HOTOVO] - Implementován Onboarding Wizard po prvním spuštění.
+- **Onboarding Wizard**: [HOTOVO] - Třístupňový průvodce (Welcome, Tracker/SOS, Notifikace) pro nové uživatele.
+- **Tracker na pozadí**: Možnost povolit běh aplikace na pozadí, tracker bude vysílat lokaci i při zamčeném telefonu (bude vyžadovat aktivní notifikaci systému) - v podstatě jako v Need For Speed a dalších online hrách.
 - **Tracker + notifikace na kolemjedoucí**: Možno si v nastavení zapnout, na kolik kilometrů se mi má zobrazovat, že je někdo v mém okolí, kdo má taky zapnutý tracker. Aplikace by pak v daném okruhu vysílala notifikace na kolemjedoucí. V nastavení by šlo nastavit, jaký okruh se má sledovat. 
 - **Stav přečtení v chatu**: Přidat indikátor u zprávy, zda ji druhá strana již přečetla.
-- **Otestování UI chatu (Mobil)**: Zkontrolovat na menších mobilech chování klávesnice.
+- **Konvoj Mód**: Vylepšení Trackeru pro konkrétní akci – zobrazení pořadí aut v koloně, upozornění "ztratili jsme se", pokud se někdo odpojí.
+- **Organizované Vyjížďky a Trasy**: Sdílení tras (GPX import/export).
+- **Hodnocení silnic**: Možnost označit úseky mapy jako "skvělá okreska" nebo "samá díra".
 
 - **Gamifikace (další fáze)**:
   - Fáze 2: Sběr speciálních BezKomprese "známek" za aktivitu -> výměna za dárky (slevy, samolepky).
   - Fáze 3: "Fight" aut formou kartiček na základě statistik aut a soutěže na nejlepší tuning, fotku, video atd.
 
 ### 🏪 Bazar a Marketplace
-- **Pokročilé filtrování**: Přidat filtry vlastností, pokud bude bazar aktivně využíván.
-- **Ověřené inzeráty (Bez Komprese Tag)**: Získání certifikátu na základě zjištění přes automobilové zdroje (VIN apod.) nebo přímo osobní prohlídky v servisu.
+- **Ověřené inzeráty (Bez Komprese Tag)**: Získání certifikátu na základě zjištění přes automobilové zdroje (VIN apod.) (LEVEL1) a nebo přímo osobní prohlídky v servisu (LEVEL2). 
 - **TOPování inzerátů**: Za drobný poplatek možnost být prvních 7 dní na předních příčkách v dané prodejní kategorii.
 - **Rychlý popup dialog pro Bazar**: Otevírání malého náhledu bez nutnosti prokliku (pozor: musí umět renderovat jak auta z profilu, tak i raw samostatné inzeráty).
+- **Pokročilé filtrování**: Přidat filtry vlastností, pokud bude bazar aktivně využíván.
 
 ### 🔧 Technická Vylepšení
-- **OBD-II Integrace**: Spárovat aplikaci přes Bluetooth s OBD-II modulem a nacpat rovnou chybové kódy (DTC) do konceptu záznamu v Servisní knížce.
 - **PWA a Offline Mode**: Offline synchronizace Servisní knížky (pro použití uvnitř nezasíťované garáže) a lepší cachování map do Trackeru pro místa bez signálu.
+- **OBD-II Integrace**: Spárovat aplikaci přes Bluetooth s OBD-II modulem a nacpat rovnou chybové kódy (DTC) do konceptu záznamu v Servisní knížce.
 - **Car Filter Index**: Vytvořit Cloud Function pro index, pokud počet uživatelských aut vzroste nad 5000, minimalizace Firestore requestů pomocí stromové mapy.
 
 ---

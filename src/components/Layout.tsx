@@ -9,15 +9,15 @@ import ChatDrawer from './ChatDrawer';
 import SupportSection from './SupportSection';
 import UserAvatar from './UserAvatar';
 import { useBackButton } from '../hooks/useBackButton';
-import { useNotificationPrompt } from '../hooks/useNotificationPrompt';
-import NotificationPromptDialog from './NotificationPromptDialog';
+import { useOnboarding } from '../hooks/useOnboarding';
+import OnboardingWizard from './OnboardingWizard';
 
 export default function Layout() {
   useBackButton();
   const { pathname } = useLocation();
   const { user, logout } = useAuth();
   const { activeChat, closeChat, unreadMap, openChat } = useChat();
-  const { showPrompt, isProcessing, handleAccept, handleDismiss } = useNotificationPrompt(user);
+  const { showOnboarding, completeOnboarding, isProcessing, permissionStatus, requestNotificationPermission } = useOnboarding(user);
 
   const unreadCount = Object.keys(unreadMap).length;
 
@@ -147,12 +147,13 @@ export default function Layout() {
 
       <CookieBanner />
 
-      {/* Notification Permission Prompt */}
-      {showPrompt && (
-        <NotificationPromptDialog
-          onAccept={handleAccept}
-          onDismiss={handleDismiss}
+      {/* Onboarding Wizard / Permissions */}
+      {showOnboarding && (
+        <OnboardingWizard
+          onComplete={completeOnboarding}
+          onRequestNotifications={requestNotificationPermission}
           isProcessing={isProcessing}
+          permissionStatus={permissionStatus}
         />
       )}
 

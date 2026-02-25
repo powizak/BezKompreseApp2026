@@ -150,7 +150,7 @@ export default function NotificationSettingsSection({ settings, onChange, userId
                 <button
                     onClick={handleMasterToggle}
                     disabled={isRegistering || permissionStatus === 'denied'}
-                    className={`w-14 h-7 rounded-full transition-colors relative ${settings.enabled && permissionStatus === 'granted' ? 'bg-brand' : 'bg-slate-600'} ${isRegistering ? 'animate-pulse' : ''}`}
+                    className={`w-14 h-7 rounded-full transition-colors relative ${settings.enabled && permissionStatus === 'granted' ? 'bg-brand' : 'bg-slate-600'} ${(isRegistering || permissionStatus === 'denied') ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                     <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${settings.enabled && permissionStatus === 'granted' ? 'left-8' : 'left-1'}`} />
                 </button>

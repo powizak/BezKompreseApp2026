@@ -2,6 +2,13 @@
 
 Všechny důležité změny v projektu jsou zaznamenány v tomto souboru.
 
+## [0.0.52] / [_2026_02_25] for Android app - 2026-02-25
+### Přidáno
+- **Onboarding Wizard**: Zaveden nový třístupňový úvodní průvodce (Welcome, Tracker & SOS, Notifications), který nahrazuje starý dialog a agresivní žádosti.
+- **Kontextová Poloha**: Z důvodu ochrany soukromí a splnění podmínek Apple App Store (5.1.1) je nyní žádost o polohu vyvolána až při reálném prvním otevření mapy (Live Trackeru), nikoliv hned po spuštění.
+- **Synchronizace Oprávnění s OS**: Aplikace nyní inteligentně detekuje, pokud uživatel zakázal notifikace v nastavení samotného telefonu (OS), promítne tento stav do `Profilu -> Nastavení` a navede uživatele zpět do nastavení systému, pokud je chce znovu zapnout.
+- **Přečištění UI**: Odstraněn původní 7denní opakující se notifikační prompt. Nyní je vše řešeno čistě na začátku a případně pak v nastavení profilu.
+
 ## [0.0.51] / [_2026_02_24] for Android app - 2026-02-24
 ### Přidáno
 - **Chat Navigace**: Možnost bezpečně zavřít překryvné okno (Overlay) chatu pomocí hardwarového tlačítka "zpět" na Androidu nebo nativního swipe-back gesta na iOS, aniž by došlo k nežádoucí běžné navigaci v aplikaci.
