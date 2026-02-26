@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.onFriendAdded = void 0;
 const functions = __importStar(require("firebase-functions"));
+const admin = __importStar(require("firebase-admin"));
 const sendNotification_1 = require("./sendNotification");
 /**
  * Triggered when a user's document is updated
@@ -54,16 +55,36 @@ exports.onFriendAdded = functions
     if (newFriends.length === 0) {
         return;
     }
-    console.log(`User ${userId} added ${newFriends.length} new friend(s)`);
+    console.log(`User ${userId} added ${newFriends.length} new friend(s). Before: ${beforeFriends.length}, After: ${afterFriends.length}`);
     const adderName = after.displayName || "Někdo";
     const notifications = newFriends.map(async (friendId) => {
+        // Check cooldown to prevent spam (e.g. remove and add immediately)
+        const lockId = `friend_req_${userId}_${friendId}`;
+        const lockRef = sendNotification_1.db.collection("notification_locks").doc(lockId);
+        const lockDoc = await lockRef.get();
+        if (lockDoc.exists) {
+            const lastSent = lockDoc.data()?.timestamp?.toDate();
+            if (lastSent && Date.now() - lastSent.getTime() < 1000 * 60 * 60 * 24) { // 24 hours
+                console.log(`Skipping notification to ${friendId} from ${userId} due to 24h cooldown.`);
+                return false;
+            }
+        }
         const userData = await (0, sendNotification_1.getUserNotificationData)(friendId);
-        if (!userData.token)
+        if (!userData.token) {
+            console.log(`Skipping friend notification for ${friendId} - missing token.`);
             return false;
-        if (!userData.settings?.enabled)
+        }
+        if (!userData.settings?.enabled) {
+            console.log(`Skipping friend notification for ${friendId} - notifications disabled completely.`);
             return false;
-        if (!userData.settings.friendRequests)
+        }
+        if (!userData.settings.friendRequests) {
+            console.log(`Skipping friend notification for ${friendId} - friendRequests notifications disabled.`);
             return false;
+        }
+        // Set lock for 24h
+        await lockRef.set({ timestamp: admin.firestore.FieldValue.serverTimestamp() });
+        console.log(`Sending friend notification to ${friendId} (from ${userId}).`);
         return (0, sendNotification_1.sendPushNotification)({
             token: userData.token,
             title: "👋 Nový přítel",

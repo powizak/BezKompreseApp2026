@@ -2,6 +2,11 @@
 
 Všechny důležité změny v projektu jsou zaznamenány v tomto souboru.
 
+## [0.0.53] / [_2026_02_26] for Android app - 2026-02-26
+### Přidáno
+- **Notifikace v popředí**: Nativní bannerové upozornění pro Android i při používání aplikace, které přesměruje uživatele na správnou obrazovku.
+- **Deduplikace notifikací na přátele**: Implementován 24hodinový cooldown pro žádosti o přátelství, který zabraňuje zahlcování.
+
 ## [0.0.52] / [_2026_02_25] for Android app - 2026-02-25
 ### Přidáno
 - **Onboarding Wizard**: Zaveden nový třístupňový úvodní průvodce (Welcome, Tracker & SOS, Notifications), který nahrazuje starý dialog a agresivní žádosti.

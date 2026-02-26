@@ -145,7 +145,38 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
 
-    const url = event.notification.data?.url || '/';
+    const data = event.notification.data || {};
+    let url = data.url || '/'; // Default to root
+
+    // Determine target URL based on notification payload type
+    if (data.type) {
+        switch (data.type) {
+            case 'new_event':
+            case 'event_update':
+            case 'event_comment':
+            case 'event_participation':
+                if (data.eventId) url = `/events/${data.eventId}`;
+                break;
+            case 'friend_request':
+            case 'badge_awarded':
+            case 'beacon_status_change': // Has userId
+                if (data.userId) url = `/profile/${data.userId}`;
+                break;
+            case 'chat_message':
+                url = '/chats';
+                // Note: /chats doesn't immediately open the specific room in mobile UI yet, but goes to the chat list.
+                break;
+            case 'marketplace_listing':
+                if (data.listingId) url = `/market/${data.listingId}`;
+                break;
+            case 'vehicle_reminder':
+                if (data.carId) url = `/garage/${data.carId}/service`;
+                break;
+            case 'sos_beacon':
+                url = '/tracker';
+                break;
+        }
+    }
 
     event.waitUntil(
         self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {

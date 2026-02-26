@@ -23,6 +23,7 @@ import MarketDetail from './pages/MarketDetail';
 import { CookieConsentProvider } from './contexts/CookieConsentContext';
 import { ChatProvider } from './contexts/ChatContext';
 import { TrackerProvider } from './contexts/TrackerContext';
+import PushNotificationHandler from './components/PushNotificationHandler';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <ChatProvider>
           <TrackerProvider>
             <BrowserRouter>
+              <PushNotificationHandler />
               <Routes>
                 <Route element={<Layout />}>
                   <Route path="/" element={<Home />} />
