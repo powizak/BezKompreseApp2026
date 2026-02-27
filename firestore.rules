@@ -96,7 +96,7 @@ service cloud.firestore {
     // Všichni authenticated mohou číst a vytvářet
     // Aktivní beacon může vymazat pouze jeho autor
     match /help-beacons/{beaconId} {
-      allow read, create: if isAuthenticated();
+      allow read, create, update: if isAuthenticated();
       allow delete: if isAuthenticated() 
                     && resource.data.userId == getUserId();
     }

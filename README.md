@@ -50,8 +50,8 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **🚀 Výkonné Procházení**: Serverové stránkování a filtrování všech aut pro bleskové načítání i při tisících vozidlech
 
 ### 📍 Live Tracker (NOVÉ!)
-- **Real-time Mapa**: Zobrazení polohy ostatních uživatelů v reálném čase (**hybridní podpora pro Safari/Chrome na iOS**)
-- **Běh na pozadí**: Foreground Sledování polohy s permanentní notifikací i při zamknutém telefonu (při uděleném povolení Vždy).
+- **Real-time Mapa**: Zobrazení polohy ostatních uživatelů v reálném čase (**hybridní podpora pro Safari/Chrome na iOS**) s robustním background syncingem.
+- **Běh na pozadí**: Foreground Sledování polohy s permanentní notifikací i při zamknutém telefonu (při uděleném povolení Vždy) odolné vůči rozdílům v systémovém čase.
 - **Proximity Alerts**: Lokální klientské notifikace na okolní uživatele podle nastavitelného rádiusu (1-100 km) k zabránění spamování.
 - **Privacy Zóny**: Automatické skrytí polohy v blízkosti domova
 - **Statusy**: Nastavení statusu (Dáme pokec?, Závod?, Projížďka?, atd.)

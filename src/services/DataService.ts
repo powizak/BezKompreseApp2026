@@ -779,8 +779,9 @@ export const DataServiceLive = Layer.succeed(
 
             return new ReadableStream({
                 start(controller) {
-                    const tenMinAgo = new Timestamp(Math.floor(Date.now() / 1000) - 600, 0);
-                    const q = query(collection(db, "presence"), where("lastActive", ">=", tenMinAgo));
+                    // Relaxed threshold to 24 hours to tolerate clock skews between devices
+                    const oneDayAgo = new Timestamp(Math.floor(Date.now() / 1000) - 86400, 0);
+                    const q = query(collection(db, "presence"), where("lastActive", ">=", oneDayAgo));
 
                     unsubscribe = onSnapshot(q, (snapshot) => {
                         if (closed) return;

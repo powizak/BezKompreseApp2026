@@ -2,6 +2,11 @@
 
 Všechny důležité změny v projektu jsou zaznamenány v tomto souboru.
 
+## [0.0.54] / [_2026_02_27] - 2026-02-27
+### Opraveno
+- **Tracker Synchronizace**: Kompletně vyřešeno odpojování Firebase u Live Tracker mapy. Sdílení polohy a viditelnost na mapě funguje nyní stoprocentně spolehlivě i při odlišných časech zařízení na mobilech.
+- **SOS Notifikace a Odezva**: Opraven pád Cloud Functions pro záchranné push notifikace a chybějící oprávnění u SOS tlačítek. Nyní plně funkční obousměrná komunikace (zavolání i odpověď).
+
 ## [0.0.53] / [_2026_02_26] for Android app - 2026-02-26
 ### Přidáno
 - **Notifikace v popředí**: Nativní bannerové upozornění pro Android i při používání aplikace, které přesměruje uživatele na správnou obrazovku.

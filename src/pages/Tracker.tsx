@@ -89,6 +89,7 @@ export default function Tracker() {
     };
 
     // Help Beacon state
+    const [allBeacons, setAllBeacons] = useState<HelpBeacon[]>([]);
     const [beacons, setBeacons] = useState<HelpBeacon[]>([]);
     const [showSOSModal, setShowSOSModal] = useState(false);
     const [sosLoading, setSOSLoading] = useState(false);
@@ -100,7 +101,7 @@ export default function Tracker() {
         }).pipe(Effect.provide(DataServiceLive))
     );
 
-    // Subscribe to active help beacons
+    // Subscribe to all active help beacons independently of location
     useEffect(() => {
         const beaconEffect = dataService.getActiveBeaconsStream();
         const stream = Effect.runSync(beaconEffect);
@@ -112,21 +113,7 @@ export default function Tracker() {
                 const { value, done } = await reader.read();
                 if (done) break;
                 if (value) {
-                    // Filter to beacons within 50km and update myBeacon if exists
-                    const filtered = value.filter(b => {
-                        if (b.userId === user?.uid) {
-                            setMyBeacon(b);
-                            return false; // Don't show own beacon in list
-                        }
-                        if (!myLoc) return true; // Show all if no location yet
-                        const dist = calculateDistance(myLoc[0], myLoc[1], b.location.lat, b.location.lng);
-                        return dist <= 50000; // 50km
-                    });
-                    setBeacons(filtered);
-
-                    // Clear myBeacon if not in the list anymore
-                    const myBeaconInList = value.find(b => b.userId === user?.uid);
-                    if (!myBeaconInList) setMyBeacon(null);
+                    setAllBeacons(value);
                 }
             }
         };
@@ -136,7 +123,30 @@ export default function Tracker() {
             isActive = false;
             reader.cancel();
         };
-    }, [user?.uid, myLoc]);
+    }, []);
+
+    // Dynamically filter beacons based on myLoc and userId
+    useEffect(() => {
+        // Filter to beacons within 50km and update myBeacon if exists
+        const filtered = allBeacons.filter(b => {
+            if (b.userId === user?.uid) {
+                // Own beacon is handled by setMyBeacon below
+                return false;
+            }
+            if (!myLoc) return true; // Show all if no tracking location yet
+            const dist = calculateDistance(myLoc[0], myLoc[1], b.location.lat, b.location.lng);
+            return dist <= 50000; // 50km
+        });
+        setBeacons(filtered);
+
+        // Update myBeacon status
+        const myBeaconInList = allBeacons.find(b => b.userId === user?.uid);
+        if (myBeaconInList) {
+            setMyBeacon(myBeaconInList);
+        } else {
+            setMyBeacon(null);
+        }
+    }, [allBeacons, myLoc, user?.uid]);
 
     // S.O.S. Beacon handlers
     const handleSOSSubmit = async (beaconType: BeaconType, description?: string) => {

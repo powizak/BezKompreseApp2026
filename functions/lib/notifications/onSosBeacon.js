@@ -49,7 +49,7 @@ const BEACON_TYPE_LABELS = {
  */
 exports.onSosBeaconCreated = functions
     .region("europe-west1")
-    .firestore.document("helpBeacons/{beaconId}")
+    .firestore.document("help-beacons/{beaconId}")
     .onCreate(async (snap, context) => {
     const beacon = snap.data();
     const beaconId = context.params.beaconId;
