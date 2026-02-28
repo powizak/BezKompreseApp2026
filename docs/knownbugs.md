@@ -3,13 +3,6 @@
 
  - uživatelé mohou ve starých verzích aplikace (Android) zadávat data s whitespace na konci -> kazí to filtrování -> nutno ještě jednou vyčistit scriptem
 
-## Nastavení notifikací
-- Volání SOS notifikace nepřijde
-- Odpověď na SOS volání notifikace nepřijde 
-
-## Tracker
-- Pokud si někdo zapne sledování polohy po mě, nevidím ho 
-
 
 ## Verze apliakce pro telefony zobrazuje stále 1.0.0 
 - chceme synchronizovat zobrazení verze aplikace jak pro web, tak pro telefony

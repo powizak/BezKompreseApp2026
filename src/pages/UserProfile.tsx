@@ -7,7 +7,8 @@ import { useChat } from '../contexts/ChatContext';
 import type { UserProfile, Car, AppEvent, NotificationSettings } from '../types';
 import { getImageUrl } from '../lib/imageService';
 import { DEFAULT_NOTIFICATION_SETTINGS } from '../types';
-import { Car as CarIcon, UserPlus, UserMinus, Users, Calendar, MapPin, User, ChevronRight, Settings, Shield, Save, CarFront, Gauge, Fuel, MessageCircle, LogOut, Award } from 'lucide-react';
+import { Car as CarIcon, UserPlus, UserMinus, Users, Calendar, MapPin, User, ChevronRight, ChevronLeft, Settings, Shield, Save, CarFront, Gauge, Fuel, MessageCircle, LogOut, Award } from 'lucide-react';
+import { useScrollOverflow } from '../hooks/useScrollOverflow';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -53,6 +54,7 @@ export default function UserProfilePage() {
     const [shareFuelConsumption, setShareFuelConsumption] = useState(false);
     const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>(DEFAULT_NOTIFICATION_SETTINGS);
     const [chatLoading, setChatLoading] = useState(false);
+    const { ref: scrollRef, canScrollLeft, canScrollRight, checkScroll } = useScrollOverflow();
 
     const dataService = Effect.runSync(
         Effect.gen(function* (_) {
@@ -107,6 +109,15 @@ export default function UserProfilePage() {
 
         fetchData();
     }, [id]);
+
+    // Force recalculate scroll when data arrays length changes (buttons are rendered as chunks asynchronously)
+    useEffect(() => {
+        if (!loading) {
+            // timeout guarantees that DOM is fully flushed with the newly generated tabs
+            const timeoutId = setTimeout(checkScroll, 150);
+            return () => clearTimeout(timeoutId);
+        }
+    }, [loading, cars.length, events.length, friends.length, checkScroll]);
 
     // Retroactive badge check – runs once currentUser is available for own profile
     useEffect(() => {
@@ -283,23 +294,41 @@ export default function UserProfilePage() {
             </div>
 
             {/* Navigation Tabs */}
-            <div className="sticky top-0 bg-slate-50 z-20 -mx-4 px-4 py-3 flex justify-start md:justify-start gap-2 md:gap-4 border-b border-slate-200 overflow-x-auto scrollbar-hide shadow-sm">
-                <button onClick={() => setActiveTab('garage')} className={`pb-3 px-2 md:px-4 text-xs md:text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-1 md:gap-2 whitespace-nowrap flex-shrink-0 ${activeTab === 'garage' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
-                    <CarIcon size={16} className="md:w-[18px] md:h-[18px]" /> Garáž <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 text-slate-500">{cars.length}</span>
-                </button>
-                <button onClick={() => setActiveTab('events')} className={`pb-3 px-2 md:px-4 text-xs md:text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-1 md:gap-2 whitespace-nowrap flex-shrink-0 ${activeTab === 'events' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
-                    <Calendar size={16} className="md:w-[18px] md:h-[18px]" /> Akce <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 text-slate-500">{events.length}</span>
-                </button>
-                <button onClick={() => setActiveTab('friends')} className={`pb-3 px-2 md:px-4 text-xs md:text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-1 md:gap-2 whitespace-nowrap flex-shrink-0 ${activeTab === 'friends' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
-                    <Users size={16} className="md:w-[18px] md:h-[18px]" /> Přátelé <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 text-slate-500">{friends.length}</span>
-                </button>
-                <button onClick={() => setActiveTab('badges')} className={`pb-3 px-2 md:px-4 text-xs md:text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-1 md:gap-2 whitespace-nowrap flex-shrink-0 ${activeTab === 'badges' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
-                    <Award size={16} className="md:w-[18px] md:h-[18px]" /> Odznaky <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 text-slate-500">{profile?.badges?.length || 0}</span>
-                </button>
-                {isMe && (
-                    <button onClick={() => setActiveTab('settings')} className={`pb-3 px-2 md:px-4 text-xs md:text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-1 md:gap-2 whitespace-nowrap flex-shrink-0 ${activeTab === 'settings' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
-                        <Settings size={16} className="md:w-[18px] md:h-[18px]" /> Nastavení
+            <div className="sticky top-0 bg-slate-50 z-30 -mx-4 border-b border-slate-200 shadow-sm relative group overflow-hidden">
+                {canScrollLeft && (
+                    <div className="absolute left-0 top-0 bottom-0 w-16 md:w-24 bg-gradient-to-r from-slate-50 from-40% via-slate-50/80 to-transparent flex items-center justify-start z-10 pointer-events-none px-2 md:px-4 text-slate-500">
+                        <ChevronLeft size={20} className="animate-pulse drop-shadow-sm" />
+                    </div>
+                )}
+
+                <div
+                    ref={scrollRef}
+                    onScroll={checkScroll}
+                    className="px-4 py-3 flex justify-start md:justify-start gap-2 md:gap-4 overflow-x-auto scrollbar-hide relative z-0"
+                >
+                    <button onClick={() => setActiveTab('garage')} className={`pb-3 px-2 md:px-4 text-xs md:text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-1 md:gap-2 whitespace-nowrap flex-shrink-0 ${activeTab === 'garage' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
+                        <CarIcon size={16} className="md:w-[18px] md:h-[18px]" /> Garáž <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 text-slate-500">{cars.length}</span>
                     </button>
+                    <button onClick={() => setActiveTab('events')} className={`pb-3 px-2 md:px-4 text-xs md:text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-1 md:gap-2 whitespace-nowrap flex-shrink-0 ${activeTab === 'events' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
+                        <Calendar size={16} className="md:w-[18px] md:h-[18px]" /> Akce <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 text-slate-500">{events.length}</span>
+                    </button>
+                    <button onClick={() => setActiveTab('friends')} className={`pb-3 px-2 md:px-4 text-xs md:text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-1 md:gap-2 whitespace-nowrap flex-shrink-0 ${activeTab === 'friends' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
+                        <Users size={16} className="md:w-[18px] md:h-[18px]" /> Přátelé <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 text-slate-500">{friends.length}</span>
+                    </button>
+                    <button onClick={() => setActiveTab('badges')} className={`pb-3 px-2 md:px-4 text-xs md:text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-1 md:gap-2 whitespace-nowrap flex-shrink-0 ${activeTab === 'badges' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
+                        <Award size={16} className="md:w-[18px] md:h-[18px]" /> Odznaky <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 text-slate-500">{profile?.badges?.length || 0}</span>
+                    </button>
+                    {isMe && (
+                        <button onClick={() => setActiveTab('settings')} className={`pb-3 px-2 md:px-4 text-xs md:text-sm font-black uppercase tracking-wide border-b-2 transition-colors flex items-center gap-1 md:gap-2 whitespace-nowrap flex-shrink-0 ${activeTab === 'settings' ? 'border-brand text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>
+                            <Settings size={16} className="md:w-[18px] md:h-[18px]" /> Nastavení
+                        </button>
+                    )}
+                </div>
+
+                {canScrollRight && (
+                    <div className="absolute right-0 top-0 bottom-0 w-16 md:w-24 bg-gradient-to-l from-slate-50 from-40% via-slate-50/80 to-transparent flex items-center justify-end z-10 pointer-events-none px-2 md:px-4 text-slate-500">
+                        <ChevronRight size={20} className="animate-pulse drop-shadow-sm" />
+                    </div>
                 )}
             </div>
 

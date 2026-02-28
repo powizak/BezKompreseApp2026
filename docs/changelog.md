@@ -2,6 +2,10 @@
 
 Všechny důležité změny v projektu jsou zaznamenány v tomto souboru.
 
+## [0.0.55] / [_2026_02_28] - 2026-02-28
+### Přidáno
+- **Vizuální nápověda scrollování v profilu**: Zlepšeno UI/UX (gradienty a dynamické šipky) pro naznačení scrollovatelných záložek s autokorekcí pro PC displeje za použití ResizeObserver a asynchronní inicializace z DOMu.
+
 ## [0.0.54] / [_2026_02_27] - 2026-02-27
 ### Opraveno
 - **Tracker Synchronizace**: Kompletně vyřešeno odpojování Firebase u Live Tracker mapy. Sdílení polohy a viditelnost na mapě funguje nyní stoprocentně spolehlivě i při odlišných časech zařízení na mobilech.

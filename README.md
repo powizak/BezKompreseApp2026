@@ -76,8 +76,9 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **SOS Upozornění**: Okamžitá notifikace při volání o pomoc
 - **Komentáře k akcím**: Notifikace o nových komentářích u akcí, kterých se účastníte
 - 👤 **Profil a Přátelé**: Správa vlastního garážového stání, sledování přátel a sbírání odznaků.
+- **🆕 Vizuální nápověda pro scrollování**: Inteligentní gradienty a mizející šipky pro lepší UX v horizontálním menu profilu.
 - ✨ **Onboarding Wizard**: Moderní úvodní průvodce pro nové uživatele s integrací oprávnění.
-- 🔔 **Chytré Notifikace**: Push oznámení pro chat, SOS, nové akce a připomínky (STK, servis).lík**: Upozornění na vypršení STK, lékárničky, pojištění nebo dálniční známky
+- 🔔 **Chytré Notifikace**: Push oznámení pro chat, SOS, nové akce a připomínky (STK, servis).
 - **🆕 Chat s uživateli**: Reálný chat mezi členy komunity s náhledy konverzací, historií a **možností prokliknout se přímo na profil uživatele**
 - **🆕 Bazar a Marketplace**: Prodej aut přímo z garáže a inzerce poptávek po dílech či servisu
 - **Tiché hodiny**: Nastavitelný čas, kdy notifikace nepřijdou (globální vynucení pro všechny typy kromě SOS)
