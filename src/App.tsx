@@ -25,6 +25,8 @@ import { ChatProvider } from './contexts/ChatContext';
 import { TrackerProvider } from './contexts/TrackerContext';
 import PushNotificationHandler from './components/PushNotificationHandler';
 
+import ScrollToTop from './components/ScrollToTop';
+
 function App() {
   return (
     <AuthProvider>
@@ -32,6 +34,7 @@ function App() {
         <ChatProvider>
           <TrackerProvider>
             <BrowserRouter>
+              <ScrollToTop />
               <PushNotificationHandler />
               <Routes>
                 <Route element={<Layout />}>
