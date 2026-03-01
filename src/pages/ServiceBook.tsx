@@ -4,6 +4,7 @@ import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
 import type { Car, ServiceRecord, ServicePart } from '../types';
+import { analyzeUpcomingServices, type ServicePrediction } from '../utils/servicePrediction';
 import {
     ArrowLeft, Plus, Gauge, Wrench, DollarSign, MapPin,
     FileText, Trash2, Pencil, X, Save, AlertCircle, TrendingUp,
@@ -27,6 +28,7 @@ export default function ServiceBook() {
     const navigate = useNavigate();
     const [car, setCar] = useState<Car | null>(null);
     const [records, setRecords] = useState<ServiceRecord[]>([]);
+    const [predictions, setPredictions] = useState<ServicePrediction[]>([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [editingRecord, setEditingRecord] = useState<ServiceRecord | null>(null);
@@ -69,9 +71,10 @@ export default function ServiceBook() {
         if (!carId) return;
 
         try {
-            const [carData, recordsData] = await Promise.all([
+            const [carData, recordsData, fuelData] = await Promise.all([
                 Effect.runPromise(dataService.getCarById(carId)),
-                Effect.runPromise(dataService.getServiceRecords(carId, user?.uid))
+                Effect.runPromise(dataService.getServiceRecords(carId, user?.uid)),
+                Effect.runPromise(dataService.getFuelRecords(carId))
             ]);
 
             if (!carData) {
@@ -86,6 +89,7 @@ export default function ServiceBook() {
 
             setCar(carData);
             setRecords(recordsData);
+            setPredictions(analyzeUpcomingServices(carData, recordsData, fuelData));
         } catch (err) {
             console.error('Failed to fetch data', err);
             setError('Nepodařilo se načíst data');
@@ -211,8 +215,12 @@ export default function ServiceBook() {
     const totalCosts = records.reduce((sum, r) => sum + r.totalCost, 0);
     const avgCostPerMonth = car ? totalCosts / Math.max(1, Math.floor((Date.now() - new Date(car.year, 0, 1).getTime()) / (30 * 24 * 60 * 60 * 1000))) : 0;
 
-    // Get upcoming services
-    const upcomingServices = records.filter(r => r.nextServiceMileage || r.nextServiceDate);
+    // Get upcoming services using predictions
+    const upcomingServices = predictions.filter(p => p.predictedDate !== null).sort((a, b) => {
+        if (!a.predictedDate) return 1;
+        if (!b.predictedDate) return -1;
+        return a.predictedDate.getTime() - b.predictedDate.getTime();
+    });
 
     if (loading) {
         return (
@@ -288,23 +296,66 @@ export default function ServiceBook() {
                 </div>
             </div>
 
-            {/* Upcoming Services */}
             {upcomingServices.length > 0 && (
                 <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-8">
                     <h3 className="font-bold text-amber-900 mb-3 flex items-center gap-2">
                         <Clock size={18} />
                         Nadcházející servis
                     </h3>
-                    <div className="space-y-2">
-                        {upcomingServices.slice(0, 3).map(record => (
-                            <div key={record.id} className="flex justify-between items-center text-sm">
-                                <span className="font-medium text-amber-800">{record.title}</span>
-                                <span className="text-amber-600">
-                                    {record.nextServiceMileage && `Za ${record.nextServiceMileage.toLocaleString()} km`}
-                                    {record.nextServiceDate && ` / ${format(new Date(record.nextServiceDate), 'd. M. yyyy', { locale: cs })}`}
-                                </span>
-                            </div>
-                        ))}
+                    <div className="space-y-4">
+                        {upcomingServices.slice(0, 3).map(pred => {
+                            const record = records.find(r => r.id === pred.recordId);
+                            if (!record || !pred.predictedDate || pred.daysRemaining === null) return null;
+
+                            // Visual urgency
+                            const isUrgent = pred.isOverdue || pred.daysRemaining < 14 || (pred.mileageRemaining !== null && pred.mileageRemaining < 500);
+                            const textColor = isUrgent ? 'text-red-700' : 'text-amber-800';
+                            const bgColor = isUrgent ? 'bg-red-200' : 'bg-amber-200';
+                            const progressColor = isUrgent ? 'bg-red-500' : 'bg-amber-500';
+
+                            // Rough progress calculation: if days > 365, it's 0% urgent. If days <= 0, 100%
+                            const progressPercent = Math.min(100, Math.max(0, 100 - (pred.daysRemaining / (365 / 100))));
+
+                            return (
+                                <div key={pred.recordId} className="bg-white/50 rounded-xl p-3 border border-amber-100">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div>
+                                            <span className={`font-bold ${textColor}`}>{record.title}</span>
+                                            <p className="text-xs text-amber-700/70 mt-0.5">
+                                                {pred.triggerType === 'mileage' && 'Na základě vašeho denního nájezdu'}
+                                                {pred.triggerType === 'date' && 'Dle kalendářního plánu'}
+                                                {pred.triggerType === 'both' && 'Na hranici nájezdu i termínu'}
+                                            </p>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className={`font-bold text-sm ${textColor}`}>
+                                                {pred.isOverdue ? 'Zpožděno!' : `Za ${pred.daysRemaining} dní`}
+                                            </div>
+                                            <div className="text-xs font-medium text-amber-700 mt-0.5">
+                                                {format(pred.predictedDate, 'd. M. yyyy', { locale: cs })}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className={`h-1.5 w-full rounded-full overflow-hidden ${bgColor}`}>
+                                        <div
+                                            className={`h-full ${progressColor} transition-all duration-1000`}
+                                            style={{ width: `${progressPercent}%` }}
+                                        />
+                                    </div>
+                                    <div className="flex justify-between items-center mt-2 text-[10px] font-bold uppercase tracking-wider text-amber-700/60">
+                                        <span>Aktuální</span>
+                                        {pred.mileageRemaining !== null && (
+                                            <span>
+                                                {pred.isOverdue && pred.mileageRemaining <= 0
+                                                    ? `Překročeno o ${Math.abs(pred.mileageRemaining).toLocaleString()} km`
+                                                    : `Zbývá ${pred.mileageRemaining.toLocaleString()} km`}
+                                            </span>
+                                        )}
+                                        <span>Limit</span>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             )}
@@ -517,7 +568,7 @@ export default function ServiceBook() {
                                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Příští servis</h4>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Za km</label>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">V km</label>
                                         <input
                                             type="number"
                                             placeholder="135000"

@@ -22,6 +22,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 - **🆕 Servisní Knížka**: Kompletní digitální evidence servisu
 - **🆕 Digitální Kaslík**: Sledování platnosti STK, lékárničky, dálniční známky a pojištění (upozornění předem)
 - **🆕 Tankování a Statistiky**: Inteligentní křížový výpočet hodnot (litry/cena), grafy spotřeby, náklady palivo vs servis, cena za km, automatická synchronizace tachometru (volitelné u částečného tankování)
+- **🆕 Předpokládaný servis**: Chytrý výpočet nadcházejícího servisu na základě reálného denního nájezdu řidiče a notifikace přímo na pozadí zařízení.
 
 ### 🔧 Servisní Knížka (NOVÉ!)
 - **Digitální Evidence**: Sledování všech servisních zásahů a oprav

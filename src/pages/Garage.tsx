@@ -2,9 +2,10 @@ import { useEffect, useState, useRef } from 'react';
 import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
-import type { Car, CarModification, VehicleReminder, VehicleStatus, ImageVariants } from '../types';
+import type { Car, CarModification, VehicleReminder, VehicleStatus, ImageVariants, ServiceRecord } from '../types';
 import { VEHICLE_STATUS_CONFIG } from '../types';
 import { Plus, Pencil, Trash2, Camera, CarFront, Gauge, Wrench, X, Save, AlertCircle, Fuel, FileCheck, Tag } from 'lucide-react';
+import { analyzeUpcomingServices, type ServicePrediction } from '../utils/servicePrediction';
 import { Link } from 'react-router-dom';
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -46,6 +47,7 @@ export default function Garage() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [carToDelete, setCarToDelete] = useState<string | null>(null);
+  const [urgentServices, setUrgentServices] = useState<{ car: Car, prediction: ServicePrediction, record: ServiceRecord }[]>([]);
 
   // Form State
   const initialFormState = {
@@ -78,7 +80,39 @@ export default function Garage() {
     Effect.runPromise(dataService.getMyCars(user.uid)).then(data => {
       setCars(data);
       setLoading(false);
+      fetchUrgentServices(data);
     });
+  };
+
+  const fetchUrgentServices = async (carsList: Car[]) => {
+    if (!user) return;
+    let alerts: { car: Car, prediction: ServicePrediction, record: ServiceRecord }[] = [];
+
+    for (const car of carsList) {
+      try {
+        const serviceRecords = await Effect.runPromise(dataService.getServiceRecords(car.id, user.uid));
+        const fuelRecords = await Effect.runPromise(dataService.getFuelRecords(car.id));
+        const preds = analyzeUpcomingServices(car, serviceRecords, fuelRecords);
+
+        for (const pred of preds) {
+          const isUrgent = pred.isOverdue || (pred.daysRemaining !== null && pred.daysRemaining <= 14) || (pred.mileageRemaining !== null && pred.mileageRemaining <= 1000);
+          if (isUrgent) {
+            const record = serviceRecords.find(r => r.id === pred.recordId);
+            if (record) alerts.push({ car, prediction: pred, record });
+          }
+        }
+      } catch (err) {
+        console.error('Failed to analyze services for car', car.id, err);
+      }
+    }
+
+    alerts.sort((a, b) => {
+      const timeA = a.prediction.predictedDate?.getTime() || 0;
+      const timeB = b.prediction.predictedDate?.getTime() || 0;
+      return timeA - timeB;
+    });
+
+    setUrgentServices(alerts);
   };
 
   const handleEdit = (car: Car) => {
@@ -314,6 +348,36 @@ export default function Garage() {
             <span>Přidat auto</span>
           </button>
         </div>
+
+        {urgentServices.length > 0 && (
+          <div className="mt-4 flex flex-col gap-3">
+            {urgentServices.map((alert, idx) => (
+              <Link
+                key={`${alert.car.id}-${alert.record.id}-${idx}`}
+                to={`/garage/${alert.car.id}/service`}
+                className={`p-4 rounded-xl flex items-start gap-3 transition-opacity hover:opacity-90 shadow-sm border ${alert.prediction.isOverdue
+                  ? 'bg-red-50 border-red-200 text-red-900'
+                  : 'bg-orange-50 border-orange-200 text-orange-900'
+                  }`}
+              >
+                <div className="shrink-0 mt-0.5">
+                  <AlertCircle size={20} className={alert.prediction.isOverdue ? "text-red-500" : "text-orange-500"} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm">
+                    {alert.car.name}: {alert.record.title}
+                  </h4>
+                  <p className={`text-xs mt-1 font-medium ${alert.prediction.isOverdue ? 'text-red-700' : 'text-orange-700'}`}>
+                    {alert.prediction.isOverdue
+                      ? `Po termínu. Očekávaný termín byl ${alert.prediction.predictedDate?.toLocaleDateString('cs-CZ')}.`
+                      : `Blíží se termín. Odhadovaný čas: ${alert.prediction.daysRemaining} dní.`
+                    }
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Delete Confirmation Modal */}

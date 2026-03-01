@@ -7,8 +7,6 @@ Tento soubor obsahuje nápady na rozvoj aplikace. Je rozdělen do sekce **TODO**
 ## 📝 TODO (Nápady k realizaci)
 
 ### 🚗 Správa Vozidla a Utility
-
-- **Předpokládaný servis**: Na základě dat z tankování a servisní knížky předpokládat, kdy bude potřeba další servis a ukazovat to uživateli v aplikaci a pokud to bude mít zapnuté jako notifikaci, pak upozornit notifikací na blížící se nutnost servisu.
 - **Zadávání tankování fotkou**: Využít AI k načtení dat z účtenky a automatickému doplnění do formuláře tankování.
 - **Export dat**: Podpora exportu statistik do CSV/Excel.
 - **Mapa tankování**: Vizualizace, kde uživatel tankuje (frekvence, levnost).
@@ -48,6 +46,8 @@ Tento soubor obsahuje nápady na rozvoj aplikace. Je rozdělen do sekce **TODO**
 ## ✅ IMPLEMENTOVÁNO
 
 ### 🚗 Správa Vozidla a Utility
+
+- **Předpokládaný servis a upozornění**: Na základě dat z tankování (inteligentní průměr za 3 měsíce) a servisní knížky (limit km a datum) se automaticky v garáži vypočítává progres bar, kde zjistíme kdy bude potřeba další servis s přesností na dny. Na to upozorňuje lokální notifikace podle uživatelského nastavení.
 
 - **Tankování a spotřeba**: Dopočet hodnot a křížový výpočet litrů a ceny s pamětí pro úpravy. Volitelné kilometry s ošetřením nulových tachometrů. Zvládnutí částečného tankování.
 - **Statistiky**: Výpočty průměru spotřeby z první a poslední plné nádrže, trend spotřeby, spočtená částka za kilometr.

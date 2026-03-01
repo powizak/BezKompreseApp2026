@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Effect, Stream } from "effect";
 import { AuthService, AuthServiceLive } from "../services/AuthService";
 import type { UserProfile } from "../types";
+import { ServiceReminderService } from '../services/ServiceReminderService';
 import LoadingState from "../components/LoadingState";
 
 interface AuthContextType {
@@ -42,6 +43,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setLoading(false);
           // Clear timeout if auth resolves quickly
           if (timeoutId) clearTimeout(timeoutId);
+
+          if (u) {
+            // Run predictive service notification check in the background
+            setTimeout(() => {
+              ServiceReminderService.checkAndNotify(u).catch(e => console.error('[AuthContext] ServiceReminder error:', e));
+            }, 5000); // Give it 5s after startup to not block initial render
+          }
         }))
       );
     };
