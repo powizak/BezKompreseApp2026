@@ -325,7 +325,7 @@ export default function Garage() {
 
   return (
     <div className="max-w-4xl mx-auto pb-20">
-      <div className="sticky top-0 bg-slate-50/95 backdrop-blur-sm py-4 z-10 px-1 mb-8">
+      <div className="sticky top-0 bg-slate-50/95 backdrop-blur-sm pt-4 pb-2 z-30 px-1 mb-4">
         <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="bg-brand/10 p-3 rounded-2xl shrink-0">
@@ -348,37 +348,37 @@ export default function Garage() {
             <span>Přidat auto</span>
           </button>
         </div>
-
-        {urgentServices.length > 0 && (
-          <div className="mt-4 flex flex-col gap-3">
-            {urgentServices.map((alert, idx) => (
-              <Link
-                key={`${alert.car.id}-${alert.record.id}-${idx}`}
-                to={`/garage/${alert.car.id}/service`}
-                className={`p-4 rounded-xl flex items-start gap-3 transition-opacity hover:opacity-90 shadow-sm border ${alert.prediction.isOverdue
-                  ? 'bg-red-50 border-red-200 text-red-900'
-                  : 'bg-orange-50 border-orange-200 text-orange-900'
-                  }`}
-              >
-                <div className="shrink-0 mt-0.5">
-                  <AlertCircle size={20} className={alert.prediction.isOverdue ? "text-red-500" : "text-orange-500"} />
-                </div>
-                <div>
-                  <h4 className="font-bold text-sm">
-                    {alert.car.name}: {alert.record.title}
-                  </h4>
-                  <p className={`text-xs mt-1 font-medium ${alert.prediction.isOverdue ? 'text-red-700' : 'text-orange-700'}`}>
-                    {alert.prediction.isOverdue
-                      ? `Po termínu. Očekávaný termín byl ${alert.prediction.predictedDate?.toLocaleDateString('cs-CZ')}.`
-                      : `Blíží se termín. Odhadovaný čas: ${alert.prediction.daysRemaining} dní.`
-                    }
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
       </div>
+
+      {urgentServices.length > 0 && (
+        <div className="mb-6 flex flex-col gap-3 px-1">
+          {urgentServices.map((alert, idx) => (
+            <Link
+              key={`${alert.car.id}-${alert.record.id}-${idx}`}
+              to={`/garage/${alert.car.id}/service`}
+              className={`p-4 rounded-xl flex items-start gap-3 transition-opacity hover:opacity-90 shadow-sm border ${alert.prediction.isOverdue
+                ? 'bg-red-50 border-red-200 text-red-900'
+                : 'bg-orange-50 border-orange-200 text-orange-900'
+                }`}
+            >
+              <div className="shrink-0 mt-0.5">
+                <AlertCircle size={20} className={alert.prediction.isOverdue ? "text-red-500" : "text-orange-500"} />
+              </div>
+              <div>
+                <h4 className="font-bold text-sm">
+                  {alert.car.name}: {alert.record.title}
+                </h4>
+                <p className={`text-xs mt-1 font-medium ${alert.prediction.isOverdue ? 'text-red-700' : 'text-orange-700'}`}>
+                  {alert.prediction.isOverdue
+                    ? `Po termínu. Očekávaný termín byl ${alert.prediction.predictedDate?.toLocaleDateString('cs-CZ')}.`
+                    : `Blíží se termín. Odhadovaný čas: ${alert.prediction.daysRemaining} dní.`
+                  }
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       {carToDelete && (

@@ -16,7 +16,6 @@ Tento soubor obsahuje nápady na rozvoj aplikace. Je rozdělen do sekce **TODO**
 
 ### 👥 Komunita a Sociální Funkce
 
-- **Stav přečtení v chatu**: Přidat indikátor u zprávy, zda ji druhá strana již přečetla.
 - **Konvoj Mód**: Vylepšení Trackeru pro konkrétní akci – zobrazení pořadí aut v koloně, upozornění "ztratili jsme se", pokud se někdo odpojí.
 - **Organizované Vyjížďky a Trasy**: Sdílení tras (GPX import/export).
 - **Hodnocení silnic (Curated "Holy Grail" Roads)**: Rozšíření cest o hodnocení. Možnost označit úseky mapy jako "skvělá okreska" nebo "samá díra". Vkládání konkrétních GPX úseků a jejich hodnocení ve formátu Michelin průvodce (kvalita asfaltu, hustota provozu, panorama).
