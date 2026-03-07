@@ -10,8 +10,8 @@
 ## Nahrávání fotek nezobrazuje náhled
 - v případě přidávání fotek v bazaru (možná i v autech) se nezobrazuje náhled fotky po výběru fotky od uživatele
 
-## Štítky v profile/garage
-- v sekci profile záložce garage se nezobrazují štítky vozidel
+## ~~Štítky v profile/garage~~
+- ~~v sekci profile záložce garage se nezobrazují štítky vozidel~~
 
 ## 🔴 Firebase Storage Rules Missing
 
