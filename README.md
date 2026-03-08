@@ -127,18 +127,24 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 1.  Nainstalujte závislosti:
     ```bash
     npm install
-    # nebo
-    bun install
     ```
 
 2.  Spusťte vývojový server:
     ```bash
     npm run dev
-    # nebo
-    bun dev
     ```
 
 3.  Otevřete v prohlížeči adresu, kterou vypíše konzole (obvykle `http://localhost:5173`).
+
+### Nastavení vlastní verze pro build (Android / iOS)
+Aplikace má custom Skript, který naráz sjednotí verzi ve webovém `package.json`, v Android buildu (`versionName`, `versionCode`) a v iOS (`MARKETING_VERSION`, `CURRENT_PROJECT_VERSION`).
+Před vytvářením produkčního buildu jednoduše spusťte:
+
+```bash
+# syntaxe: npm run version:set <verze> <build-number>
+npm run version:set 1.0.1 2
+```
+Tím se vše přenastaví a následně můžete spustit příkaz `npm run cap:sync` pro úspěšné zkompilování nativních knihoven.
 
 ## Nastavení Firebase
 
@@ -165,6 +171,20 @@ Aplikace používá následující kolekce:
 - `help-beacons` - S.O.S. signály pro nouzové situace
 - `marketplace-listings` - Inzeráty v bazaru (poptávky, díly)
 - `chats` - Konverzace mezi uživateli
+- `app-settings` - Globální nastavení aplikace (např. vynucování aktualizací)
+
+### Vynucení aktualizace aplikace (Force Update)
+
+Aplikace umí uživatelům starších verzí zablokovat přístup a donutit je k aktualizaci. Pro nastavení nebo změnu minimální vyžadované verze můžete použít připravený skript:
+
+1. Ve Firebase Console v sekci **Project Settings -> Service accounts** vygenerujte nový privátní klíč (Generate new private key).
+2. Uložte stažený JSON soubor do kořenového adresáře tohoto projektu jako `serviceAccountKey.json`.
+3. Upravte soubor `scripts/init-app-settings.js` (pokud potřebujete změnit požadovanou verzi na např. `"1.0.1"` nebo upravit linky do storu).
+4. Spusťte skript:
+   ```bash
+   node scripts/init-app-settings.js
+   ```
+   Tímto se bezpečně zapíše nová `minVersion` do Firestore a všechny starší aplikace budou ihned zablokovány s odkazem k aktualizaci.
 
 ## Struktura projektu
 

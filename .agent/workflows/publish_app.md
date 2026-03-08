@@ -2,9 +2,9 @@
 description: Build, deploy to Firebase Hosting, and push changes to GitHub. Use this workflow to publish the app.
 ---
 
-0. Increment the verion of app in package.json
+0. Increment the version of app across all platforms
 // turbo
-change the version of app (mainVersion.Subversion.Change) by the changes made in app (mainVersion is only for Main releases, which has to be said by user) 
+Check the current version and build number in `android/app/build.gradle` (versionName and versionCode). Increment the version of app (mainVersion.Subversion.Change) by the changes made in app (mainVersion is only for Main releases, which has to be said by user), and increment the build number by 1. Run `npm run version:set <new_version> <new_build_number>` to sync it across package.json, Android and iOS. 
 
 1. Build the production version of the app
 // turbo

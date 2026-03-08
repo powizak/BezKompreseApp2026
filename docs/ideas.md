@@ -80,3 +80,4 @@ Tento soubor obsahuje nápady na rozvoj aplikace. Je rozdělen do sekce **TODO**
 
 - Sjednoceno ukládání fotek, komprese formátu za letu do WebP se 70% redukcí velikosti a limit formátem napříč webem až do objemu max 15MB upload (šetřeno UI storage v Firebase).
 - Historie dokumentace se separovala a loguje se přímo do souboru `changelog.md` pro zmenšení duplicitních nápadních tabulek.
+- **Force Update**: Implementován blokovací systém na straně uživatele pomocí databáze Firestore a Capacitor App API pro nucenou aktualizaci zastaralých verzí aplikace (včetně automatizovaného scriptu na správu verzí napříč platformami).

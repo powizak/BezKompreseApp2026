@@ -24,8 +24,8 @@ import { CookieConsentProvider } from './contexts/CookieConsentContext';
 import { ChatProvider } from './contexts/ChatContext';
 import { TrackerProvider } from './contexts/TrackerContext';
 import PushNotificationHandler from './components/PushNotificationHandler';
-
 import ScrollToTop from './components/ScrollToTop';
+import ForceUpdate from './components/ForceUpdate';
 
 function App() {
   return (
@@ -34,30 +34,32 @@ function App() {
         <ChatProvider>
           <TrackerProvider>
             <BrowserRouter>
-              <ScrollToTop />
-              <PushNotificationHandler />
-              <Routes>
-                <Route element={<Layout />}>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/cars" element={<CarsPage />} />
-                  <Route path="/garage" element={<Garage />} />
-                  <Route path="/garage/:carId/service" element={<ServiceBook />} />
-                  <Route path="/garage/:carId/fuel" element={<FuelTracker />} />
-                  <Route path="/events" element={<Events />} />
-                  <Route path="/events/:id" element={<EventDetail />} />
-                  <Route path="/users" element={<UsersPage />} />
-                  <Route path="/profile/:id" element={<UserProfile />} />
-                  <Route path="/car/:id" element={<CarDetail />} />
-                  <Route path="/chats" element={<Chats />} />
-                  <Route path="/market" element={<Market />} />
-                  <Route path="/market/:id" element={<MarketDetail />} />
-                  <Route path="/info" element={<Info />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/privacy" element={<PrivacyPolicy />} />
-                  <Route path="/tos" element={<TermsOfService />} />
-                  <Route path="/tracker" element={<Tracker />} />
-                </Route>
-              </Routes>
+              <ForceUpdate>
+                <ScrollToTop />
+                <PushNotificationHandler />
+                <Routes>
+                  <Route element={<Layout />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/cars" element={<CarsPage />} />
+                    <Route path="/garage" element={<Garage />} />
+                    <Route path="/garage/:carId/service" element={<ServiceBook />} />
+                    <Route path="/garage/:carId/fuel" element={<FuelTracker />} />
+                    <Route path="/events" element={<Events />} />
+                    <Route path="/events/:id" element={<EventDetail />} />
+                    <Route path="/users" element={<UsersPage />} />
+                    <Route path="/profile/:id" element={<UserProfile />} />
+                    <Route path="/car/:id" element={<CarDetail />} />
+                    <Route path="/chats" element={<Chats />} />
+                    <Route path="/market" element={<Market />} />
+                    <Route path="/market/:id" element={<MarketDetail />} />
+                    <Route path="/info" element={<Info />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/privacy" element={<PrivacyPolicy />} />
+                    <Route path="/tos" element={<TermsOfService />} />
+                    <Route path="/tracker" element={<Tracker />} />
+                  </Route>
+                </Routes>
+              </ForceUpdate>
             </BrowserRouter>
           </TrackerProvider>
         </ChatProvider>
