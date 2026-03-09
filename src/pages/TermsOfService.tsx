@@ -35,7 +35,7 @@ const TermsOfService = () => {
                     <h2 className="text-2xl font-semibold text-white">2. Uživatelský účet</h2>
                     <p className="text-zinc-400 leading-relaxed">
                         Pro plné využití aplikace je nutná registrace (přihlášení přes Google). Uživatel odpovídá za to, že údaje poskytnuté při registraci jsou pravdivé. Uživatel nese plnou odpovědnost za veškerou aktivitu na svém účtu.
-                        Provozovatel si vyhrazuje právo zablokovat nebo zrušit účet, který porušuje tyto podmínky, zákony ČR nebo dobré mravy.
+                        Provozovatel si vyhrazuje právo zablokovat nebo zrušit účet, který porušuje tyto podmínky, zákony ČR nebo dobré mravy. Provozovatel si zároveň vyhrazuje právo smazat účty, které nebyly aktivní za posledních 12 po sobě jdoucích měsíců, a to včetně všech dat, které uživatel do aplikace přidal.
                     </p>
                 </section>
 
@@ -70,14 +70,28 @@ const TermsOfService = () => {
                 </section>
 
                 <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-white">6. Omezení odpovědnosti</h2>
+                    <h2 className="text-2xl font-semibold text-white">6. Předplatné a platby</h2>
+                    <p className="text-zinc-400 leading-relaxed">
+                        Některé funkce aplikace mohou být zpoplatněny formou předplatného. Před začátkem předplatného může být poskytnuta bezplatná zkušební doba. Nákupy a správa předplatného probíhají prostřednictvím platforem třetích stran (např. Google Play). Provozovatel nenese odpovědnost za procesování plateb těmito platformami.
+                    </p>
+                </section>
+
+                <section className="space-y-4">
+                    <h2 className="text-2xl font-semibold text-white">7. Nástroje umělé inteligence (AI)</h2>
+                    <p className="text-zinc-400 leading-relaxed">
+                        Aplikace může obsahovat funkce využívající umělou inteligenci (např. AI chat). Odpovědi generované umělou inteligencí mají pouze informativní charakter a provozovatel nezaručuje jejich absolutní přesnost nebo vhodnost. Uživatel nesmí sdílet s AI citlivé osobní údaje, přístupová hesla nebo důvěrné informace.
+                    </p>
+                </section>
+
+                <section className="space-y-4">
+                    <h2 className="text-2xl font-semibold text-white">8. Omezení odpovědnosti</h2>
                     <p className="text-zinc-400 leading-relaxed">
                         Aplikace je poskytována "tak, jak je". Provozovatel nenese odpovědnost za případné výpadky služby, ztrátu dat ani za škody vzniklé používáním aplikace. Toto není oficiální aplikace značky "Bez Komprese".
                     </p>
                 </section>
 
                 <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-white">7. Změny podmínek a kontakt</h2>
+                    <h2 className="text-2xl font-semibold text-white">9. Změny podmínek a kontakt</h2>
                     <p className="text-zinc-400 leading-relaxed">
                         Tyto podmínky můžeme kdykoli aktualizovat. Pokračováním v používání aplikace po změně vyjadřujete souhlas s novým zněním.
                     </p>

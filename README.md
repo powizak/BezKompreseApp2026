@@ -107,6 +107,8 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 
 ### ⚖️ Právní informace a Soukromí (AKTUALIZOVÁNO!)
 - **GDPR Kompatibilita**: Kompletní revize zásad zpracování osobních údajů.
+- **Smazání neaktivních účtů**: Pravidlo o smazání účtů (včetně veškerých dat) po 12 měsících neaktivity pro minimalizaci ukládaných dat.
+- **Umělá inteligence a předplatné**: Jasná pravidla pro využívání integrované AI, sběr dat spojených s AI dotazy a zpracování dat o nabízeném předplatném.
 - **Transparentnost**: Jasně definovaná pravidla pro Bazar, Tracker a sdílení dat o spotřebě.
 - **Kontakt**: Přímý kontakt na správce údajů (Jakub Prošek) pro uplatnění práv uživatelů.
 

@@ -55,8 +55,10 @@ const PrivacyPolicy = () => {
                         <li><strong>Údaje o vozidlech:</strong> Informace o autech (značka, model, motorizace, rok výroby), která vložíte do "Garáže".</li>
                         <li><strong>Provozní údaje:</strong> Záznamy o tankování, nákladech, servisní knížka (opravy, údržba) a nájezd kilometrů.</li>
                         <li><strong>Komunikační údaje:</strong> Příspěvky v chatu, soukromé zprávy, komentáře.</li>
+                        <li><strong>Interakce s AI:</strong> Textové dotazy a komunikace s integrovanými AI nástroji.</li>
                         <li><strong>Bazar:</strong> Inzeráty, fotografie prodávaných předmětů a kontaktní údaje uvedené v inzerátu.</li>
                         <li><strong>Polohové údaje:</strong> GPS souřadnice (pouze při aktivní funkci Tracker).</li>
+                        <li><strong>Platby a předplatné:</strong> Informace o stavu vašeho předplatného a nákupech (samotné platební údaje nezpracováváme, dělají tak poskytovatelé třetích stran, např. Google Play).</li>
                     </ul>
                 </section>
 
@@ -81,7 +83,14 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section className="space-y-4">
-                    <h2 className="text-2xl font-semibold text-white">6. Vaše práva</h2>
+                    <h2 className="text-2xl font-semibold text-white">6. Doba uchovávání dat a smazání neaktivních účtů</h2>
+                    <p className="text-zinc-400 leading-relaxed">
+                        Vaše osobní údaje uchováváme po dobu trvání vašeho uživatelského účtu. Správce si vyhrazuje právo smazat účty, které nebyly aktivní za posledních 12 po sobě jdoucích měsíců. V takovém případě dojde k trvalému a nevratnému odstranění účtu včetně všech dat, inzerátů a obsahu, které uživatel do aplikace přidal.
+                    </p>
+                </section>
+
+                <section className="space-y-4">
+                    <h2 className="text-2xl font-semibold text-white">7. Vaše práva</h2>
                     <p className="text-zinc-400 leading-relaxed">
                         Dle GDPR máte právo na:
                     </p>
