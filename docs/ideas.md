@@ -12,12 +12,15 @@ Tento soubor obsahuje nápady na rozvoj aplikace. Je rozdělen do sekce **TODO**
 - **Mapa tankování**: Vizualizace, kde uživatel tankuje (frekvence, levnost).
 - **Další typy paliva**: Podpora pro LPG, CNG, elektrická a hybridní auta.
 - **Vylepšení pole motorizace**: U pole "engine" zavést buď kombinaci 2 polí (číslo + velká písmena), nebo našeptávač existujících hodnot pro sjednocení zadaných dat uživateli.
-- **Audio Soundboard (Co to klepe?)**: Možnost nahrát 2 zvukové stopy přímo k profilu auta ("Cold Start" a "Revving"). Skvělé pro prezentaci motoru komunitě i jako forum pro komunitní audio-diagnostiku problémů.
+- **Acoustic Fingerprint & Kognitivní Telemetrie (Audio Soundboard)**: Možnost nahrát 2 zvukové stopy přímo k profilu auta ("Cold Start" a "Revving"). Skvělé pro prezentaci motoru komunitě i jako forum pro komunitní audio-diagnostiku problémů.
+  - *UI/UX (Intentional Minimalism)*: Absolutně černé pozadí (OLED pure black). Spektrogram renderovaný jako tenké neonové křivky s vysoce kontrastní typografií (např. Geist nebo Inter). Žádný zbytečný text, jen čistá audiovizuální data.
 
 ### 👥 Komunita a Sociální Funkce
 
 - **Konvoj Mód**: Vylepšení Trackeru pro konkrétní akci – zobrazení pořadí aut v koloně, upozornění "ztratili jsme se", pokud se někdo odpojí.
-- **Organizované Vyjížďky a Trasy**: Sdílení tras (GPX import/export).
+- **"Zen Drive" & Generativní Storyboardy (Organizované Vyjížďky a Trasy)**: Sdílení tras (GPX import/export).
+  - Během jízdy aplikace pasivně sleduje data (GPS vektor, elevace, plynulost, zastávky). Na konci jízdy nevygeneruje nudnou Google mapu, ale *Avantgardní digitální plakát*. Minimalistický overlay vektoru trasy přes mapu bez popisků ulic, doplněný o dynamická data (počasí, čas, G-force peak) s architektonickým rozložením.
+  - *Export a sdílení*: Export mapy do komponenty připravené na 1-click sdílení do IG Stories (ve formátu 9:16). Žádné složité sdílení odkazů, jen čistý vizuální *flex* estetiky.
 - **Hodnocení silnic (Curated "Holy Grail" Roads)**: Rozšíření cest o hodnocení. Možnost označit úseky mapy jako "skvělá okreska" nebo "samá díra". Vkládání konkrétních GPX úseků a jejich hodnocení ve formátu Michelin průvodce (kvalita asfaltu, hustota provozu, panorama).
 - **Likování aut**: Možnost každému autu dát palec hore, srdíčko a další emotikony (třeba 5) a zobrazovat to na kartě vozidla, kolik toho dané auto má -> udělat z toho odznak.
 - **Spotter Mode (Digitalizace pozdravu na ulici)**: Vygenerování unikátního prohledného QR kódu na okno/auto. Požití jiným jedincem (i bez appky) načte profil auta s akčním tlačítkem pro udělení "respektu/lajku" a výzvou ke stažení. Majitel získává odznaky za street cred a notifikace o spotech. Uvnitř komunity i offline.

@@ -97,6 +97,9 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 ### 📋 Changelog
 - V [changelog.md](docs/changelog.md) najdete historii změn v aplikaci, včetně nedávných updatů NPM balíčků a bezpečnostních oprav.
 
+### 🤖 AI a Vývoj
+- V [AI_GUIDELINES.md](AI_GUIDELINES.md) najdete architektonický standard a UX pravidla pro projekt. AI agenti i přispěvatelé se jimi musí řídit.
+
 ### 💡 Myšlenky pro budoucí verze
 - V [ideas.md](docs/ideas.md) najdete některé myšlenky pro budoucí verze aplikace, které můžete sami navrhovat.
 
