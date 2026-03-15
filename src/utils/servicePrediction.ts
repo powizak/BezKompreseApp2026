@@ -1,4 +1,4 @@
-import { differenceInDays, addDays, isBefore } from 'date-fns';
+import { differenceInDays, differenceInCalendarDays, addDays, isBefore } from 'date-fns';
 import type { FuelRecord, ServiceRecord, Car } from '../types';
 
 export interface ServicePrediction {
@@ -90,13 +90,8 @@ export function analyzeUpcomingServices(
 
         if (record.nextServiceMileage) {
             mileageRemaining = record.nextServiceMileage - currentMileage;
-            if (mileageRemaining <= 0) {
-                daysFromMileage = 0;
-                dateFromMileage = now;
-            } else {
-                daysFromMileage = Math.round(mileageRemaining / averageDaily);
-                dateFromMileage = addDays(now, daysFromMileage);
-            }
+            daysFromMileage = Math.round(mileageRemaining / averageDaily);
+            dateFromMileage = addDays(now, daysFromMileage);
         }
 
         let dateFromTime: Date | null = null;
@@ -104,8 +99,7 @@ export function analyzeUpcomingServices(
 
         if (record.nextServiceDate) {
             dateFromTime = new Date(record.nextServiceDate);
-            daysFromTime = differenceInDays(dateFromTime, now);
-            if (daysFromTime < 0) daysFromTime = 0;
+            daysFromTime = differenceInCalendarDays(dateFromTime, now);
         }
 
         let predictedDate: Date | null = null;
@@ -139,14 +133,14 @@ export function analyzeUpcomingServices(
             triggerType = 'date';
         }
 
-        if (finalDays !== null && finalDays <= 0) {
+        if (finalDays !== null && finalDays < 0) {
             isOverdue = true;
         }
 
         predictions.push({
             recordId: record.id,
             predictedDate,
-            daysRemaining: finalDays,
+            daysRemaining: finalDays !== null ? Math.max(finalDays, 0) : null,
             mileageRemaining,
             isOverdue,
             triggerType,
