@@ -25,6 +25,7 @@ Tento soubor obsahuje nápady na rozvoj aplikace. Je rozdělen do sekce **TODO**
 - **Likování aut**: Možnost každému autu dát palec hore, srdíčko a další emotikony (třeba 5) a zobrazovat to na kartě vozidla, kolik toho dané auto má -> udělat z toho odznak.
 - **Spotter Mode (Digitalizace pozdravu na ulici)**: Vygenerování unikátního prohledného QR kódu na okno/auto. Požití jiným jedincem (i bez appky) načte profil auta s akčním tlačítkem pro udělení "respektu/lajku" a výzvou ke stažení. Majitel získává odznaky za street cred a notifikace o spotech. Uvnitř komunity i offline.
 - **Wrench-hub & Local Garage (Sdílení kompetencí)**: Rozšíření mapy o komunitní dovednosti a nářadí. Zobrazení ochotných členů v okolí (např. "mám zvedák", "mám diagnostiku", nebo "hledám pomoc s výměnou ramen, platím pizzu"). Návrat ke kořenům garážových komunit.
+- **Odkazy na sdílení z aplikaci**: Vytvořit v rámci celé aplikace z veřených stránek, které si může zobrazit jakýkoliv uživatel možnost rychlého sdílení z aplikace na sociální sítě, odkazem atd. (např. profil auta, profil uživatele, inzerát v bazaru (to již máme, tedy v tomto stylu), event atd.)
 
 - **Gamifikace (další fáze)**:
   - Fáze 2: Sběr speciálních BezKomprese "známek" za aktivitu -> výměna za dárky (slevy, samolepky).
