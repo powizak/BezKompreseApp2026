@@ -7,7 +7,8 @@ import { useChat } from '../contexts/ChatContext';
 import type { UserProfile, Car, AppEvent, NotificationSettings } from '../types';
 import { getImageUrl } from '../lib/imageService';
 import { DEFAULT_NOTIFICATION_SETTINGS, VEHICLE_STATUS_CONFIG } from '../types';
-import { Car as CarIcon, UserPlus, UserMinus, Users, Calendar, MapPin, User, ChevronRight, ChevronLeft, Settings, Shield, Save, CarFront, Gauge, Fuel, MessageCircle, LogOut, Award, Tag } from 'lucide-react';
+import { Car as CarIcon, UserPlus, UserMinus, Users, Calendar, MapPin, User, ChevronRight, ChevronLeft, Settings, Shield, Save, CarFront, Gauge, Fuel, MessageCircle, LogOut, Award, Tag, Share2 } from 'lucide-react';
+import { shareContent } from '../utils/shareUtils';
 import { useScrollOverflow } from '../hooks/useScrollOverflow';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
@@ -252,6 +253,13 @@ export default function UserProfilePage() {
             {/* Header */}
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 flex flex-col md:flex-row items-center md:items-start gap-6 relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-slate-900 to-slate-800"></div>
+                
+                <button
+                    onClick={() => shareContent(`Profil uživatele ${profile.displayName}`, '', window.location.href, 'Sdílet profil')}
+                    className="absolute top-4 right-4 z-20 p-2 text-white/70 hover:text-white transition-colors rounded-full hover:bg-white/10"
+                >
+                    <Share2 size={20} />
+                </button>
 
                 <div className="relative z-10 w-32 h-32 rounded-full border-4 border-white shadow-xl bg-white">
                     <UserAvatar user={profile} size={64} className="w-full h-full" />

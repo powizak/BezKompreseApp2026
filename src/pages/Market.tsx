@@ -14,8 +14,9 @@ import UserAvatar from '../components/UserAvatar';
 
 import {
     Store, ShoppingBag, Search, Plus, X, MessageCircle, Tag,
-    CarFront, Check, AlertCircle, Camera, Save, Trash2
+    CarFront, Check, AlertCircle, Camera, Save, Trash2, Share2
 } from 'lucide-react';
+import { shareContent } from '../utils/shareUtils';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { cs } from 'date-fns/locale';
@@ -290,13 +291,21 @@ export default function Market() {
                     </div>
                 </div>
 
-                <button
-                    onClick={() => setShowForm(true)}
-                    className="bg-brand text-slate-900 px-4 py-2 rounded-xl font-bold text-sm shadow-md shadow-brand/20 hover:bg-brand-dark hover:shadow-brand/40 transition-all flex items-center gap-2"
-                >
-                    <Plus size={16} />
-                    Nový inzerát
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => shareContent('Bazar - Bez Komprese', 'Inzerce na Bez Komprese', window.location.href, 'Sdílet Bazar')}
+                        className="p-2 text-slate-400 hover:text-brand transition-colors rounded-full hover:bg-brand/10"
+                    >
+                        <Share2 size={20} />
+                    </button>
+                    <button
+                        onClick={() => setShowForm(true)}
+                        className="bg-brand text-slate-900 px-4 py-2 rounded-xl font-bold text-sm shadow-md shadow-brand/20 hover:bg-brand-dark hover:shadow-brand/40 transition-all flex items-center gap-2"
+                    >
+                        <Plus size={16} />
+                        Nový inzerát
+                    </button>
+                </div>
             </div>
 
             {/* Search & Tabs */}

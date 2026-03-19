@@ -3,7 +3,8 @@ import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
 import type { UserProfile } from '../types';
-import { Search, Users as UsersIcon, UserPlus, UserMinus, Heart } from 'lucide-react';
+import { Search, Users as UsersIcon, UserPlus, UserMinus, Heart, Share2 } from 'lucide-react';
+import { shareContent } from '../utils/shareUtils';
 import { Link } from 'react-router-dom';
 import LoginRequired from '../components/LoginRequired';
 import LoadingState from '../components/LoadingState';
@@ -114,7 +115,13 @@ export default function UsersPage() {
 
     return (
         <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 pb-20">
-            <div className="text-center py-10 space-y-4">
+            <div className="text-center py-10 space-y-4 relative">
+                <button
+                    onClick={() => shareContent('Komunita - Bez Komprese', 'Připoj se ke komunitě', window.location.href, 'Sdílet komunitu')}
+                    className="absolute top-4 right-4 p-2 text-slate-400 hover:text-brand transition-colors rounded-full hover:bg-brand/10"
+                >
+                    <Share2 size={20} />
+                </button>
                 <h2 className="text-5xl font-black italic text-slate-900 uppercase tracking-tighter">
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand to-brand-light">Komunita</span>
                 </h2>

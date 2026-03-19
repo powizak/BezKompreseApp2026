@@ -4,8 +4,9 @@ import { Effect } from 'effect';
 import { DataService, DataServiceLive } from '../services/DataService';
 import type { Car, UserProfile } from '../types';
 import { VEHICLE_STATUS_CONFIG } from '../types';
-import { Car as CarIcon, Calendar, Gauge, Wrench, ChevronLeft, ChevronRight, X, Zap, ArrowUpRight, CarFront, Fuel, Tag } from 'lucide-react';
+import { Car as CarIcon, Calendar, Gauge, Wrench, ChevronLeft, ChevronRight, X, Zap, ArrowUpRight, CarFront, Fuel, Tag, Share2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { shareContent } from '../utils/shareUtils';
 import { getImageUrl } from '../lib/imageService';
 import LoginRequired from '../components/LoginRequired';
 import CachedImage from '../components/CachedImage';
@@ -96,9 +97,17 @@ export default function CarDetail() {
 
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 space-y-8">
-            <Link to={owner ? `/profile/${owner.uid}` : '/'} className="inline-flex items-center gap-2 text-slate-500 hover:text-brand font-bold uppercase tracking-wide text-xs mb-4">
-                <ChevronLeft size={16} /> Zpět na profil {owner ? owner.displayName : ''}
-            </Link>
+            <div className="flex items-center justify-between mb-4">
+                <Link to={owner ? `/profile/${owner.uid}` : '/'} className="inline-flex items-center gap-2 text-slate-500 hover:text-brand font-bold uppercase tracking-wide text-xs">
+                    <ChevronLeft size={16} /> Zpět na profil {owner ? owner.displayName : ''}
+                </Link>
+                <button
+                    onClick={() => shareContent(`Profil auta ${car.name}`, '', window.location.href, 'Sdílet auto')}
+                    className="p-2 text-slate-400 hover:text-brand transition-colors rounded-full hover:bg-brand/10"
+                >
+                    <Share2 size={20} />
+                </button>
+            </div>
 
             <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100">
                 {/* Main Image Carousel */}

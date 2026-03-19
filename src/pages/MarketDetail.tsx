@@ -13,7 +13,7 @@ import ChatDrawer from '../components/ChatDrawer';
 import { ArrowLeft, MessageCircle, Calendar, Tag, Share2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { cs } from 'date-fns/locale';
-import { Share } from '@capacitor/share';
+import { shareContent } from '../utils/shareUtils';
 
 export default function MarketDetail() {
     const { id } = useParams<{ id: string }>();
@@ -80,24 +80,12 @@ export default function MarketDetail() {
     };
 
     const handleShare = async () => {
-        try {
-            const canShare = await Share.canShare();
-            if (canShare.value) {
-                await Share.share({
-                    title: listing?.title || 'Inzerát na Bez Komprese',
-                    text: listing?.description,
-                    url: window.location.href,
-                    dialogTitle: 'Sdílet inzerát'
-                });
-            } else {
-                throw new Error('Share API not available');
-            }
-        } catch (err) {
-            console.log('Falling back to clipboard', err);
-            // Fallback for desktop: copy to clipboard
-            navigator.clipboard.writeText(window.location.href);
-            alert('Odkaz zkopírován do schránky!');
-        }
+        await shareContent(
+            listing?.title || 'Inzerát na Bez Komprese',
+            listing?.description || '',
+            window.location.href,
+            'Sdílet inzerát'
+        );
     };
 
     if (loading) return <LoadingState message="Načítám inzerát..." />;

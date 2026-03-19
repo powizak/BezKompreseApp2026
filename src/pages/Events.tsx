@@ -4,7 +4,8 @@ import { DataService, DataServiceLive } from '../services/DataService';
 import { useAuth } from '../contexts/AuthContext';
 import type { AppEvent, EventType, UserProfile } from '../types';
 import { EVENT_TYPE_LABELS, EVENT_TYPE_COLORS } from '../types';
-import { MapPin, Map as MapIcon, List, Plus, X, ChevronRight, Calendar, Filter, Users } from 'lucide-react';
+import { MapPin, Map as MapIcon, List, Plus, X, ChevronRight, Calendar, Filter, Users, Share2 } from 'lucide-react';
+import { shareContent } from '../utils/shareUtils';
 import EventMap from '../components/EventMap';
 import { Link } from 'react-router-dom';
 import { getImageUrl } from '../lib/imageService';
@@ -158,7 +159,14 @@ export default function Events() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 shrink-0">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                    <button
+                        onClick={() => shareContent('Kalendář akcí - Bez Komprese', 'Srazy, vyjížďky a trackdays', window.location.href, 'Sdílet akce')}
+                        className="p-2 text-slate-400 hover:text-brand transition-colors rounded-full hover:bg-brand/10 self-end sm:self-auto"
+                    >
+                        <Share2 size={20} />
+                    </button>
+                    <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 shrink-0">
                     <button
                         onClick={() => setViewMode('list')}
                         className={`p-2 rounded-lg transition-all flex items-center gap-2 text-sm font-bold ${viewMode === 'list' ? 'bg-white shadow-sm text-slate-900 ring-1 ring-slate-200' : 'text-slate-500 hover:text-slate-900'}`}
@@ -171,6 +179,7 @@ export default function Events() {
                     >
                         <MapIcon size={18} /> <span className="hidden sm:inline">Mapa</span>
                     </button>
+                </div>
                 </div>
             </div>
 

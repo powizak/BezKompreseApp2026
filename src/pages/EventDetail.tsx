@@ -8,6 +8,7 @@ import { MapPin, Calendar, ArrowLeft, Share2, Check, Navigation, ExternalLink, U
 import EventMap from '../components/EventMap';
 import { useAuth } from '../contexts/AuthContext';
 import { getImageUrl } from '../lib/imageService';
+import { shareContent } from '../utils/shareUtils';
 import LoginRequired from '../components/LoginRequired';
 import CachedImage from '../components/CachedImage';
 import UserAvatar from '../components/UserAvatar';
@@ -190,7 +191,10 @@ export default function EventDetail() {
                     <ArrowLeft size={16} /> Zpět na seznam
                 </Link>
                 <div className="flex gap-2">
-                    <button className="text-slate-400 hover:text-slate-900 transition-colors p-2 hover:bg-slate-100 rounded-full">
+                    <button
+                        onClick={() => shareContent(event.title, event.description, window.location.href, 'Sdílet akci')}
+                        className="text-slate-400 hover:text-slate-900 transition-colors p-2 hover:bg-slate-100 rounded-full"
+                    >
                         <Share2 size={20} />
                     </button>
                 </div>

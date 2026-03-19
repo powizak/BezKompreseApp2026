@@ -11,7 +11,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 ### 🏠 Domovská Stránka
 - **Sociální Feed**: Automatické načítání nejnovějších příspěvků z YouTube, Instagramu a Facebooku
 - **Přehledné Karty**: Zobrazení videí, reelů a postů s náhledem a statistikami
-- **🆕 Sdílení**: Možnost zkopírovat odkaz nebo použít nativní sdílení u každého příspěvku
+- **🆕 Sdílení**: Možnost sdílet příspěvky, inzeráty, profil auta, uživatelský profil i celé sekce (Bazar, Komunita, Akce) pomocí nativního rozhraní nebo odkazu.
 
 ### 🚗 Moje Garáž
 - **Správa Vozidel**: Přidávání a editace vlastních aut s detailními informacemi

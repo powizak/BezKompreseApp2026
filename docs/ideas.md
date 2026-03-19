@@ -25,7 +25,6 @@ Tento soubor obsahuje nápady na rozvoj aplikace. Je rozdělen do sekce **TODO**
 - **Likování aut**: Možnost každému autu dát palec hore, srdíčko a další emotikony (třeba 5) a zobrazovat to na kartě vozidla, kolik toho dané auto má -> udělat z toho odznak.
 - **Spotter Mode (Digitalizace pozdravu na ulici)**: Vygenerování unikátního prohledného QR kódu na okno/auto. Požití jiným jedincem (i bez appky) načte profil auta s akčním tlačítkem pro udělení "respektu/lajku" a výzvou ke stažení. Majitel získává odznaky za street cred a notifikace o spotech. Uvnitř komunity i offline.
 - **Wrench-hub & Local Garage (Sdílení kompetencí)**: Rozšíření mapy o komunitní dovednosti a nářadí. Zobrazení ochotných členů v okolí (např. "mám zvedák", "mám diagnostiku", nebo "hledám pomoc s výměnou ramen, platím pizzu"). Návrat ke kořenům garážových komunit.
-- **Odkazy na sdílení z aplikaci**: Vytvořit v rámci celé aplikace z veřených stránek, které si může zobrazit jakýkoliv uživatel možnost rychlého sdílení z aplikace na sociální sítě, odkazem atd. (např. profil auta, profil uživatele, inzerát v bazaru (to již máme, tedy v tomto stylu), event atd.)
 
 - **Gamifikace (další fáze)**:
   - Fáze 2: Sběr speciálních BezKomprese "známek" za aktivitu -> výměna za dárky (slevy, samolepky).
@@ -66,6 +65,7 @@ Tento soubor obsahuje nápady na rozvoj aplikace. Je rozdělen do sekce **TODO**
 - **Tracker na pozadí**: Běh Live Trackeru na pozadí (Foreground Service napříč mobilem a Local notifications) i při zamknutém displeji.
 - **Proximity Alerts**: Lokální notifikace na kolemjedoucí uživatele v libovolně nastavitelném rádiusu (1-100 km).
 - **Kopírování a sdílení**: U příspěvků na titulní straně a v bazaru přidána možnost nativního sdílení (Android/iOS) nebo zkopírování odkazu do schránky (Web).
+- **Globální sdílení**: Implementovány odkazy pro sdílení pro všechny klíčové veřejné stránky (Detail auta, Uživatelský profil, Detail akce, Seznam inzerátů, Seznam uživatelů a Kalendář akcí) s využitím jednotné utility a Capacitor Share API.
 - **Chat s uživateli**: Live chat v celé aplikaci, vyvolání chat panelu pro komunikaci s majiteli z marketplace, udržování měsíční historie a navigační proklik z hlavičky na profil společníka. Upozornění systémovými Push notifikacemi.
 - **Help Beacon (SOS)**: Community assist – lokalizace do 50 km s plovoucím SOS tlačítkem, detailní statusy krize, a akční tlačítka.
 - **Digitální Kaslík (Reminder Status)**: Automatické hlídání platností např. STK a dálniční známky před limitem.
