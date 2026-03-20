@@ -11,18 +11,26 @@ import ChatDrawer from '../components/ChatDrawer';
 import CachedImage from '../components/CachedImage';
 import LoadingState from '../components/LoadingState';
 import UserAvatar from '../components/UserAvatar';
+import MarketQuickView, { type UnifiedQuickViewData } from '../components/MarketQuickView';
 
 import {
     Store, ShoppingBag, Search, Plus, X, MessageCircle, Tag,
     CarFront, Check, AlertCircle, Camera, Save, Trash2, Share2
 } from 'lucide-react';
 import { shareContent } from '../utils/shareUtils';
-import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { cs } from 'date-fns/locale';
 
 type TabType = 'cars' | 'demand' | 'offers';
 type FilterCategory = 'all' | 'cars' | 'parts' | 'service' | 'other';
+
+const getDate = (d: any) => {
+    if (!d) return new Date();
+    if (typeof d === 'string') return new Date(d);
+    if (d.toDate) return d.toDate();
+    if (d.seconds) return new Date(d.seconds * 1000);
+    return new Date(d);
+};
 
 export default function Market() {
     const { user } = useAuth();
@@ -34,6 +42,7 @@ export default function Market() {
     const [listings, setListings] = useState<MarketplaceListing[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [quickViewEntity, setQuickViewEntity] = useState<UnifiedQuickViewData | null>(null);
 
     // New listing form
     const [showForm, setShowForm] = useState(false);
@@ -120,14 +129,6 @@ export default function Market() {
 
         // Sort by newest
         return all.sort((a, b) => {
-            // Handle different date formats (string vs Timestamp)
-            const getDate = (d: any) => {
-                if (!d) return new Date(0);
-                if (typeof d === 'string') return new Date(d);
-                if (d.seconds) return d.toDate(); // Firebase Timestamp
-                return new Date(d);
-            };
-
             const dateA = getDate(a.date);
             const dateB = getDate(b.date);
             return dateB.getTime() - dateA.getTime();
@@ -469,12 +470,32 @@ export default function Market() {
                                             </button>
                                         )}
 
-                                        <Link
-                                            to={isGarage ? `/car/${car!.id}` : `/market/${listing!.id}`}
+                                        <button
+                                            onClick={() => {
+                                                setQuickViewEntity({
+                                                    id: id,
+                                                    sourceType: isGarage ? 'car' : 'market',
+                                                    badgeLabel: isGarage ? 'Na prodej' : LISTING_TYPE_LABELS[listing!.type],
+                                                    badgeColorClass: isGarage ? 'bg-green-500 text-white' : `${LISTING_TYPE_COLORS[listing!.type].bg} ${LISTING_TYPE_COLORS[listing!.type].text}`,
+                                                    title: title,
+                                                    subtitle: subtitle,
+                                                    priceText: price > 0 ? `${price.toLocaleString('cs-CZ')} Kč` : null,
+                                                    description: isGarage ? (car!.saleDescription || '') : (listing!.description || ''),
+                                                    imageUrl: (imageUrl as any) || null,
+                                                    author: {
+                                                        userId: isGarage ? car!.ownerId : listing!.userId,
+                                                        name: isGarage ? (car as any).ownerName || 'Uživatel' : listing!.userName,
+                                                        photoUrl: isGarage ? (car as any).ownerAvatar : listing!.userPhotoURL,
+                                                        isBKTeam: isGarage ? false : listing!.isBKTeam
+                                                    },
+                                                    createdAt: getDate(item.date),
+                                                    shareUrl: `${window.location.origin}${isGarage ? '/car/' : '/market/'}${id}`
+                                                });
+                                            }}
                                             className="bg-slate-100 text-slate-700 font-bold py-2.5 px-4 rounded-xl hover:bg-slate-200 transition-all text-sm"
                                         >
-                                            Detail
-                                        </Link>
+                                            Náhled
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -562,12 +583,33 @@ export default function Market() {
                                                 Kontaktovat
                                             </button>
                                         )}
-                                        <Link
-                                            to={`/market/${listing.id}`}
+                                        <button
+                                            onClick={() => {
+                                                const colors = LISTING_TYPE_COLORS[listing.type];
+                                                setQuickViewEntity({
+                                                    id: listing.id,
+                                                    sourceType: 'market',
+                                                    badgeLabel: LISTING_TYPE_LABELS[listing.type],
+                                                    badgeColorClass: `${colors.bg} ${colors.text}`,
+                                                    title: listing.title,
+                                                    subtitle: listing.description,
+                                                    priceText: listing.price ? `${listing.price.toLocaleString('cs-CZ')} Kč` : null,
+                                                    description: listing.description || '',
+                                                    imageUrl: (listing.imageUrl as any) || null,
+                                                    author: {
+                                                        userId: listing.userId,
+                                                        name: listing.userName,
+                                                        photoUrl: listing.userPhotoURL,
+                                                        isBKTeam: listing.isBKTeam
+                                                    },
+                                                    createdAt: getDate(listing.createdAt),
+                                                    shareUrl: `${window.location.origin}/market/${listing.id}`
+                                                });
+                                            }}
                                             className="bg-slate-100 text-slate-700 font-bold py-2.5 px-4 rounded-xl hover:bg-slate-200 transition-all text-sm"
                                         >
-                                            Detail
-                                        </Link>
+                                            Náhled
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -721,6 +763,14 @@ export default function Market() {
                     </div>
                 </div>
             )}
+
+            <MarketQuickView
+                isOpen={!!quickViewEntity}
+                onClose={() => setQuickViewEntity(null)}
+                data={quickViewEntity}
+                currentUserId={user?.uid}
+                onContact={handleContact}
+            />
 
             {/* Chat Drawer */}
             {activeChat && (

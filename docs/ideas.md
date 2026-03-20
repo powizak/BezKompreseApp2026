@@ -34,7 +34,6 @@ Tento soubor obsahuje nápady na rozvoj aplikace. Je rozdělen do sekce **TODO**
 
 - **Ověřené inzeráty (Bez Komprese Tag)**: Získání certifikátu na základě zjištění přes automobilové zdroje (VIN apod.) (LEVEL1) a nebo přímo osobní prohlídky v servisu (LEVEL2).
 - **TOPování inzerátů**: Za drobný poplatek možnost být prvních 7 dní na předních příčkách v dané prodejní kategorii.
-- **Rychlý popup dialog pro Bazar**: Otevírání malého náhledu bez nutnosti prokliku (pozor: musí umět renderovat jak auta z profilu, tak i raw samostatné inzeráty).
 - **Pokročilé filtrování**: Přidat filtry vlastností, pokud bude bazar aktivně využíván.
 
 ### 🔧 Technická Vylepšení
@@ -77,6 +76,7 @@ Tento soubor obsahuje nápady na rozvoj aplikace. Je rozdělen do sekce **TODO**
 ### 🏪 Bazar
 
 - **Marketplace**: Založen bazar rozdělený na Prodej aut, Poptávky a Nabídky s dalším filtrováním podle kategorie zboží a auto-vyhledáváním hesel.
+- **Rychlý popup dialog pro Bazar**: Otevírání malého náhledu pomocí abstrahované UI view komponenty pro obě entity (auta/inzeráty) nativně z přehledu. Sdílecí flow zapojeno.
 - **Inzeráty a Garáž**: Plná svoboda (prodat konkrétní vozidlo přímo z profilové garáže) versus zřídit stand-alone off-app vložení poptávky nebo prodeje.
 - **Workflow prodeje**: Označení existujícího vozidla jako "prodaného" jej přeřadí pod kapotu, a zároveň schová případný bazarový inzerát. Vlastnosti inzerátu propisovány i do car profilu při prodávání auta z garáže.
 

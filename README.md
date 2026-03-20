@@ -67,6 +67,7 @@ Aplikace běží online na adrese: **[https://bezkompreseapp.web.app](https://be
 ### 🏪 Bazar a Marketplace (NOVÉ!)
 - **🆕 Tří-tabový layout**: Přenastavení bazaru na sekce "Prodej aut", "Poptávky" a "Nabídky" pro lepší přehlednost
 - **🆕 Unified Grid**: Sjednocené zobrazení aut z garáže i samostatných inzerátů v jednom feedu
+- **🆕 Rychlý náhled (QuickView)**: Otevírání malého náhledu bez nutnosti prokliku na detail. Abstrahovaný design zvládne vykreslit auta z garáže i syrové textové poptávky nativně přímo z feedu.
 - **🆕 Samostatné Inzeráty**: Možnost prodat auto i bez nutnosti mít ho v aplikaci v garáži
 - **🆕 Detail Inzerátu**: Nová detailní stránka pro každý inzerát s velkou galerií a **nativním sdílením přes systémové rozhraní**
 - **🆕 Navigace**: Chytré přesměrování (samostatný inzerát vs detail auta v garáži)
