@@ -106,6 +106,10 @@ export interface DataService {
     readonly markCarAsSold: (carId: string) => Effect.Effect<void, DataError>;
     readonly uploadListingImage: (file: File, listingId: string) => Effect.Effect<ImageVariants, DataError>;
     readonly uploadProfilePhoto: (file: File, userId: string) => Effect.Effect<string, DataError>;
+    
+    // Car Reactions
+    readonly toggleCarReaction: (carId: string, userId: string, emoji: string) => Effect.Effect<void, DataError>;
+    readonly getUserCarReaction: (carId: string, userId: string) => Effect.Effect<string | null, DataError>;
 }
 
 export const DataService = Context.GenericTag<DataService>("DataService");
@@ -1181,6 +1185,68 @@ export const DataServiceLive = Layer.succeed(
                 Effect.mapError((e) => new DataError("Failed to upload listing image", e))
             ));
             return result;
+        }),
+
+        toggleCarReaction: (carId, userId, emoji) => Effect.tryPromise({
+            try: async () => {
+                const { runTransaction } = await import("firebase/firestore");
+                const carRef = doc(db, "cars", carId);
+                const reactionRef = doc(db, "car_reactions", `${carId}_${userId}`);
+
+                await runTransaction(db, async (transaction) => {
+                    const carDoc = await transaction.get(carRef);
+                    if (!carDoc.exists()) throw new Error("Car does not exist");
+                    
+                    const reactionDoc = await transaction.get(reactionRef);
+                    const carData = carDoc.data() as Car;
+                    const currentCounts = carData.reactionCounts || {};
+                    let totalReactions = carData.totalReactions || 0;
+
+                    if (reactionDoc.exists()) {
+                        const existingEmoji = reactionDoc.data().emoji;
+                        if (existingEmoji === emoji) {
+                            // Remove reaction
+                            currentCounts[emoji] = Math.max(0, (currentCounts[emoji] || 1) - 1);
+                            totalReactions = Math.max(0, totalReactions - 1);
+                            transaction.delete(reactionRef);
+                        } else {
+                            // Change reaction
+                            currentCounts[existingEmoji] = Math.max(0, (currentCounts[existingEmoji] || 1) - 1);
+                            currentCounts[emoji] = (currentCounts[emoji] || 0) + 1;
+                            transaction.set(reactionRef, { carId, userId, emoji, createdAt: serverTimestamp() });
+                        }
+                    } else {
+                        // Add reaction
+                        currentCounts[emoji] = (currentCounts[emoji] || 0) + 1;
+                        totalReactions += 1;
+                        transaction.set(reactionRef, { carId, userId, emoji, createdAt: serverTimestamp() });
+                    }
+
+                    transaction.update(carRef, { reactionCounts: currentCounts, totalReactions });
+                });
+
+                // Fire and forget badge check
+                // We re-fetch the user's cars to check if any of them passed the 50/100 threshold
+                try {
+                    const carSnap = await getDoc(carRef);
+                    if (carSnap.exists()) {
+                        const carData = carSnap.data() as Car;
+                        BadgeService.checkCarReactionsBadges(carData.ownerId).catch(console.error);
+                    }
+                } catch (e) {
+                    console.error("Badge check failed", e);
+                }
+            },
+            catch: (e) => new DataError("Failed to toggle car reaction", e)
+        }),
+
+        getUserCarReaction: (carId, userId) => Effect.tryPromise({
+            try: async () => {
+                const reactionRef = doc(db, "car_reactions", `${carId}_${userId}`);
+                const snap = await getDoc(reactionRef);
+                return snap.exists() ? snap.data().emoji : null;
+            },
+            catch: (e) => new DataError("Failed to fetch user reaction", e)
         })
     })
 );

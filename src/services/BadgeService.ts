@@ -135,6 +135,31 @@ export class BadgeService {
     }
 
     /**
+     * Checks car reaction badges (50 and 100 likes).
+     */
+    static async checkCarReactionsBadges(userId: string, userSnapshot?: UserProfile): Promise<void> {
+        const user = userSnapshot || await this.getUserProfile(userId);
+        if (!user) return;
+
+        // Fetch user's cars to check likes
+        const { collection, query, where, getDocs } = await import('firebase/firestore');
+        const q = query(collection(db, "cars"), where("ownerId", "==", userId));
+        const snapshot = await getDocs(q);
+        const cars = snapshot.docs.map(doc => doc.data() as Car);
+
+        const newBadges: string[] = [];
+
+        // Check if ANY car has >= 50 or >= 100 reactions
+        const has50 = cars.some(c => (c.totalReactions || 0) >= 50);
+        const has100 = cars.some(c => (c.totalReactions || 0) >= 100);
+
+        if (has50) newBadges.push('nice_ride_50');
+        if (has100) newBadges.push('awesome_ride_100');
+
+        await this.awardBadges(userId, newBadges);
+    }
+
+    /**
      * Checks profile/social badges.
      * Should be called on login or profile update.
      */
@@ -208,6 +233,9 @@ export class BadgeService {
         } catch (e) {
             console.error("Failed to check organizer badge retroactively", e);
         }
+
+        // --- Car Reactions ---
+        await this.checkCarReactionsBadges(userId, user);
 
         // --- Registration Badges ---
         // Try to get createdAt from profile. If not present, we might be limited.

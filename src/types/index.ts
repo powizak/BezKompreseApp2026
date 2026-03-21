@@ -72,6 +72,10 @@ export interface Car {
   forSale?: boolean;
   salePrice?: number;
   saleDescription?: string;
+  
+  // Reactions
+  reactionCounts?: Record<string, number>; // e.g. { '❤️': 10, '🔥': 5 }
+  totalReactions?: number;
 }
 
 // Vehicle Status Types

@@ -12,6 +12,7 @@ import LoginRequired from '../components/LoginRequired';
 import CachedImage from '../components/CachedImage';
 import LoadingState from '../components/LoadingState';
 import UserAvatar from '../components/UserAvatar';
+import { CarEmojiReactions } from '../components/CarEmojiReactions';
 
 export default function CarDetail() {
     const { id } = useParams<{ id: string }>();
@@ -315,9 +316,9 @@ export default function CarDetail() {
                         </div>
                     </div>
 
-                    {/* Right Column: Owner Card */}
-                    <div>
-                        <div className="bg-slate-900 p-8 rounded-3xl shadow-2xl sticky top-24 border border-slate-800">
+                    {/* Right Column: Owner Card & Reactions */}
+                    <div className="space-y-6 sticky top-24">
+                        <div className="bg-slate-900 p-8 rounded-3xl shadow-2xl border border-slate-800">
                             <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-8 border-b border-slate-800 pb-4">Profil Majitele</h3>
                             {owner ? (
                                 <Link to={`/profile/${owner.uid}`} className="block group">
@@ -347,6 +348,12 @@ export default function CarDetail() {
                                     </div>
                                 </div>
                             )}
+                        </div>
+                        
+                        {/* Reactions Card */}
+                        <div className="bg-slate-900 p-8 rounded-3xl shadow-2xl border border-slate-800">
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-6 border-b border-slate-800 pb-4">Hodnocení Komunity</h3>
+                            <CarEmojiReactions carId={car.id} ownerId={car.ownerId} initialCounts={car.reactionCounts} variant="large" />
                         </div>
                     </div>
                 </div>

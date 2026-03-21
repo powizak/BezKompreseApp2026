@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { CarFront, Filter, X, Search, Calendar, Gauge, Tag } from 'lucide-react';
 import CachedImage from '../components/CachedImage';
 import LoadingState from '../components/LoadingState';
+import { CarEmojiReactions } from '../components/CarEmojiReactions';
 
 export default function CarsPage() {
     const { user } = useAuth();
@@ -276,13 +277,20 @@ export default function CarsPage() {
                             </div>
 
                             {/* Info */}
-                            <div className="p-4 flex justify-between items-center text-slate-600 text-sm">
-                                <span className="flex items-center gap-1 font-bold bg-slate-50 px-2 py-1 rounded-md border border-slate-100">
-                                    <Calendar size={14} className="text-brand" /> {car.year}
-                                </span>
-                                <span className="flex items-center gap-1 font-bold bg-slate-50 px-2 py-1 rounded-md border border-slate-100">
-                                    <Gauge size={14} className="text-brand" /> {car.power} kW
-                                </span>
+                            <div className="p-4 flex flex-col gap-3">
+                                <div className="flex justify-between items-center text-slate-600 text-sm">
+                                    <span className="flex items-center gap-1 font-bold bg-slate-50 px-2 py-1 rounded-md border border-slate-100">
+                                        <Calendar size={14} className="text-brand" /> {car.year}
+                                    </span>
+                                    <span className="flex items-center gap-1 font-bold bg-slate-50 px-2 py-1 rounded-md border border-slate-100">
+                                        <Gauge size={14} className="text-brand" /> {car.power} kW
+                                    </span>
+                                </div>
+                                
+                                {/* Reactions Row Bottom List */}
+                                <div className="pt-2 border-t border-slate-50 flex justify-center w-full">
+                                    <CarEmojiReactions carId={car.id} ownerId={car.ownerId} initialCounts={car.reactionCounts} variant="small" />
+                                </div>
                             </div>
                         </Link>
                     ))

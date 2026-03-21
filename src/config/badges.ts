@@ -124,6 +124,24 @@ export const BADGES: BadgeDefinition[] = [
         icon: 'Award',
         category: 'special',
         criteriaText: 'Členství v aplikaci déle než 1 rok.',
+    },
+    
+    // --- Car Reactions ---
+    {
+        id: 'nice_ride_50',
+        name: 'Pěkný povoz',
+        description: 'Vaše auto nasbíralo 50 reakcí.',
+        icon: 'ThumbsUp',
+        category: 'community',
+        criteriaText: 'Získejte 50 reakcí na jednom voze.',
+    },
+    {
+        id: 'awesome_ride_100',
+        name: 'Super povoz',
+        description: 'Vaše auto nasbíralo 100 reakcí.',
+        icon: 'Star',
+        category: 'community',
+        criteriaText: 'Získejte 100 reakcí na jednom voze.',
     }
 ];
 

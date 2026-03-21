@@ -32,13 +32,22 @@ service cloud.firestore {
 
     // ============ CARS Kolekce ============
     // Všichni authenticated uživatelé mohou číst auta
-    // Pouze owner může vytvářet/upravovat svá auta
+    // Pouze owner může vytvářet/upravovat svá auta (ostatní mohou updatovat pouze statistiky liků)
     match /cars/{carId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated() 
                     && request.resource.data.ownerId == getUserId();
-      allow update, delete: if isAuthenticated() 
+      allow update: if isAuthenticated() 
+                    && (resource.data.ownerId == getUserId() || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactionCounts', 'totalReactions']));
+      allow delete: if isAuthenticated() 
                     && resource.data.ownerId == getUserId();
+    }
+
+    // ============ CAR-REACTIONS Kolekce ============
+    match /car_reactions/{reactionId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.userId == getUserId();
+      allow update, delete: if isAuthenticated() && resource.data.userId == getUserId();
     }
 
     // ============ EVENTS Kolekce ============
